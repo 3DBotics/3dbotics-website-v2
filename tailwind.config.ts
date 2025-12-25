@@ -9,8 +9,14 @@ export default {
         lg: ".5625rem", /* 9px */
         md: ".375rem", /* 6px */
         sm: ".1875rem", /* 3px */
+        xl: "1rem",
+        "2xl": "1.5rem",
       },
       colors: {
+        "brand-teal": "hsl(var(--brand-teal) / <alpha-value>)",
+        "brand-red": "hsl(var(--brand-red) / <alpha-value>)",
+        "brand-lime": "hsl(var(--brand-lime) / <alpha-value>)",
+        "space-black": "hsl(var(--space-black) / <alpha-value>)",
         // Flat / base colors (regular buttons)
         background: "hsl(var(--background) / <alpha-value>)",
         foreground: "hsl(var(--foreground) / <alpha-value>)",
