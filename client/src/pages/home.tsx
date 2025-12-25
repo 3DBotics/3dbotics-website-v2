@@ -45,12 +45,12 @@ function Navigation() {
     <nav className="fixed top-0 left-0 right-0 z-50 h-16 md:h-20 bg-brand-teal shadow-md" data-testid="navigation">
       <div className="max-w-7xl mx-auto px-4 md:px-8 h-full flex items-center justify-between gap-4">
         <a href="#home" className="flex-shrink-0 flex items-center gap-2" data-testid="link-logo">
-          <div className="w-14 h-14 md:w-16 md:h-16 rounded-full ring-[3px] ring-[#1a5a5a] ring-offset-[3px] ring-offset-transparent flex items-center justify-center">
-            <div className="w-full h-full rounded-full border-[3px] border-[#1a5a5a] bg-white overflow-hidden flex items-center justify-center p-1">
+          <div className="w-14 h-14 md:w-16 md:h-16 rounded-full border-[3px] border-[#1a5a5a] p-[3px] bg-white">
+            <div className="w-full h-full rounded-full border-[3px] border-[#1a5a5a] bg-white overflow-hidden flex items-center justify-center">
               <img 
                 src={logoImage} 
                 alt="3DBotics Logo" 
-                className="w-[90%] h-[90%] object-contain"
+                className="w-[95%] h-[95%] object-contain"
                 data-testid="img-logo"
               />
             </div>
@@ -129,12 +129,12 @@ function HeroSection() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24 text-center">
         <div className="flex justify-center mb-8">
-          <div className="w-48 h-48 md:w-64 md:h-64 rounded-full ring-[4px] ring-[#1a5a5a] ring-offset-[6px] ring-offset-transparent flex items-center justify-center shadow-xl">
-            <div className="w-full h-full rounded-full border-[4px] border-[#1a5a5a] bg-white overflow-hidden flex items-center justify-center p-2">
+          <div className="w-52 h-52 md:w-72 md:h-72 rounded-full border-[4px] border-[#1a5a5a] p-[5px] bg-white shadow-xl">
+            <div className="w-full h-full rounded-full border-[4px] border-[#1a5a5a] bg-white overflow-hidden flex items-center justify-center">
               <img 
                 src={logoImage} 
                 alt="3DBotics Robot" 
-                className="w-[92%] h-[92%] object-contain"
+                className="w-[95%] h-[95%] object-contain"
                 data-testid="img-hero-robot"
               />
             </div>
@@ -675,12 +675,12 @@ function Footer() {
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full ring-[2px] ring-[#1a5a5a] ring-offset-[2px] ring-offset-transparent flex items-center justify-center">
-              <div className="w-full h-full rounded-full border-[2px] border-[#1a5a5a] bg-white overflow-hidden flex items-center justify-center p-0.5">
+            <div className="w-12 h-12 rounded-full border-[2px] border-[#1a5a5a] p-[2px] bg-white">
+              <div className="w-full h-full rounded-full border-[2px] border-[#1a5a5a] bg-white overflow-hidden flex items-center justify-center">
                 <img 
                   src={logoImage} 
                   alt="3DBotics" 
-                  className="w-[88%] h-[88%] object-contain"
+                  className="w-[95%] h-[95%] object-contain"
                   data-testid="img-footer-logo"
                 />
               </div>
@@ -709,12 +709,12 @@ function ExternalChatbot() {
       {isOpen && (
         <div className="absolute bottom-16 right-0 w-80 md:w-96 h-[500px] bg-white rounded-2xl overflow-hidden shadow-2xl border-2" style={{ borderColor: '#7DD3D8' }} data-testid="chatbot-window">
           <div className="bg-brand-teal p-3 flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full ring-[2px] ring-[#1a5a5a] ring-offset-[2px] ring-offset-transparent flex items-center justify-center">
-              <div className="w-full h-full rounded-full border-[2px] border-[#1a5a5a] bg-white overflow-hidden flex items-center justify-center p-0.5">
+            <div className="w-12 h-12 rounded-full border-[2px] border-[#1a5a5a] p-[2px] bg-white">
+              <div className="w-full h-full rounded-full border-[2px] border-[#1a5a5a] bg-white overflow-hidden flex items-center justify-center">
                 <img 
                   src={logoImage} 
                   alt="AI Assistant" 
-                  className="w-[88%] h-[88%] object-contain"
+                  className="w-[95%] h-[95%] object-contain"
                   data-testid="img-chatbot-avatar"
                 />
               </div>
@@ -745,14 +745,14 @@ function ExternalChatbot() {
       
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-16 h-16 md:w-18 md:h-18 rounded-full ring-[3px] ring-[#1a5a5a] ring-offset-[3px] ring-offset-white flex items-center justify-center shadow-lg transition-transform hover:scale-105"
+        className="w-16 h-16 rounded-full border-[3px] border-[#1a5a5a] p-[3px] bg-white shadow-lg transition-transform hover:scale-105"
         data-testid="button-open-chat"
       >
-        <div className="w-full h-full rounded-full border-[3px] border-[#1a5a5a] bg-white overflow-hidden flex items-center justify-center p-1">
+        <div className="w-full h-full rounded-full border-[3px] border-[#1a5a5a] bg-white overflow-hidden flex items-center justify-center">
           <img 
             src={logoImage} 
             alt="Chat" 
-            className="w-[90%] h-[90%] object-contain"
+            className="w-[95%] h-[95%] object-contain"
           />
         </div>
       </button>
