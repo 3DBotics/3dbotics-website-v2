@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { SiFacebook, SiInstagram, SiYoutube } from "react-icons/si";
 import logoImage from "@assets/Untitled_design_2_1766698542754.png";
+import founderImage from "@assets/founder_veni_flores.png";
 
 function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -206,6 +207,43 @@ function AboutSection() {
             </div>
           </div>
         </Card>
+      </div>
+    </section>
+  );
+}
+
+function FounderSection() {
+  return (
+    <section className="py-16 md:py-24 bg-gray-50" data-testid="section-founder">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6 uppercase tracking-wide" data-testid="text-founder-title">
+              Message from the Founder
+            </h2>
+            
+            <p className="text-gray-700 text-base md:text-lg leading-relaxed mb-6" data-testid="text-founder-bio-1">
+              3DBotics was founded by Veni Flores, an internationally recognized public speaker, bestselling author, and business mentor. With over 14 years of experience empowering corporations to achieve exponential growth, Veni has now focused his passion for technology and education to create 3DBotics—a movement designed to equip Filipino youth with future-ready skills in 3D printing, robotics, and artificial intelligence.
+            </p>
+            
+            <p className="text-gray-700 text-base md:text-lg leading-relaxed" data-testid="text-founder-bio-2">
+              Veni's innovation journey began during the pandemic with the success of Toydemic, the largest home-based 3D printing farm in the Philippines. From this venture, 3DBotics was born, combining his expertise in entrepreneurship with a mission to prepare the next generation for the demands of Industry 4.0.
+            </p>
+          </div>
+          
+          <div className="flex flex-col items-center">
+            <img 
+              src={founderImage} 
+              alt="Veni Flores - CEO and Founder of 3DBotics" 
+              className="w-full max-w-md rounded-lg shadow-xl object-cover"
+              data-testid="img-founder"
+            />
+            <div className="text-center mt-4">
+              <h3 className="text-xl font-bold text-gray-800" data-testid="text-founder-name">Veni Flores</h3>
+              <p className="text-gray-600" data-testid="text-founder-role">CEO and Founder of 3DBotics</p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -667,6 +705,7 @@ export default function Home() {
       <main>
         <HeroSection />
         <AboutSection />
+        <FounderSection />
         <ProgramsSection />
         <TechDojoSection />
         <TestimonialsSection />
