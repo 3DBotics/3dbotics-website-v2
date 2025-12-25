@@ -23,7 +23,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { SiFacebook } from "react-icons/si";
-import logoImage from "@assets/Untitled_design_2_1766698542754.png";
+import logoImage from "@assets/2026_3DBotics®_LOGO_1766703414890.jpg";
 import founderImage from "@assets/veni_founder.jpg";
 import slider1 from "@assets/slider_1.jpg";
 import slider2 from "@assets/slider_2.jpg";
@@ -45,11 +45,11 @@ function Navigation() {
     <nav className="fixed top-0 left-0 right-0 z-50 h-16 md:h-20 bg-brand-teal shadow-md" data-testid="navigation">
       <div className="max-w-7xl mx-auto px-4 md:px-8 h-full flex items-center justify-between gap-4">
         <a href="#home" className="flex-shrink-0 flex items-center gap-2" data-testid="link-logo">
-          <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-[#1a5a5a] p-1.5 flex items-center justify-center">
+          <div className="w-12 h-12 md:w-14 md:h-14 rounded-full ring-2 ring-[#1a5a5a] ring-offset-2 ring-offset-transparent overflow-hidden">
             <img 
               src={logoImage} 
               alt="3DBotics Logo" 
-              className="w-full h-full object-contain"
+              className="w-full h-full object-cover rounded-full"
               data-testid="img-logo"
             />
           </div>
@@ -127,11 +127,11 @@ function HeroSection() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24 text-center">
         <div className="flex justify-center mb-8">
-          <div className="w-36 h-36 md:w-52 md:h-52 rounded-full bg-[#1a5a5a] p-3 flex items-center justify-center shadow-xl">
+          <div className="w-40 h-40 md:w-56 md:h-56 rounded-full ring-4 ring-[#1a5a5a] ring-offset-4 ring-offset-transparent overflow-hidden shadow-xl">
             <img 
               src={logoImage} 
               alt="3DBotics Robot" 
-              className="w-full h-full object-contain"
+              className="w-full h-full object-cover rounded-full"
               data-testid="img-hero-robot"
             />
           </div>
@@ -671,11 +671,11 @@ function Footer() {
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-[#1a5a5a] p-1.5 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full ring-2 ring-[#1a5a5a] ring-offset-1 ring-offset-transparent overflow-hidden">
               <img 
                 src={logoImage} 
                 alt="3DBotics" 
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover rounded-full"
                 data-testid="img-footer-logo"
               />
             </div>
@@ -703,11 +703,11 @@ function ExternalChatbot() {
       {isOpen && (
         <div className="absolute bottom-16 right-0 w-80 md:w-96 h-[500px] bg-white rounded-2xl overflow-hidden shadow-2xl border-2" style={{ borderColor: '#7DD3D8' }} data-testid="chatbot-window">
           <div className="bg-brand-teal p-3 flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-[#1a5a5a] p-1.5 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full ring-2 ring-[#1a5a5a] ring-offset-1 ring-offset-transparent overflow-hidden">
               <img 
                 src={logoImage} 
                 alt="AI Assistant" 
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover rounded-full"
                 data-testid="img-chatbot-avatar"
               />
             </div>
@@ -737,13 +737,13 @@ function ExternalChatbot() {
       
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-16 h-16 md:w-18 md:h-18 rounded-full bg-[#1a5a5a] p-2 flex items-center justify-center shadow-lg transition-transform hover:scale-105"
+        className="w-14 h-14 md:w-16 md:h-16 rounded-full ring-2 ring-[#1a5a5a] ring-offset-2 ring-offset-white overflow-hidden shadow-lg transition-transform hover:scale-105"
         data-testid="button-open-chat"
       >
         <img 
           src={logoImage} 
           alt="Chat" 
-          className="w-full h-full object-contain"
+          className="w-full h-full object-cover rounded-full"
         />
       </button>
       {!isOpen && (
