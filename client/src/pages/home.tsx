@@ -22,9 +22,9 @@ import {
   X,
   Loader2,
 } from "lucide-react";
-import { SiFacebook, SiInstagram, SiYoutube } from "react-icons/si";
+import { SiFacebook } from "react-icons/si";
 import logoImage from "@assets/Untitled_design_2_1766698542754.png";
-import founderImage from "@assets/founder_veni_flores.png";
+import founderImage from "@assets/veni_founder.jpg";
 import slider1 from "@assets/slider_1.jpg";
 import slider2 from "@assets/slider_2.jpg";
 import slider3 from "@assets/slider_3.jpg";
@@ -45,16 +45,16 @@ function Navigation() {
     <nav className="fixed top-0 left-0 right-0 z-50 h-16 md:h-20 bg-brand-teal shadow-md" data-testid="navigation">
       <div className="max-w-7xl mx-auto px-4 md:px-8 h-full flex items-center justify-between gap-4">
         <a href="#home" className="flex-shrink-0 flex items-center gap-2" data-testid="link-logo">
-          <div className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-[#1a5a5a] p-1 flex items-center justify-center">
+          <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-[#1a5a5a] p-1.5 flex items-center justify-center">
             <img 
               src={logoImage} 
               alt="3DBotics Logo" 
-              className="w-full h-full object-contain rounded-full"
+              className="w-full h-full object-contain"
               data-testid="img-logo"
             />
           </div>
-          <span className="text-xl md:text-2xl font-bold text-gray-800">
-            3D<span className="text-brand-coral">Botics</span><sup className="text-xs">®</sup>
+          <span className="text-xl md:text-2xl font-bold">
+            <span className="text-[#1a5a5a]">3DBotics</span><sup className="text-xs text-[#1a5a5a]">®</sup>
           </span>
         </a>
 
@@ -127,11 +127,11 @@ function HeroSection() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24 text-center">
         <div className="flex justify-center mb-8">
-          <div className="w-32 h-32 md:w-48 md:h-48 rounded-full bg-[#1a5a5a] p-2 flex items-center justify-center shadow-xl">
+          <div className="w-36 h-36 md:w-52 md:h-52 rounded-full bg-[#1a5a5a] p-3 flex items-center justify-center shadow-xl">
             <img 
               src={logoImage} 
               alt="3DBotics Robot" 
-              className="w-full h-full object-contain rounded-full"
+              className="w-full h-full object-contain"
               data-testid="img-hero-robot"
             />
           </div>
@@ -139,18 +139,18 @@ function HeroSection() {
         
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-800 mb-6 tracking-tight" data-testid="text-hero-title">
           Welcome to{" "}
-          <span className="text-brand-green">3DBotics</span>{" "}
-          <span className="text-brand-teal">TechDojo</span>
+          <span className="text-[#1a5a5a]">3DBotics</span><sup className="text-lg text-[#1a5a5a]">®</sup>{" "}
+          <span className="text-[#1a5a5a]">Tech</span><span className="text-brand-coral">Dojo</span>
         </h1>
         
         <div className="max-w-3xl mx-auto mb-10 space-y-2" data-testid="text-hero-subtitle">
-          <p className="text-lg md:text-xl text-gray-700 font-semibold">
+          <p className="text-lg md:text-xl text-white font-semibold">
             China–Japan Standard Technology Education
           </p>
-          <p className="text-lg md:text-xl text-gray-700">
+          <p className="text-lg md:text-xl text-white">
             中日标准科技教育
           </p>
-          <p className="text-lg md:text-xl text-gray-700">
+          <p className="text-lg md:text-xl text-white">
             日中基準のテクノロジー教育
           </p>
         </div>
@@ -613,8 +613,10 @@ function ContactSection() {
                 <div>
                   <p className="text-gray-800 font-medium mb-1">Address</p>
                   <p className="text-gray-600" data-testid="text-contact-address">
-                    123 Innovation Drive, Tech City<br />
-                    Philippines
+                    3DBotics 2nd Floor Laguna Central Shopping Mall<br />
+                    Don Jose street Paseo De Sta Rosa Greenfield<br />
+                    Santa Rosa Laguna, Philippines<br />
+                    (Beside Shopwise)
                   </p>
                 </div>
               </div>
@@ -625,7 +627,7 @@ function ContactSection() {
                 <div>
                   <p className="text-gray-800 font-medium mb-1">Email</p>
                   <p className="text-gray-600" data-testid="text-contact-email">
-                    hello@3dbotics.ph
+                    info@3DBotics.ph
                   </p>
                 </div>
               </div>
@@ -636,7 +638,7 @@ function ContactSection() {
                 <div>
                   <p className="text-gray-800 font-medium mb-1">Phone</p>
                   <p className="text-gray-600" data-testid="text-contact-phone">
-                    +63 123 456 7890
+                    (0966) 418 7054
                   </p>
                 </div>
               </div>
@@ -646,25 +648,13 @@ function ContactSection() {
               <p className="text-gray-800 font-medium mb-4">Follow Us</p>
               <div className="flex gap-4 flex-wrap">
                 <a 
-                  href="#" 
+                  href="https://www.facebook.com/share/14TWvvRRUpB/?mibextid=wwXIfr" 
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-12 h-12 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-brand-teal hover:border-brand-teal transition-colors shadow-sm"
                   data-testid="link-social-facebook"
                 >
                   <SiFacebook className="w-5 h-5" />
-                </a>
-                <a 
-                  href="#" 
-                  className="w-12 h-12 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-brand-teal hover:border-brand-teal transition-colors shadow-sm"
-                  data-testid="link-social-instagram"
-                >
-                  <SiInstagram className="w-5 h-5" />
-                </a>
-                <a 
-                  href="#" 
-                  className="w-12 h-12 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-brand-teal hover:border-brand-teal transition-colors shadow-sm"
-                  data-testid="link-social-youtube"
-                >
-                  <SiYoutube className="w-5 h-5" />
                 </a>
               </div>
             </div>
@@ -681,16 +671,16 @@ function Footer() {
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#1a5a5a] p-1 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-[#1a5a5a] p-1.5 flex items-center justify-center">
               <img 
                 src={logoImage} 
                 alt="3DBotics" 
-                className="w-full h-full object-contain rounded-full"
+                className="w-full h-full object-contain"
                 data-testid="img-footer-logo"
               />
             </div>
-            <span className="text-gray-800 font-bold">
-              3D<span className="text-brand-coral">Botics</span><sup className="text-xs">®</sup>
+            <span className="font-bold">
+              <span className="text-[#1a5a5a]">3DBotics</span><sup className="text-xs text-[#1a5a5a]">®</sup>
             </span>
             <span className="text-gray-700 text-sm">
               3D Printing | AI | Robotics
@@ -713,11 +703,11 @@ function ExternalChatbot() {
       {isOpen && (
         <div className="absolute bottom-16 right-0 w-80 md:w-96 h-[500px] bg-white rounded-2xl overflow-hidden shadow-2xl border-2" style={{ borderColor: '#7DD3D8' }} data-testid="chatbot-window">
           <div className="bg-brand-teal p-3 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#1a5a5a] p-1 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-[#1a5a5a] p-1.5 flex items-center justify-center">
               <img 
                 src={logoImage} 
                 alt="AI Assistant" 
-                className="w-full h-full object-contain rounded-full"
+                className="w-full h-full object-contain"
                 data-testid="img-chatbot-avatar"
               />
             </div>
@@ -747,13 +737,13 @@ function ExternalChatbot() {
       
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-[#1a5a5a] p-1 flex items-center justify-center shadow-lg transition-transform hover:scale-105"
+        className="w-16 h-16 md:w-18 md:h-18 rounded-full bg-[#1a5a5a] p-2 flex items-center justify-center shadow-lg transition-transform hover:scale-105"
         data-testid="button-open-chat"
       >
         <img 
           src={logoImage} 
           alt="Chat" 
-          className="w-full h-full object-contain rounded-full"
+          className="w-full h-full object-contain"
         />
       </button>
       {!isOpen && (
