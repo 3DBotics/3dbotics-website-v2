@@ -77,4 +77,17 @@ shared/           # Shared code between client/server
 
 ### Assets
 - Brand logo stored in `attached_assets/` directory, aliased as `@assets` in Vite
+- Robot face logo used in navigation, hero section, and as chatbot avatar
 - Design guidelines documented in `design_guidelines.md`
+
+## API Endpoints
+- `POST /api/contact` - Submit contact form (name, email, message) → stores message and returns success
+- `POST /api/chat` - Chatbot message endpoint → returns intelligent keyword-based responses
+
+## Recent Updates (December 2025)
+- Implemented complete one-page layout with all sections: Navigation, Hero, About, Programs, TechDojo Portal, Testimonials, Contact, Footer
+- Added floating AI chatbot with robot face avatar and intelligent responses
+- Applied glassmorphism design with Space Black background and brand color accents
+- TechDojo Portal features Student Login (Red theme) and Franchisee Login (Teal theme)
+- Fixed dynamic Tailwind class issue by using explicit class mappings for brand colors
+- Programs section displays cards with unique border colors per program type
