@@ -45,12 +45,12 @@ function Navigation() {
     <nav className="fixed top-0 left-0 right-0 z-50 h-16 md:h-20 bg-brand-teal shadow-md" data-testid="navigation">
       <div className="max-w-7xl mx-auto px-4 md:px-8 h-full flex items-center justify-between gap-4">
         <a href="#home" className="flex-shrink-0 flex items-center gap-2" data-testid="link-logo">
-          <div className="w-14 h-14 md:w-16 md:h-16 rounded-full border-[3px] border-[#1a5a5a] p-[3px] bg-white">
-            <div className="w-full h-full rounded-full border-[3px] border-[#1a5a5a] bg-white overflow-hidden flex items-center justify-center">
+          <div className="w-14 h-14 md:w-16 md:h-16 rounded-full border-[2px] border-[#1a5a5a] p-[2px] bg-white">
+            <div className="w-full h-full rounded-full border-[2px] border-[#1a5a5a] bg-white overflow-hidden flex items-center justify-center">
               <img 
                 src={logoImage} 
                 alt="3DBotics Logo" 
-                className="w-[95%] h-[95%] object-contain"
+                className="w-full h-full object-cover"
                 data-testid="img-logo"
               />
             </div>
@@ -129,12 +129,12 @@ function HeroSection() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24 text-center">
         <div className="flex justify-center mb-8">
-          <div className="w-52 h-52 md:w-72 md:h-72 rounded-full border-[4px] border-[#1a5a5a] p-[5px] bg-white shadow-xl">
-            <div className="w-full h-full rounded-full border-[4px] border-[#1a5a5a] bg-white overflow-hidden flex items-center justify-center">
+          <div className="w-52 h-52 md:w-72 md:h-72 rounded-full border-[3px] border-[#1a5a5a] p-[3px] bg-white shadow-xl">
+            <div className="w-full h-full rounded-full border-[3px] border-[#1a5a5a] bg-white overflow-hidden flex items-center justify-center">
               <img 
                 src={logoImage} 
                 alt="3DBotics Robot" 
-                className="w-[95%] h-[95%] object-contain"
+                className="w-full h-full object-cover"
                 data-testid="img-hero-robot"
               />
             </div>
@@ -680,7 +680,7 @@ function Footer() {
                 <img 
                   src={logoImage} 
                   alt="3DBotics" 
-                  className="w-[95%] h-[95%] object-contain"
+                  className="w-full h-full object-cover"
                   data-testid="img-footer-logo"
                 />
               </div>
@@ -714,7 +714,7 @@ function ExternalChatbot() {
                 <img 
                   src={logoImage} 
                   alt="AI Assistant" 
-                  className="w-[95%] h-[95%] object-contain"
+                  className="w-full h-full object-cover"
                   data-testid="img-chatbot-avatar"
                 />
               </div>
@@ -745,14 +745,14 @@ function ExternalChatbot() {
       
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-16 h-16 rounded-full border-[3px] border-[#1a5a5a] p-[3px] bg-white shadow-lg transition-transform hover:scale-105"
+        className="w-16 h-16 rounded-full border-[2px] border-[#1a5a5a] p-[2px] bg-white shadow-lg transition-transform hover:scale-105"
         data-testid="button-open-chat"
       >
-        <div className="w-full h-full rounded-full border-[3px] border-[#1a5a5a] bg-white overflow-hidden flex items-center justify-center">
+        <div className="w-full h-full rounded-full border-[2px] border-[#1a5a5a] bg-white overflow-hidden flex items-center justify-center">
           <img 
             src={logoImage} 
             alt="Chat" 
-            className="w-[95%] h-[95%] object-contain"
+            className="w-full h-full object-cover"
           />
         </div>
       </button>
