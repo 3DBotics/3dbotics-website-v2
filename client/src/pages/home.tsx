@@ -38,6 +38,7 @@ function Navigation() {
     { label: "About", href: "#about" },
     { label: "Programs", href: "#programs" },
     { label: "TechDojo", href: "#techdojo" },
+    { label: "Branches", href: "#branches" },
     { label: "Contact", href: "#contact" },
   ];
 
@@ -669,6 +670,72 @@ function ContactSection() {
   );
 }
 
+const branches = [
+  { name: "3DBotics Cagayan De Oro", contact: "0976 176 5241", address: "ROOM 3D, H BUILDING, LOT 13, MASTERSON MILES, MASTERSON AVENUE, UPPER CARMEN, CAGAYAN DE ORO CITY" },
+  { name: "3DBotics Bacolod", contact: "0919 065 2600", address: "2nd Floor Mayfair Plaza 12th Lacson ST. Bacolod City" },
+  { name: "3DBotics Bacoor, Cavite", contact: "0917 872 3189", address: "Center Name: Play Logix Studio /3DBotics Bacoor Address: 2F Main Square Mall Bacoor Blvd, Brgy Bayanan, Bacoor City" },
+  { name: "3DBotics Batangas City", contact: "0917 127 4167", address: "2nd floor RL building P burgos st. Corner D silang st. Batangas city" },
+  { name: "3DBotics Cabuyao City", contact: "0920-276-1204", address: "Unit 3C RLI Bldg., Southpoint Banay-Banay, Cabuyao City, Laguna" },
+  { name: "3DBotics Catanduanes", contact: "0968 602 7812", address: "Sta. Elena, Virac, Catanduanes" },
+  { name: "3DBotics Imus City", contact: "0956-895-0278", address: "Center Name: Robofab 3DBotics Imus | 189 RCJ Commercial Bldg. Gen. Yengco St. Bayan Luma 1 Imus City Cavite" },
+  { name: "3DBotics Las Piñas", contact: "0998 530 9437", address: "Scholl/Center Name: 3DBotics Las Piñas x Mind Builderz Address: Unit 115 Vatican building BF Resort Las Pinas" },
+  { name: "3DBotics Makati City", contact: "09176726871", address: "Unit 127, Mile Long Building Amorosolo Corner, Rufino st. Legaspi Village Makati City" },
+  { name: "3DBotics Mandaluyong City", contact: "0917 578 1611", address: "6F MG Tower II, Shaw Blvd., Mandaluyong City" },
+  { name: "3DBotics Muntinlupa", contact: "0927-572-2212", address: "IDEYA P-H Tutorial Services | Festival Mall Alabang" },
+  { name: "3DBotics Nuvali", contact: "0975 081 8303", address: "2nd Floor (near Shopwise), Laguna Central, Sta. Rosa Laguna" },
+  { name: "3DBotics Occ. Mindoro", contact: "0968 524 4403", address: "Scholl/Center Name: SJ 3Dbotics Learning Hub Address: Tagumpay A, Bagong Sikat ,San Jose Occidental Mindoro" },
+  { name: "3DBotics Ormoc City", contact: "0969 648 2744", address: "UG 113, Chinatown Eastgate, Lilia Ave., Brgy. Cogon, Ormoc City" },
+  { name: "3DBotics Parañaque", contact: "0995 861 8106", address: "Unit 2, 2nd Floor El Grande Arcade, 316 El Grande Avenue, BF Parañaque City, 1720" },
+  { name: "3DBotics Pasay City", contact: "0929 374 3932 | 0976 149 2525", address: "722 P. Santos St., Brgy. 169, Malibay, Pasay City" },
+  { name: "3DBotics San Pablo City", contact: "0945-289-0343", address: "Tech Wiz Club-3DBotics, 4 Lt. R. Brion St, San Pablo City, Laguna" },
+  { name: "3DBotics Sto. Tomas Batangas", contact: "0945 289 0343", address: "#19 A. Bonifacio St., Pob. 2, Sto Tomas Batangas" },
+  { name: "3DBotics Tacloban", contact: "0917 850 2008", address: "GF Primark Town Center, Caibaan, Tacloban" },
+  { name: "3DBotics Tagbilaran", contact: "0905 225 1088", address: "G/F Konnichiwa Building, J.B. Gallares Street, Janssen Heights, Dampas, Tagbilaran City, Bohol 6300" },
+  { name: "3DBotics Taguig", contact: "0917 557 2078 / 0927 647 8955", address: "2nd Flr #72 MRT Avenue Central Signal Village, Taguig City Email: 3dboticstaguig@gmail.com" },
+  { name: "3DBotics Tarlac", contact: "0943 134 9368", address: "Bayanihan Institute, Saint Marys Subdivision, Matatalaib, Tarlac City" },
+  { name: "3DBotics Urdaneta City", contact: "0908 224 6367", address: "3rd floor, RjR Building, San Vicente, Urdaneta City, Pangasinan" },
+];
+
+function Branches() {
+  return (
+    <section id="branches" className="py-16 md:py-24 bg-white" data-testid="branches-section">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-12" data-testid="text-branches-title">
+          Branches
+        </h2>
+        <div className="grid md:grid-cols-2 gap-6">
+          {branches.map((branch, index) => (
+            <div
+              key={index}
+              className="border border-gray-200 rounded-lg p-6 flex flex-col items-center text-center"
+              data-testid={`card-branch-${index}`}
+            >
+              <div className="w-20 h-20 rounded-full border-[2px] border-[#1a5a5a] p-[2px] bg-white mb-4">
+                <div className="w-full h-full rounded-full border-[2px] border-[#1a5a5a] bg-white overflow-hidden flex items-center justify-center">
+                  <img 
+                    src={logoImage} 
+                    alt="3DBotics" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+              <h3 className="text-lg font-bold text-[#EAB93F] mb-3" data-testid={`text-branch-name-${index}`}>
+                {branch.name}
+              </h3>
+              <p className="text-gray-700 text-sm mb-1">
+                <span className="font-medium">Contact #:</span> <span className="font-bold">{branch.contact}</span>
+              </p>
+              <p className="text-gray-600 text-sm">
+                <span className="font-medium">Address:</span> {branch.address}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Footer() {
   return (
     <footer className="py-8 bg-brand-teal" data-testid="footer">
@@ -777,6 +844,7 @@ export default function Home() {
         <ProgramsSection />
         <TechDojoSection />
         <TestimonialsSection />
+        <Branches />
         <ContactSection />
       </main>
       <Footer />
