@@ -14,9 +14,10 @@ export default {
       },
       colors: {
         "brand-teal": "hsl(var(--brand-teal) / <alpha-value>)",
-        "brand-red": "hsl(var(--brand-red) / <alpha-value>)",
-        "brand-lime": "hsl(var(--brand-lime) / <alpha-value>)",
-        "space-black": "hsl(var(--space-black) / <alpha-value>)",
+        "brand-yellow": "hsl(var(--brand-yellow) / <alpha-value>)",
+        "brand-green": "hsl(var(--brand-green) / <alpha-value>)",
+        "brand-coral": "hsl(var(--brand-coral) / <alpha-value>)",
+        "brand-header": "hsl(var(--brand-header) / <alpha-value>)",
         // Flat / base colors (regular buttons)
         background: "hsl(var(--background) / <alpha-value>)",
         foreground: "hsl(var(--foreground) / <alpha-value>)",

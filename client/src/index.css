@@ -2,94 +2,95 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 3DBotics Brand Colors from Logo */
-/* Teal: #5EC4C6 -> HSL: 181 50% 57% */
-/* Red: #E8755E -> HSL: 11 74% 64% */
-/* Lime Green: #B5D333 -> HSL: 70 67% 51% */
-/* Space Black: #0a0a0a */
+/* 3DBotics Brand Colors - Matching Old Website */
+/* Light Teal Header: #7DD3D8 -> HSL: 184 55% 67% */
+/* Yellow/Gold Accent: #EAB93F -> HSL: 44 82% 58% */
+/* Green Sections: #7CB342 -> HSL: 88 46% 48% */
+/* Coral/Orange: #E8755E -> HSL: 11 74% 64% */
 
-/* DARK MODE ONLY - Space Black Theme */
+/* LIGHT MODE - Matching Old Website Theme */
 :root {
-  --button-outline: rgba(255,255,255, .10);
-  --badge-outline: rgba(255,255,255, .05);
-  --opaque-button-border-intensity: 9;
-  --elevate-1: rgba(255,255,255, .04);
-  --elevate-2: rgba(255,255,255, .09);
+  --button-outline: rgba(0,0,0, .10);
+  --badge-outline: rgba(0,0,0, .05);
+  --opaque-button-border-intensity: -9;
+  --elevate-1: rgba(0,0,0, .04);
+  --elevate-2: rgba(0,0,0, .09);
   
-  /* Space Black Background */
-  --background: 0 0% 4%;
-  --foreground: 0 0% 98%;
-  --border: 0 0% 12%;
+  /* Light Background */
+  --background: 0 0% 98%;
+  --foreground: 210 11% 15%;
+  --border: 210 10% 85%;
   
-  /* Cards with glassmorphism base */
-  --card: 0 0% 8%;
-  --card-foreground: 0 0% 98%;
-  --card-border: 70 67% 51%;
+  /* Cards with light styling */
+  --card: 0 0% 100%;
+  --card-foreground: 210 11% 15%;
+  --card-border: 210 10% 85%;
   
-  --sidebar: 0 0% 6%;
-  --sidebar-foreground: 0 0% 98%;
-  --sidebar-border: 0 0% 14%;
-  --sidebar-primary: 181 50% 57%;
+  --sidebar: 184 55% 67%;
+  --sidebar-foreground: 210 11% 15%;
+  --sidebar-border: 184 55% 55%;
+  --sidebar-primary: 184 55% 50%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 0 0% 14%;
-  --sidebar-accent-foreground: 0 0% 98%;
-  --sidebar-ring: 70 67% 51%;
+  --sidebar-accent: 184 55% 75%;
+  --sidebar-accent-foreground: 210 11% 15%;
+  --sidebar-ring: 44 82% 58%;
   
-  --popover: 0 0% 8%;
-  --popover-foreground: 0 0% 98%;
-  --popover-border: 0 0% 16%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 210 11% 15%;
+  --popover-border: 210 10% 85%;
   
-  /* Primary: Lime Green */
-  --primary: 70 67% 51%;
-  --primary-foreground: 0 0% 4%;
+  /* Primary: Teal (header color) */
+  --primary: 184 55% 50%;
+  --primary-foreground: 0 0% 100%;
   
-  /* Secondary: Teal */
-  --secondary: 181 50% 57%;
-  --secondary-foreground: 0 0% 100%;
+  /* Secondary: Yellow/Gold */
+  --secondary: 44 82% 58%;
+  --secondary-foreground: 210 11% 15%;
   
-  --muted: 0 0% 14%;
-  --muted-foreground: 0 0% 70%;
+  --muted: 210 10% 93%;
+  --muted-foreground: 210 11% 45%;
   
-  /* Accent: Teal */
-  --accent: 181 50% 20%;
-  --accent-foreground: 0 0% 98%;
+  /* Accent: Light Teal */
+  --accent: 184 55% 90%;
+  --accent-foreground: 210 11% 15%;
   
-  /* Destructive: Brand Red */
+  /* Destructive: Coral/Orange */
   --destructive: 11 74% 54%;
   --destructive-foreground: 0 0% 100%;
   
-  --input: 0 0% 20%;
-  --ring: 70 67% 51%;
+  --input: 210 10% 90%;
+  --ring: 184 55% 50%;
   
   /* Brand color chart */
-  --chart-1: 70 67% 51%;
-  --chart-2: 181 50% 57%;
-  --chart-3: 11 74% 64%;
-  --chart-4: 220 70% 68%;
+  --chart-1: 184 55% 67%;
+  --chart-2: 44 82% 58%;
+  --chart-3: 88 46% 48%;
+  --chart-4: 11 74% 64%;
   --chart-5: 280 65% 68%;
   
-  /* Futuristic fonts */
-  --font-sans: 'Space Grotesk', 'Inter', sans-serif;
+  /* Clean fonts */
+  --font-sans: 'Inter', 'Segoe UI', sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: 'JetBrains Mono', monospace;
   
   --radius: .5rem;
-  --shadow-2xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
-  --shadow-xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
-  --shadow-sm: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 1px 2px -1px hsl(0 0% 0% / 0.00);
-  --shadow: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 1px 2px -1px hsl(0 0% 0% / 0.00);
-  --shadow-md: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 2px 4px -1px hsl(0 0% 0% / 0.00);
-  --shadow-lg: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 4px 6px -1px hsl(0 0% 0% / 0.00);
-  --shadow-xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 8px 10px -1px hsl(0 0% 0% / 0.00);
-  --shadow-2xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
+  --shadow-2xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.05);
+  --shadow-xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.08);
+  --shadow-sm: 0px 1px 3px 0px hsl(0 0% 0% / 0.10), 0px 1px 2px -1px hsl(0 0% 0% / 0.05);
+  --shadow: 0px 2px 4px 0px hsl(0 0% 0% / 0.10), 0px 1px 2px -1px hsl(0 0% 0% / 0.05);
+  --shadow-md: 0px 4px 6px 0px hsl(0 0% 0% / 0.10), 0px 2px 4px -1px hsl(0 0% 0% / 0.05);
+  --shadow-lg: 0px 8px 12px 0px hsl(0 0% 0% / 0.10), 0px 4px 6px -1px hsl(0 0% 0% / 0.05);
+  --shadow-xl: 0px 16px 24px 0px hsl(0 0% 0% / 0.10), 0px 8px 10px -1px hsl(0 0% 0% / 0.05);
+  --shadow-2xl: 0px 24px 48px 0px hsl(0 0% 0% / 0.15);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
 
-  /* Brand custom colors */
-  --brand-teal: 181 50% 57%;
-  --brand-red: 11 74% 54%;
-  --brand-lime: 70 67% 51%;
-  --space-black: 0 0% 4%;
+  /* Brand custom colors matching old site */
+  --brand-teal: 184 55% 67%;
+  --brand-yellow: 44 82% 58%;
+  --brand-green: 88 46% 48%;
+  --brand-coral: 11 74% 54%;
+  --brand-header: 184 55% 67%;
 
   /* Fallback for older browsers */
   --sidebar-primary-border: hsl(var(--sidebar-primary));
@@ -126,39 +127,39 @@
   --opaque-button-border-intensity: 9;
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
-  --background: 0 0% 4%;
+  --background: 210 15% 12%;
   --foreground: 0 0% 98%;
-  --border: 0 0% 12%;
-  --card: 0 0% 8%;
+  --border: 210 10% 20%;
+  --card: 210 15% 15%;
   --card-foreground: 0 0% 98%;
-  --card-border: 70 67% 51%;
-  --sidebar: 0 0% 6%;
+  --card-border: 210 10% 25%;
+  --sidebar: 184 55% 25%;
   --sidebar-foreground: 0 0% 98%;
-  --sidebar-border: 0 0% 14%;
-  --sidebar-primary: 181 50% 57%;
+  --sidebar-border: 184 55% 35%;
+  --sidebar-primary: 184 55% 60%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 0 0% 14%;
+  --sidebar-accent: 184 55% 30%;
   --sidebar-accent-foreground: 0 0% 98%;
-  --sidebar-ring: 70 67% 51%;
-  --popover: 0 0% 8%;
+  --sidebar-ring: 44 82% 58%;
+  --popover: 210 15% 15%;
   --popover-foreground: 0 0% 98%;
-  --popover-border: 0 0% 16%;
-  --primary: 70 67% 51%;
-  --primary-foreground: 0 0% 4%;
-  --secondary: 181 50% 57%;
-  --secondary-foreground: 0 0% 100%;
-  --muted: 0 0% 14%;
-  --muted-foreground: 0 0% 70%;
-  --accent: 181 50% 20%;
+  --popover-border: 210 10% 25%;
+  --primary: 184 55% 55%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 44 82% 58%;
+  --secondary-foreground: 210 11% 15%;
+  --muted: 210 10% 20%;
+  --muted-foreground: 210 10% 70%;
+  --accent: 184 55% 30%;
   --accent-foreground: 0 0% 98%;
   --destructive: 11 74% 54%;
   --destructive-foreground: 0 0% 100%;
-  --input: 0 0% 20%;
-  --ring: 70 67% 51%;
-  --chart-1: 70 67% 51%;
-  --chart-2: 181 50% 57%;
-  --chart-3: 11 74% 64%;
-  --chart-4: 220 70% 68%;
+  --input: 210 10% 25%;
+  --ring: 184 55% 55%;
+  --chart-1: 184 55% 67%;
+  --chart-2: 44 82% 58%;
+  --chart-3: 88 46% 48%;
+  --chart-4: 11 74% 64%;
   --chart-5: 280 65% 68%;
   --shadow-2xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
   --shadow-xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
@@ -169,10 +170,11 @@
   --shadow-xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 8px 10px -1px hsl(0 0% 0% / 0.00);
   --shadow-2xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
 
-  --brand-teal: 181 50% 57%;
-  --brand-red: 11 74% 54%;
-  --brand-lime: 70 67% 51%;
-  --space-black: 0 0% 4%;
+  --brand-teal: 184 55% 67%;
+  --brand-yellow: 44 82% 58%;
+  --brand-green: 88 46% 48%;
+  --brand-coral: 11 74% 54%;
+  --brand-header: 184 55% 50%;
 
   /* Fallback for older browsers */
   --sidebar-primary-border: hsl(var(--sidebar-primary));
