@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,6 +25,10 @@ import {
 import { SiFacebook, SiInstagram, SiYoutube } from "react-icons/si";
 import logoImage from "@assets/Untitled_design_2_1766698542754.png";
 import founderImage from "@assets/founder_veni_flores.png";
+import slider1 from "@assets/slider_1.jpg";
+import slider2 from "@assets/slider_2.jpg";
+import slider3 from "@assets/slider_3.jpg";
+import slider4 from "@assets/slider_4.jpg";
 
 function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -40,13 +44,18 @@ function Navigation() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 h-16 md:h-20 bg-brand-teal shadow-md" data-testid="navigation">
       <div className="max-w-7xl mx-auto px-4 md:px-8 h-full flex items-center justify-between gap-4">
-        <a href="#home" className="flex-shrink-0" data-testid="link-logo">
-          <img 
-            src={logoImage} 
-            alt="3DBotics Logo" 
-            className="h-10 md:h-14 w-auto object-contain rounded-full"
-            data-testid="img-logo"
-          />
+        <a href="#home" className="flex-shrink-0 flex items-center gap-2" data-testid="link-logo">
+          <div className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-[#1a5a5a] p-1 flex items-center justify-center">
+            <img 
+              src={logoImage} 
+              alt="3DBotics Logo" 
+              className="w-full h-full object-contain rounded-full"
+              data-testid="img-logo"
+            />
+          </div>
+          <span className="text-xl md:text-2xl font-bold text-gray-800">
+            3D<span className="text-brand-coral">Botics</span><sup className="text-xs">®</sup>
+          </span>
         </a>
 
         <div className="hidden md:flex items-center gap-8 flex-wrap">
@@ -118,24 +127,33 @@ function HeroSection() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24 text-center">
         <div className="flex justify-center mb-8">
-          <img 
-            src={logoImage} 
-            alt="3DBotics Robot" 
-            className="w-32 h-32 md:w-48 md:h-48 object-contain rounded-full shadow-xl"
-            style={{ animationDuration: '3s' }}
-            data-testid="img-hero-robot"
-          />
+          <div className="w-32 h-32 md:w-48 md:h-48 rounded-full bg-[#1a5a5a] p-2 flex items-center justify-center shadow-xl">
+            <img 
+              src={logoImage} 
+              alt="3DBotics Robot" 
+              className="w-full h-full object-contain rounded-full"
+              data-testid="img-hero-robot"
+            />
+          </div>
         </div>
         
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-800 mb-6 tracking-tight" data-testid="text-hero-title">
           Welcome to{" "}
-          <span className="text-brand-green">3DBotics</span>
-          <span className="text-brand-coral">®</span>
+          <span className="text-brand-green">3DBotics</span>{" "}
+          <span className="text-brand-teal">TechDojo</span>
         </h1>
         
-        <p className="text-lg md:text-xl lg:text-2xl text-gray-700 max-w-3xl mx-auto mb-10 leading-relaxed" data-testid="text-hero-subtitle">
-          Bringing <span className="bg-brand-yellow text-gray-800 px-2 py-1 rounded font-semibold">STEAM</span> Education and Creativity to Every Corner of the Country!
-        </p>
+        <div className="max-w-3xl mx-auto mb-10 space-y-2" data-testid="text-hero-subtitle">
+          <p className="text-lg md:text-xl text-gray-700 font-semibold">
+            China–Japan Standard Technology Education
+          </p>
+          <p className="text-lg md:text-xl text-gray-700">
+            中日标准科技教育
+          </p>
+          <p className="text-lg md:text-xl text-gray-700">
+            日中基準のテクノロジー教育
+          </p>
+        </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 flex-wrap">
           <Button 
@@ -156,10 +174,52 @@ function HeroSection() {
           </Button>
         </div>
       </div>
+    </section>
+  );
+}
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <div className="w-6 h-10 border-2 border-gray-800/50 rounded-full flex justify-center pt-2">
-          <div className="w-1 h-3 bg-gray-800 rounded-full" />
+function ImageSlideshow() {
+  const slides = [slider1, slider2, slider3, slider4];
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [slides.length]);
+
+  return (
+    <section className="w-full bg-white py-4" data-testid="section-slideshow">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        <div className="relative w-full overflow-hidden rounded-xl shadow-lg">
+          <div 
+            className="flex transition-transform duration-500 ease-in-out"
+            style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+          >
+            {slides.map((slide, index) => (
+              <img
+                key={index}
+                src={slide}
+                alt={`Slide ${index + 1}`}
+                className="w-full flex-shrink-0 object-cover"
+                data-testid={`img-slide-${index}`}
+              />
+            ))}
+          </div>
+          
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-3 h-3 rounded-full transition-colors ${
+                  currentSlide === index ? 'bg-brand-teal' : 'bg-white/50'
+                }`}
+                data-testid={`button-slide-dot-${index}`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -621,13 +681,18 @@ function Footer() {
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <img 
-              src={logoImage} 
-              alt="3DBotics" 
-              className="h-8 w-auto object-contain rounded-full"
-              data-testid="img-footer-logo"
-            />
-            <span className="text-gray-800 text-sm">
+            <div className="w-10 h-10 rounded-full bg-[#1a5a5a] p-1 flex items-center justify-center">
+              <img 
+                src={logoImage} 
+                alt="3DBotics" 
+                className="w-full h-full object-contain rounded-full"
+                data-testid="img-footer-logo"
+              />
+            </div>
+            <span className="text-gray-800 font-bold">
+              3D<span className="text-brand-coral">Botics</span><sup className="text-xs">®</sup>
+            </span>
+            <span className="text-gray-700 text-sm">
               3D Printing | AI | Robotics
             </span>
           </div>
@@ -648,12 +713,14 @@ function ExternalChatbot() {
       {isOpen && (
         <div className="absolute bottom-16 right-0 w-80 md:w-96 h-[500px] bg-white rounded-2xl overflow-hidden shadow-2xl border-2" style={{ borderColor: '#7DD3D8' }} data-testid="chatbot-window">
           <div className="bg-brand-teal p-3 flex items-center gap-3">
-            <img 
-              src={logoImage} 
-              alt="AI Assistant" 
-              className="w-10 h-10 object-contain rounded-full bg-white p-1"
-              data-testid="img-chatbot-avatar"
-            />
+            <div className="w-10 h-10 rounded-full bg-[#1a5a5a] p-1 flex items-center justify-center">
+              <img 
+                src={logoImage} 
+                alt="AI Assistant" 
+                className="w-full h-full object-contain rounded-full"
+                data-testid="img-chatbot-avatar"
+              />
+            </div>
             <div>
               <p className="text-gray-800 font-semibold">3DBotics Assistant</p>
               <p className="text-gray-700 text-xs">Online</p>
@@ -680,13 +747,13 @@ function ExternalChatbot() {
       
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-brand-teal flex items-center justify-center shadow-lg transition-transform hover:scale-105"
+        className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-[#1a5a5a] p-1 flex items-center justify-center shadow-lg transition-transform hover:scale-105"
         data-testid="button-open-chat"
       >
         <img 
           src={logoImage} 
           alt="Chat" 
-          className="w-10 h-10 md:w-12 md:h-12 object-contain rounded-full"
+          className="w-full h-full object-contain rounded-full"
         />
       </button>
       {!isOpen && (
@@ -704,6 +771,7 @@ export default function Home() {
       <Navigation />
       <main>
         <HeroSection />
+        <ImageSlideshow />
         <AboutSection />
         <FounderSection />
         <ProgramsSection />
