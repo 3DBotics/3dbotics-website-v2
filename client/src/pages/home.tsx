@@ -674,7 +674,7 @@ function ContactSection() {
 const videos = [
   { 
     title: "Welcome to 3DBotics TechDojo", 
-    vimeoUrl: "https://player.vimeo.com/video/YOUR_VIDEO_ID"
+    vimeoUrl: "https://player.vimeo.com/video/1149372357"
   },
 ];
 
