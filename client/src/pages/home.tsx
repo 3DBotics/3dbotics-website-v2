@@ -21,6 +21,7 @@ import {
   Menu,
   X,
   Loader2,
+  Gamepad2,
 } from "lucide-react";
 import { SiFacebook } from "react-icons/si";
 import logoImage from "@assets/2026_3DBotics®_LOGO_1766703414890.jpg";
@@ -336,11 +337,19 @@ function ProgramsSection() {
     },
     {
       icon: Cpu,
-      title: "Robotics",
-      description: "Design, build, and program robots. Compete in challenges and develop engineering skills.",
+      title: "Kit-Free Robotics",
+      description: "Design, build, and program robots without traditional kits. Compete in challenges and develop engineering skills.",
       iconBgClass: "bg-brand-green/20",
       iconColorClass: "text-brand-green",
       bgColor: "#7CB342"
+    },
+    {
+      icon: Gamepad2,
+      title: "Game and Mobile App AI Development",
+      description: "Create engaging games and mobile applications powered by AI. Learn to build interactive experiences for the digital age.",
+      iconBgClass: "bg-brand-coral/20",
+      iconColorClass: "text-brand-coral",
+      bgColor: "#E8755E"
     },
   ];
 
@@ -357,7 +366,7 @@ function ProgramsSection() {
           <div className="w-24 h-1 bg-brand-yellow mx-auto mt-4 rounded-full" />
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           {programs.map((program, index) => (
             <Card 
               key={program.title}
