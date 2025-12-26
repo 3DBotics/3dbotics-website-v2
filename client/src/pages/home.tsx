@@ -29,6 +29,7 @@ import slider1 from "@assets/slider_1.jpg";
 import slider2 from "@assets/slider_2.jpg";
 import slider3 from "@assets/slider_3.jpg";
 import slider4 from "@assets/slider_4.jpg";
+import chatbotAvatar from "@assets/Gemini_Generated_Image_8t7xmn8t7xmn8t7x_1766711043630.png";
 
 function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -824,7 +825,7 @@ function ExternalChatbot() {
             <div className="w-12 h-12 rounded-full border-[2px] border-[#1a5a5a] p-[2px] bg-white">
               <div className="w-full h-full rounded-full border-[2px] border-[#1a5a5a] bg-white overflow-hidden flex items-center justify-center">
                 <img 
-                  src={logoImage} 
+                  src={chatbotAvatar} 
                   alt="AI Assistant" 
                   className="w-full h-full object-cover"
                   data-testid="img-chatbot-avatar"
@@ -855,24 +856,26 @@ function ExternalChatbot() {
         </div>
       )}
       
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-16 h-16 rounded-full border-[2px] border-[#1a5a5a] p-[2px] bg-white shadow-lg transition-transform hover:scale-105"
-        data-testid="button-open-chat"
-      >
-        <div className="w-full h-full rounded-full border-[2px] border-[#1a5a5a] bg-white overflow-hidden flex items-center justify-center">
-          <img 
-            src={logoImage} 
-            alt="Chat" 
-            className="w-full h-full object-cover"
-          />
-        </div>
-      </button>
-      {!isOpen && (
-        <span className="absolute -top-2 -left-2 bg-brand-teal text-gray-800 text-xs font-bold px-3 py-1 rounded-full shadow-md whitespace-nowrap">
-          Ask Me Anything
-        </span>
-      )}
+      <div className="flex flex-col items-center">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-20 h-20 rounded-full border-[3px] border-[#1a5a5a] p-[3px] bg-white shadow-lg transition-transform hover:scale-105"
+          data-testid="button-open-chat"
+        >
+          <div className="w-full h-full rounded-full border-[3px] border-[#1a5a5a] bg-white overflow-hidden flex items-center justify-center">
+            <img 
+              src={chatbotAvatar} 
+              alt="Chat" 
+              className="w-full h-full object-cover"
+            />
+          </div>
+        </button>
+        {!isOpen && (
+          <span className="mt-2 bg-brand-teal text-gray-800 text-xs font-bold px-3 py-1 rounded-full shadow-md whitespace-nowrap">
+            Ask Me Anything
+          </span>
+        )}
+      </div>
     </div>
   );
 }
