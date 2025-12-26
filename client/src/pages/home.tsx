@@ -38,6 +38,7 @@ function Navigation() {
     { label: "About", href: "#about" },
     { label: "Programs", href: "#programs" },
     { label: "TechDojo", href: "#techdojo" },
+    { label: "Videos", href: "#videos" },
     { label: "Branches", href: "#branches" },
     { label: "Contact", href: "#contact" },
   ];
@@ -670,6 +671,50 @@ function ContactSection() {
   );
 }
 
+const videos = [
+  { 
+    title: "Welcome to 3DBotics TechDojo", 
+    vimeoUrl: "https://player.vimeo.com/video/YOUR_VIDEO_ID"
+  },
+];
+
+function VideosSection() {
+  return (
+    <section id="videos" className="py-16 md:py-24 bg-gray-50" data-testid="videos-section">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-12 text-center" data-testid="text-videos-title">
+          Videos
+        </h2>
+        <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-8">
+          {videos.map((video, index) => (
+            <div
+              key={index}
+              className="bg-white rounded-xl shadow-lg overflow-hidden"
+              data-testid={`card-video-${index}`}
+            >
+              <div className="aspect-video">
+                <iframe
+                  src={video.vimeoUrl}
+                  className="w-full h-full"
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  allowFullScreen
+                  title={video.title}
+                  data-testid={`iframe-video-${index}`}
+                />
+              </div>
+              <div className="p-4 bg-brand-teal">
+                <h3 className="text-lg font-bold text-[#1a5a5a]" data-testid={`text-video-title-${index}`}>
+                  {video.title}
+                </h3>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 const branches = [
   { name: "3DBotics Cagayan De Oro", contact: "0976 176 5241", address: "ROOM 3D, H BUILDING, LOT 13, MASTERSON MILES, MASTERSON AVENUE, UPPER CARMEN, CAGAYAN DE ORO CITY" },
   { name: "3DBotics Bacolod", contact: "0919 065 2600", address: "2nd Floor Mayfair Plaza 12th Lacson ST. Bacolod City" },
@@ -844,6 +889,7 @@ export default function Home() {
         <ProgramsSection />
         <TechDojoSection />
         <TestimonialsSection />
+        <VideosSection />
         <Branches />
         <ContactSection />
       </main>
