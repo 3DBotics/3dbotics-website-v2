@@ -48,7 +48,7 @@ export default function ChatPage() {
       try {
         setConnectionStatus("connecting");
         // Test connection to LM Studio
-        const testResponse = await fetch("http://192.168.1.33:1234/v1/chat/completions", {
+        const testResponse = await fetch("https://undeclarable-kandy-graspingly.ngrok-free.dev/v1/chat/completions", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -109,7 +109,7 @@ export default function ChatPage() {
 
   const ask3DBoticsAI = async (studentMessage: string): Promise<string> => {
     try {
-      const response = await fetch("http://192.168.1.33:1234/v1/chat/completions", {
+      const response = await fetch("https://undeclarable-kandy-graspingly.ngrok-free.dev/v1/chat/completions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
