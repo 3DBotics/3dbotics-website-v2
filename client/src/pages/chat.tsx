@@ -230,8 +230,8 @@ TEACHING STYLE
                 <motion.img 
                   src="/assets/characters/veni.png" 
                   alt="Veni Character" 
-                  className="h-32 w-auto mb-4 drop-shadow-lg"
-                  animate={{ y: [0, -10, 0] }}
+                  className="h-64 w-auto mb-6 drop-shadow-2xl"
+                  animate={{ y: [0, -15, 0] }}
                   transition={{ duration: 3, repeat: Infinity }}
                 />
                 <h2 className="text-2xl font-bold text-gray-800 mb-2">Welcome to 3DBotics AI Classroom!</h2>
