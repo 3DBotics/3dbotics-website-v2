@@ -27,7 +27,12 @@ export default function ChatPage() {
   // Auto-scroll to latest message
   useEffect(() => {
     if (scrollContainer.current) {
-      scrollContainer.current.scrollTop = scrollContainer.current.scrollHeight;
+      // Use setTimeout to ensure the DOM has updated before scrolling
+      setTimeout(() => {
+        if (scrollContainer.current) {
+          scrollContainer.current.scrollTop = scrollContainer.current.scrollHeight;
+        }
+      }, 0);
     }
   }, [messages]);
 
@@ -214,8 +219,8 @@ TEACHING STYLE
 
       {/* Chat Area */}
       <div className="flex-1 overflow-hidden flex flex-col">
-        <ScrollArea className="flex-1">
-          <div ref={scrollContainer} className="max-w-4xl mx-auto px-4 py-6 space-y-4">
+        <div ref={scrollContainer} className="flex-1 overflow-y-auto">
+          <div className="max-w-4xl mx-auto px-4 py-6 space-y-4">
             {messages.length === 0 && (
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
@@ -310,7 +315,7 @@ TEACHING STYLE
               </motion.div>
             )}
           </div>
-        </ScrollArea>
+        </div>
       </div>
 
       {/* Input Area */}
