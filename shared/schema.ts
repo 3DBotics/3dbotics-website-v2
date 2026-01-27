@@ -39,3 +39,20 @@ export type ChatMessage = z.infer<typeof chatMessageSchema>;
 export interface ChatResponse {
   response: string;
 }
+
+export const studentChats = pgTable("student_chats", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  message: text("message").notNull(),
+  response: text("response").notNull(),
+  branch: text("branch").notNull(),
+  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const insertStudentChatSchema = createInsertSchema(studentChats).pick({
+  message: true,
+  response: true,
+  branch: true,
+});
+
+export type InsertStudentChat = z.infer<typeof insertStudentChatSchema>;
+export type StudentChat = typeof studentChats.$inferSelect;
