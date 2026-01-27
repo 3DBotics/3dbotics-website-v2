@@ -1,19 +1,15 @@
 import { useState, useEffect, useRef } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
-import { 
-  Send, 
-  Loader2, 
-  AlertCircle,
-  Home,
-  Cpu
-} from "lucide-react";
-import logoImage from "@assets/2026_3DBotics®_LOGO_1766703414890.jpg";
-import chatbotAvatar from "@assets/Gemini_Generated_Image_8t7xmn8t7xmn8t7x_1766711043630.png";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Link } from "wouter";
+import { Home, Send, Bot, User, Loader2, Wifi, WifiOff } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-interface ChatMessage {
+interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
@@ -24,78 +20,49 @@ interface StudentChat {
   message: string;
   response: string;
   branch: string;
-  timestamp?: Date;
+  timestamp: Date;
 }
 
+const LM_STUDIO_URL = "https://undeclarable-kandy-graspingly.ngrok-free.dev/v1/chat/completions";
+
 export default function ChatPage() {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: "1",
+      role: "assistant",
+      content: "Hello! 👋 Welcome to 3DBotics AI Classroom! I'm your 3DBotics Facilitator. I'm here to help you learn about 3D printing, robotics, and AI. What's your name, student?",
+      timestamp: new Date(),
+    },
+  ]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState<"connected" | "connecting" | "error">("connecting");
-  const [studentName, setStudentName] = useState("");
-  const [hasIntroduced, setHasIntroduced] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [connectionStatus, setConnectionStatus] = useState<"checking" | "online" | "error">("checking");
   const { toast } = useToast();
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to bottom when new messages arrive
+  // Auto-scroll to bottom when messages change
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const scrollContainer = scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]');
+    if (scrollContainer) {
+      scrollContainer.scrollTop = scrollContainer.scrollHeight;
+    }
   }, [messages]);
 
-  // Initialize connection and send welcome message
+  // Check connection to LM Studio on mount
   useEffect(() => {
     const initializeChat = async () => {
       try {
-        setConnectionStatus("connecting");
-        // Test connection to LM Studio
-        const testResponse = await fetch("https://undeclarable-kandy-graspingly.ngrok-free.dev/v1/chat/completions", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            model: "llama-3.2-3b-instruct",
-            messages: [
-              { role: "system", content: "You are the 3DBotics Facilitator. Respond briefly." },
-              { role: "user", content: "Hello" }
-            ],
-            temperature: 0.7,
-            max_tokens: 50
-          })
+        const response = await fetch("https://undeclarable-kandy-graspingly.ngrok-free.dev/v1/models", {
+          signal: AbortController.timeout(5000).signal
         });
-
-        if (testResponse.ok) {
-          setConnectionStatus("connected");
-          // Add welcome message
-          const welcomeMessage: ChatMessage = {
-            id: Date.now().toString(),
-            role: "assistant",
-            content: "Hello! 👋 Welcome to 3DBotics AI Classroom! I'm your 3DBotics Facilitator. I'm here to help you learn about 3D printing, robotics, and AI. What's your name, student?",
-            timestamp: new Date()
-          };
-          setMessages([welcomeMessage]);
+        if (response.ok) {
+          setConnectionStatus("online");
         } else {
           setConnectionStatus("error");
-          const errorMessage: ChatMessage = {
-            id: Date.now().toString(),
-            role: "assistant",
-            content: "⚠️ I can't connect to the Master Brain right now. Please ask the Facilitator to check if the server is running on the MacBook.",
-            timestamp: new Date()
-          };
-          setMessages([errorMessage]);
-          toast({
-            title: "Connection Error",
-            description: "Unable to connect to LM Studio. Please check if the server is running.",
-            variant: "destructive"
-          });
         }
-      } catch (error) {
+      } catch (err) {
+        console.error("Connection check failed:", err);
         setConnectionStatus("error");
-        const errorMessage: ChatMessage = {
-          id: Date.now().toString(),
-          role: "assistant",
-          content: "⚠️ Connection lost to Master MacBook! Please ask the Facilitator to check the server!",
-          timestamp: new Date()
-        };
-        setMessages([errorMessage]);
         toast({
           title: "Connection Error",
           description: "Failed to initialize chat connection.",
@@ -107,9 +74,15 @@ export default function ChatPage() {
     initializeChat();
   }, [toast]);
 
-  const ask3DBoticsAI = async (studentMessage: string): Promise<string> => {
+  const ask3DBoticsAI = async (studentMessage: string, currentMessages: Message[]): Promise<string> => {
     try {
-      const response = await fetch("https://undeclarable-kandy-graspingly.ngrok-free.dev/v1/chat/completions", {
+      // Prepare the full message history for the AI
+      const history = currentMessages.map(m => ({
+        role: m.role === 'user' ? 'user' : 'assistant',
+        content: m.content
+      }));
+
+      const response = await fetch(LM_STUDIO_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -117,13 +90,13 @@ export default function ChatPage() {
           messages: [
             {
               role: "system",
-              content: "You are the 3DBotics Facilitator. Explain everything like the user is a 5th grader. Give only the first step. Keep responses short and encouraging."
+              content: "You are the 3DBotics Facilitator. Explain everything like the user is a 5th grader. Give only the first step.",
             },
-            { role: "user", content: studentMessage }
+            ...history,
+            { role: "user", content: studentMessage },
           ],
           temperature: 0.7,
-          max_tokens: 150
-        })
+        }),
       });
 
       if (!response.ok) {
@@ -133,7 +106,7 @@ export default function ChatPage() {
       const data = await response.json();
       const aiReply = data.choices[0].message.content;
 
-      // Save to Supabase
+      // Save to Supabase via our backend API
       try {
         const chatData: StudentChat = {
           message: studentMessage,
@@ -145,11 +118,10 @@ export default function ChatPage() {
         await fetch("/api/chat-log", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(chatData)
+          body: JSON.stringify(chatData),
         });
-      } catch (logError) {
-        console.warn("Failed to log chat to Supabase:", logError);
-        // Continue even if logging fails
+      } catch (supabaseErr) {
+        console.error("Failed to log to Supabase:", supabaseErr);
       }
 
       return aiReply;
@@ -161,199 +133,155 @@ export default function ChatPage() {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!inputValue.trim() || isLoading) return;
 
-    if (!inputValue.trim()) {
-      return;
-    }
-
-    // If student hasn't introduced themselves, capture their name
-    if (!hasIntroduced && inputValue.trim().length > 0) {
-      setStudentName(inputValue.trim());
-      setHasIntroduced(true);
-    }
-
-    // Add user message
-    const userMessage: ChatMessage = {
+    const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
-      content: inputValue,
-      timestamp: new Date()
+      content: inputValue.trim(),
+      timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
     setIsLoading(true);
 
-    try {
-      const aiResponse = await ask3DBoticsAI(inputValue);
-      const assistantMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: aiResponse,
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error("Error getting AI response:", error);
-      const errorMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: "Sorry, I encountered an error. Please try again.",
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
+    const aiReply = await ask3DBoticsAI(userMessage.content, messages);
+    
+    const assistantMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      role: "assistant",
+      content: aiReply,
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, assistantMessage]);
+    setIsLoading(false);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-teal to-brand-teal/80 pt-20 pb-8">
-      <div className="max-w-2xl mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-b from-brand-teal/20 to-white p-4 md:p-8">
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <a href="/" className="flex items-center gap-2 text-white hover:text-white/80 transition-colors">
-            <Home className="w-5 h-5" />
-            <span className="text-sm font-medium">Back to Home</span>
-          </a>
-          <div className="text-white text-center">
-            <h1 className="text-2xl md:text-3xl font-bold">3DBotics AI Classroom</h1>
-            <p className="text-sm text-white/80">Learn from your AI Teacher</p>
+        <div className="flex items-center justify-between mb-8">
+          <Link href="/">
+            <Button variant="ghost" className="text-gray-600 hover:text-brand-teal">
+              <Home className="mr-2 h-4 w-4" />
+              Back to Home
+            </Button>
+          </Link>
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-800">3DBotics AI Classroom</h1>
+            <p className="text-gray-600">Learn from your AI Teacher</p>
           </div>
-          <div className="w-12 h-12 rounded-full border-[2px] border-white p-[2px] bg-white">
-            <div className="w-full h-full rounded-full border-[2px] border-white bg-white overflow-hidden flex items-center justify-center">
-              <img 
-                src={logoImage} 
-                alt="3DBotics Logo" 
-                className="w-full h-full object-cover"
-              />
-            </div>
+          <div className="flex items-center gap-2">
+            <Avatar className="h-10 w-10 border-2 border-brand-teal">
+              <AvatarImage src="/logo.png" />
+              <AvatarFallback>3DB</AvatarFallback>
+            </Avatar>
           </div>
         </div>
 
         {/* Connection Status */}
-        <div className="mb-4 flex items-center justify-center gap-2">
-          <div className={`w-3 h-3 rounded-full ${
-            connectionStatus === "connected" ? "bg-green-400" : 
-            connectionStatus === "connecting" ? "bg-yellow-400 animate-pulse" : 
-            "bg-red-400"
-          }`} />
-          <span className="text-white text-sm font-medium">
-            {connectionStatus === "connected" && "Connected to AI Teacher"}
-            {connectionStatus === "connecting" && "Connecting to AI Teacher..."}
-            {connectionStatus === "error" && "Connection Error - Check Server"}
-          </span>
+        <div className="flex justify-center mb-4">
+          <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${
+            connectionStatus === "online" ? "bg-green-100 text-green-700" : 
+            connectionStatus === "error" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-700"
+          }`}>
+            {connectionStatus === "online" ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
+            {connectionStatus === "online" ? "Connected to AI Teacher" : 
+             connectionStatus === "error" ? "Connection Error - Check Server" : "Checking Connection..."}
+          </div>
         </div>
 
         {/* Chat Container */}
-        <Card className="bg-white rounded-2xl shadow-2xl overflow-hidden border-0 h-[600px] flex flex-col">
-          {/* Chat Messages */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50">
-            {messages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                <Cpu className="w-16 h-16 mb-4 opacity-30" />
-                <p>Initializing AI Teacher...</p>
-              </div>
-            ) : (
-              <>
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}
-                  >
-                    {message.role === "assistant" && (
-                      <div className="w-8 h-8 rounded-full border-[2px] border-brand-teal p-[2px] bg-white flex-shrink-0">
-                        <div className="w-full h-full rounded-full border-[2px] border-brand-teal bg-white overflow-hidden flex items-center justify-center">
-                          <img 
-                            src={chatbotAvatar} 
-                            alt="AI Teacher" 
-                            className="w-full h-full object-cover"
-                          />
+        <Card className="border-none shadow-2xl bg-white/80 backdrop-blur-sm overflow-hidden">
+          <CardContent className="p-0">
+            <ScrollArea className="h-[500px] p-4 md:p-6" ref={scrollAreaRef}>
+              <div className="space-y-6">
+                <AnimatePresence initial={false}>
+                  {messages.map((message) => (
+                    <motion.div
+                      key={message.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                    >
+                      <div className={`flex gap-3 max-w-[80%] ${message.role === "user" ? "flex-row-reverse" : ""}`}>
+                        <Avatar className={`h-8 w-8 shrink-0 ${message.role === "assistant" ? "border border-brand-teal" : ""}`}>
+                          {message.role === "assistant" ? (
+                            <>
+                              <AvatarImage src="/teacher-avatar.png" />
+                              <AvatarFallback className="bg-brand-teal text-white"><Bot size={16} /></AvatarFallback>
+                            </>
+                          ) : (
+                            <AvatarFallback className="bg-gray-200 text-gray-600"><User size={16} /></AvatarFallback>
+                          )}
+                        </Avatar>
+                        <div className={`flex flex-col ${message.role === "user" ? "items-end" : "items-start"}`}>
+                          <div className={`rounded-2xl px-4 py-2 text-sm md:text-base shadow-sm ${
+                            message.role === "user" 
+                              ? "bg-brand-teal text-white rounded-tr-none" 
+                              : "bg-gray-100 text-gray-800 rounded-tl-none"
+                          }`}>
+                            {message.content}
+                          </div>
+                          <span className="text-[10px] text-gray-400 mt-1">
+                            {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
                         </div>
                       </div>
-                    )}
-                    <div
-                      className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${
-                        message.role === "user"
-                          ? "bg-brand-teal text-white rounded-br-none"
-                          : "bg-gray-200 text-gray-800 rounded-bl-none"
-                      }`}
-                    >
-                      <p className="text-sm md:text-base leading-relaxed">{message.content}</p>
-                      <p className={`text-xs mt-1 ${
-                        message.role === "user" ? "text-white/70" : "text-gray-600"
-                      }`}>
-                        {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
                 {isLoading && (
-                  <div className="flex gap-3 justify-start">
-                    <div className="w-8 h-8 rounded-full border-[2px] border-brand-teal p-[2px] bg-white flex-shrink-0">
-                      <div className="w-full h-full rounded-full border-[2px] border-brand-teal bg-white overflow-hidden flex items-center justify-center">
-                        <img 
-                          src={chatbotAvatar} 
-                          alt="AI Teacher" 
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
+                    <div className="flex gap-3 items-center bg-gray-100 rounded-2xl px-4 py-2">
+                      <Loader2 className="h-4 w-4 animate-spin text-brand-teal" />
+                      <span className="text-sm text-gray-500">AI Teacher is thinking...</span>
                     </div>
-                    <div className="bg-gray-200 text-gray-800 px-4 py-3 rounded-lg rounded-bl-none">
-                      <div className="flex gap-1">
-                        <div className="w-2 h-2 bg-gray-600 rounded-full animate-bounce" />
-                        <div className="w-2 h-2 bg-gray-600 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
-                        <div className="w-2 h-2 bg-gray-600 rounded-full animate-bounce" style={{ animationDelay: "0.4s" }} />
-                      </div>
-                    </div>
-                  </div>
+                  </motion.div>
                 )}
-                <div ref={messagesEndRef} />
-              </>
-            )}
-          </div>
+              </div>
+            </ScrollArea>
 
-          {/* Input Area */}
-          <div className="border-t border-gray-200 p-4 bg-white">
-            {connectionStatus === "error" && (
-              <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg flex gap-2 items-start">
-                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-red-700">
+            {/* Input Area */}
+            <div className="p-4 border-t bg-white/50">
+              {connectionStatus === "error" && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-100 rounded-lg text-red-600 text-sm flex items-center gap-2">
+                  <WifiOff className="h-4 w-4" />
                   Cannot connect to AI Teacher. Please check if LM Studio is running on the MacBook.
+                </div>
+              )}
+              <form onSubmit={handleSendMessage} className="flex gap-2">
+                <Input
+                  type="text"
+                  placeholder="Ask your AI Teacher a question..."
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  disabled={isLoading || connectionStatus === "error"}
+                  className="flex-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 rounded-full focus:ring-brand-teal focus:border-brand-teal"
+                />
+                <Button
+                  type="submit"
+                  disabled={isLoading || !inputValue.trim() || connectionStatus === "error"}
+                  className="bg-brand-teal hover:bg-brand-teal/90 text-white rounded-full px-6"
+                >
+                  {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                </Button>
+              </form>
+              <div className="mt-4 text-center">
+                <p className="text-[10px] text-gray-400 flex items-center justify-center gap-1">
+                  <Bot size={12} /> Tip: Ask about 3D printing, robotics, or AI concepts!
+                </p>
+                <p className="text-[10px] text-gray-400 mt-1">
+                  Your conversations are being recorded for learning progress tracking.
                 </p>
               </div>
-            )}
-            <form onSubmit={handleSendMessage} className="flex gap-2">
-              <Input
-                type="text"
-                placeholder="Ask your AI Teacher a question..."
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                disabled={isLoading || connectionStatus === "error"}
-                className="flex-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 rounded-full focus:ring-brand-teal focus:border-brand-teal"
-              />
-              <Button
-                type="submit"
-                disabled={isLoading || !inputValue.trim() || connectionStatus === "error"}
-                className="bg-brand-teal hover:bg-brand-teal/90 text-white rounded-full px-6"
-              >
-                {isLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Send className="w-4 h-4" />
-                )}
-              </Button>
-            </form>
-          </div>
+            </div>
+          </CardContent>
         </Card>
-
-        {/* Footer Info */}
-        <div className="mt-6 text-center text-white/80 text-sm">
-          <p>💡 Tip: Ask about 3D printing, robotics, or AI concepts!</p>
-          <p className="mt-2">Your conversations are being recorded for learning progress tracking.</p>
-        </div>
       </div>
     </div>
   );
 }
-// Trigger deployment
