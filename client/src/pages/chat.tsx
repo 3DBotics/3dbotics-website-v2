@@ -8,6 +8,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Link } from "wouter";
 import { Home, Send, Bot, User, Loader2, Wifi, WifiOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import ReactMarkdown from "react-markdown";
 
 interface Message {
   id: string;
@@ -244,7 +245,18 @@ export default function ChatPage() {
                               ? "bg-brand-teal text-white rounded-tr-none" 
                               : "bg-gray-100 text-gray-800 rounded-tl-none"
                           }`}>
-                            {message.content}
+                            <ReactMarkdown 
+                              className="prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
+                              components={{
+                                p: ({children}) => <p className="mb-2 last:mb-0">{children}</p>,
+                                ul: ({children}) => <ul className="list-disc ml-4 mb-2">{children}</ul>,
+                                ol: ({children}) => <ol className="list-decimal ml-4 mb-2">{children}</ol>,
+                                li: ({children}) => <li className="mb-1">{children}</li>,
+                                strong: ({children}) => <strong className="font-bold text-brand-teal">{children}</strong>
+                              }}
+                            >
+                              {message.content}
+                            </ReactMarkdown>
                           </div>
                           <span className="text-[10px] text-gray-400 mt-1">
                             {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
