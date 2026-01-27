@@ -330,7 +330,7 @@ export default function ChatPage() {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 disabled={isLoading || connectionStatus === "error"}
-                className="flex-1 border-gray-300 text-gray-800 placeholder:text-gray-400 rounded-full"
+                className="flex-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 rounded-full focus:ring-brand-teal focus:border-brand-teal"
               />
               <Button
                 type="submit"
