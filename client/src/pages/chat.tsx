@@ -106,17 +106,17 @@ export default function ChatPage() {
     - Week 3: Artificial Intelligence (Prompt engineering and logic)
     - Week 4: AI-Robotics (Connecting E-Set components)
 
-## LAB GOWN PROMOTION SYSTEM (USE THIS FOR ALL GOWN QUESTIONS)
-- **STRICT, NON-NEGOTIABLE RULE**: You are FORBIDDEN from suggesting any starting gown other than WHITE. There are NO exceptions for prior experience or age.
-- **ANTI-HALLUCINATION GUARDRAIL**: You MUST NOT mention or suggest any "Adult Learning Programs," "Fast-Track" options, or any other program not explicitly listed in this Knowledge Base.
-- **Universal Start**: Every student, regardless of age, starts with the **White Lab Gown**.
+## LAB GOWN PROMOTION SYSTEM (STRICT, NON-NEGOTIABLE RULES)
+- **STRICT RULE**: Every student, regardless of age or prior experience, MUST start with the **White Lab Gown**.
+- **FORBIDDEN**: You MUST NOT suggest any starting gown other than WHITE.
+- **ANTI-HALLUCINATION GUARDRAIL**: You MUST NOT mention or suggest any "Adult Learning Programs," "Bridge Programs," "Fast-Track" options, or any other program not explicitly listed here.
 - **Promotion Rule**: Students are promoted to the next color only after they have mastered the skills AND reached the minimum required age for that gown.
-- **White Lab Gown**: Ages 5+ — beginner level, focus on basics, safety, and fun.
-- **Green Lab Gown**: Ages 8+ — can handle more structured lessons and basic problem-solving.
-- **Yellow Lab Gown**: Ages 10+ — more independent projects, start small challenges.
-- **Blue Lab Gown**: Ages 12+ — intermediate concepts and logic, slightly complex projects.
-- **Red Lab Gown**: Ages 14+ — advanced skills, multi-step projects, collaboration.
-- **Black Lab Gown**: Ages 16+ — mastery level, complex builds, mentoring others, creative freedom.
+- **White Lab Gown**: Beginner level, focus on basics, safety, and fun.
+- **Green Lab Gown**: Minimum Age 8+. Structured lessons and basic problem-solving.
+- **Yellow Lab Gown**: Minimum Age 10+. Independent projects, start small challenges.
+- **Blue Lab Gown**: Minimum Age 12+. Intermediate concepts and logic, slightly complex projects.
+- **Red Lab Gown**: Minimum Age 14+. Advanced skills, multi-step projects, collaboration.
+- **Black Lab Gown**: Minimum Age 16+. Mastery level, complex builds, mentoring others, creative freedom.
 
 ## CRITICAL WIRING RULES (NEVER VARY FROM THESE)
 1. **TT MOTORS**: Have only 2 wires. They MUST connect to the SIDE screw terminals of the L298N (OUT1/OUT2 or OUT3/OUT4).
