@@ -289,30 +289,31 @@ TEACHING STYLE
                   )}
                 </motion.div>
               ))}
-            {isLoading && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex gap-3 justify-start"
-              >
-                <Avatar className="h-8 w-8 flex-shrink-0 mt-1">
-                  <AvatarImage src="/assets/characters/veni.png" alt="AI Teacher" />
-                  <AvatarFallback className="bg-brand-teal text-white"><Bot size={16} /></AvatarFallback>
-                </Avatar>
-                <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-md">
-                  <motion.div className="flex gap-1">
-                    {[0, 1, 2].map((i) => (
-                      <motion.div
-                        key={i}
-                        className="w-2 h-2 bg-brand-teal rounded-full"
-                        animate={{ y: [0, -8, 0] }}
-                        transition={{ duration: 0.6, delay: i * 0.1, repeat: Infinity }}
-                      />
-                    ))}
-                  </motion.div>
-                </div>
-              </motion.div>
-            )}
+              {isLoading && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex gap-3 justify-start"
+                >
+                  <Avatar className="h-8 w-8 flex-shrink-0 mt-1">
+                    <AvatarImage src="/assets/characters/veni.png" alt="AI Teacher" />
+                    <AvatarFallback className="bg-brand-teal text-white"><Bot size={16} /></AvatarFallback>
+                  </Avatar>
+                  <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-md">
+                    <motion.div className="flex gap-1">
+                      {[0, 1, 2].map((i) => (
+                        <motion.div
+                          key={i}
+                          className="w-2 h-2 bg-brand-teal rounded-full"
+                          animate={{ y: [0, -8, 0] }}
+                          transition={{ duration: 0.6, delay: i * 0.1, repeat: Infinity }}
+                        />
+                      ))}
+                    </motion.div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
