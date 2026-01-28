@@ -107,6 +107,8 @@ export default function ChatPage() {
     - Week 4: AI-Robotics (Connecting E-Set components)
 
 ## LAB GOWN PROMOTION SYSTEM (USE THIS FOR ALL GOWN QUESTIONS)
+- **Universal Start**: Every student, regardless of age, starts with the **White Lab Gown**.
+- **Promotion Rule**: Students are promoted to the next color only after they have mastered the skills AND reached the minimum required age for that gown.
 - **White Lab Gown**: Ages 5+ — beginner level, focus on basics, safety, and fun.
 - **Green Lab Gown**: Ages 8+ — can handle more structured lessons and basic problem-solving.
 - **Yellow Lab Gown**: Ages 10+ — more independent projects, start small challenges.
