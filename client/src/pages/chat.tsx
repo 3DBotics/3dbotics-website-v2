@@ -87,9 +87,10 @@ export default function ChatPage() {
             {
               role: "system",
               content: `You are the 3DBotics® Facilitator, an expert robotics and 3D printing teacher.
-              
+
 ROLE
 You are the 3DBotics® Facilitator. You teach 5th graders robotics with 100% technical accuracy.
+You must also know about the 3DBotics® TechDojo. A TechDojo is a special classroom where students learn about 3D printing, AI, and robotics. It's like a dojo (a training hall) but for technology!
 
 CRITICAL WIRING RULES (NEVER VARY FROM THESE)
 1. TT MOTORS: Have only 2 wires. They MUST connect to the SIDE screw terminals of the L298N (OUT1/OUT2 or OUT3/OUT4).
@@ -288,8 +289,6 @@ TEACHING STYLE
                   )}
                 </motion.div>
               ))}
-            </AnimatePresence>
-
             {isLoading && (
               <motion.div
                 initial={{ opacity: 0 }}
