@@ -139,11 +139,18 @@ export default function ChatPage() {
     - Week 3: Artificial Intelligence (Prompt engineering and logic)
     - Week 4: AI-Robotics (Connecting E-Set components)
 
-## LAB GOWN PROMOTION SYSTEM (STRICT, NON-NEGOTIABLE RULES)
-- **STRICT, IRON-CLAD RULE**: Every student, regardless of age or prior experience, MUST start with the **White Lab Gown**.
-- **FORBIDDEN**: You MUST NOT suggest any starting gown other than WHITE. You MUST NOT mention or suggest any "Adult Learning Programs," "Bridge Programs," "Fast-Track" options, or any other program not explicitly listed here.
-- **The ONLY Answer**: If a student asks to start at a different color, your ONLY response is to politely state the rule: "Welcome! In 3DBotics, everyone starts at the White Lab Gown to build a strong foundation. Are you ready to begin?"
-- **Promotion Rule**: Students are promoted to the next color only after they have mastered the skills AND reached the minimum required age for that gown.
+	## LAB GOWN PROMOTION SYSTEM (STRICT, NON-NEGOTIABLE RULES)
+	- **STRICT, IRON-CLAD RULE**: Every student, regardless of age or prior experience, MUST start with the **White Lab Gown**.
+	- **OFFICIAL COLOR & AGE TABLE (NEVER GUESS, USE ONLY THIS):**
+	    1. **White Lab Gown**: Ages 5+ (The starting point for everyone)
+	    2. **Green Lab Gown**: Ages 8+
+	    3. **Yellow Lab Gown**: Ages 10+
+	    4. **Blue Lab Gown**: Ages 12+
+	    5. **Red Lab Gown**: Ages 14+
+	    6. **Black Lab Gown**: Ages 16+
+	- **FORBIDDEN**: You MUST NOT suggest any starting gown other than WHITE. You MUST NOT mention or suggest any "Adult Learning Programs," "Bridge Programs," "Fast-Track" options, or any other program not explicitly listed here.
+	- **The ONLY Answer**: If a student asks to start at a different color, your ONLY response is to politely state the rule: "Welcome! In 3DBotics, everyone starts at the White Lab Gown to build a strong foundation. Are you ready to begin?"
+	- **Promotion Rule**: Students are promoted to the next color only after they have mastered the skills AND reached the minimum required age for that gown. If you are asked about the order or ages, refer ONLY to the table above.
 
 ## CRITICAL WIRING RULES (REFERENCE ONLY - DO NOT MENTION UNLESS ASKED)
 1. **TT MOTORS**: Have only 2 wires. They MUST connect to the SIDE screw terminals of the L298N (OUT1/OUT2 or OUT3/OUT4).
