@@ -24,6 +24,33 @@ export default function ChatPage() {
   const scrollContainer = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
+  // Load messages from localStorage on component mount
+  useEffect(() => {
+    try {
+      const savedMessages = localStorage.getItem("3dbotics-chat-history");
+      if (savedMessages) {
+        const parsedMessages = JSON.parse(savedMessages).map((msg: any) => ({
+          ...msg,
+          timestamp: new Date(msg.timestamp)
+        }));
+        setMessages(parsedMessages);
+      }
+    } catch (err) {
+      console.warn("Failed to load chat history from localStorage:", err);
+    }
+  }, []);
+
+  // Save messages to localStorage whenever they change
+  useEffect(() => {
+    if (messages.length > 0) {
+      try {
+        localStorage.setItem("3dbotics-chat-history", JSON.stringify(messages));
+      } catch (err) {
+        console.warn("Failed to save chat history to localStorage:", err);
+      }
+    }
+  }, [messages]);
+
   // Auto-scroll to latest message
   useEffect(() => {
     if (scrollContainer.current) {
@@ -35,6 +62,12 @@ export default function ChatPage() {
       }, 0);
     }
   }, [messages]);
+
+  // Clear chat history (optional function for students to reset)
+  const clearChatHistory = () => {
+    setMessages([]);
+    localStorage.removeItem("3dbotics-chat-history");
+  };
 
   // Check connection to LM Studio on mount
   useEffect(() => {
@@ -204,12 +237,21 @@ export default function ChatPage() {
                 <p className="text-sm text-blue-100">Chat with your AI Robotics Teacher</p>
               </div>
             </div>
-            <Link href="/">
-              <button className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-3 py-2 rounded-lg transition">
-                <Home size={18} />
-                <span className="text-sm">Home</span>
+            <div className="flex gap-2">
+              <Link href="/">
+                <button className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-3 py-2 rounded-lg transition">
+                  <Home size={18} />
+                  <span className="text-sm">Home</span>
+                </button>
+              </Link>
+              <button 
+                onClick={clearChatHistory}
+                className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-3 py-2 rounded-lg transition text-sm"
+                title="Clear chat history"
+              >
+                Clear Chat
               </button>
-            </Link>
+            </div>
           </div>
         </div>
       </div>
