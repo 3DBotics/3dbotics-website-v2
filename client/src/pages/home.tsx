@@ -829,7 +829,7 @@ function ExternalChatbot() {
   return (
     <div className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50" data-testid="chatbot-container">
       {isOpen && (
-        <div className="absolute bottom-16 right-0 w-80 md:w-96 h-[500px] bg-white rounded-2xl overflow-hidden shadow-2xl border-2" style={{ borderColor: '#7DD3D8' }} data-testid="chatbot-window">
+        <div className="absolute bottom-16 right-0 w-80 md:w-96 h-[700px] bg-white rounded-2xl overflow-hidden shadow-2xl border-2" style={{ borderColor: '#7DD3D8' }} data-testid="chatbot-window">
           <div className="bg-brand-teal p-3 flex items-center gap-3">
             <div className="w-12 h-12 rounded-full border-[2px] border-[#1a5a5a] p-[2px] bg-white">
               <div className="w-full h-full rounded-full border-[2px] border-[#1a5a5a] bg-white overflow-hidden flex items-center justify-center">

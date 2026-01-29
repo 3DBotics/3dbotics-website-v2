@@ -328,7 +328,7 @@ We follow China–Japan Standard Technology Education (中日标准科技教育 
       {/* Chat Area */}
       <div className="flex-1 overflow-hidden flex flex-col">
         <div ref={scrollContainer} className="flex-1 overflow-y-auto">
-          <div className="max-w-4xl mx-auto px-4 py-6 space-y-4">
+          <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
             {messages.length === 0 && (
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
@@ -366,7 +366,7 @@ We follow China–Japan Standard Technology Education (中日标准科技教育 
                   )}
                   
                   <div className={`flex flex-col ${message.role === "user" ? "items-end" : "items-start"}`}>
-                    <div className={`rounded-2xl px-4 py-3 text-sm md:text-base shadow-md max-w-xs md:max-w-md lg:max-w-lg ${
+                    <div className={`rounded-2xl px-5 py-4 text-sm md:text-base shadow-md max-w-xs md:max-w-md lg:max-w-lg ${
                       message.role === "user" 
                         ? "bg-gradient-to-r from-brand-teal to-blue-500 text-white rounded-tr-none" 
                         : "bg-white text-gray-800 border border-gray-200 rounded-tl-none"
