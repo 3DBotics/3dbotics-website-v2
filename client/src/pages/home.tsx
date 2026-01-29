@@ -857,7 +857,7 @@ function ExternalChatbot() {
           </div>
           
           <iframe
-            src="https://chat.3dbotics.ph"
+            src="https://3dbotics.ph/concierge"
             title="3DBotics Chatbot"
             className="w-full h-[calc(100%-56px)] border-0"
             data-testid="iframe-chatbot"
