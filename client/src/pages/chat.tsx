@@ -80,7 +80,7 @@ export default function ChatPage() {
             "ngrok-skip-browser-warning": "true"
           },
           body: JSON.stringify({
-            model: "llama-3.2-3b-instruct",
+            model: "llama-3.1-8b-instruct",
             messages: [{ role: "user", content: "ping" }],
             temperature: 0.7,
             max_tokens: 10
