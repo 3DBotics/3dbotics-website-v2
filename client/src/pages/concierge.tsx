@@ -162,47 +162,43 @@ Every student starts with the **White Lab Gown** and progresses through the colo
 We offer a FREE trial session called "Trial Play!" where prospective students have 5 minutes to experience becoming a racer. It's a fast-paced, hands-on introduction to our program.
 
 ## Locations and Contact Information
-3DBotics® has 22 branches nationwide. Here are all the locations:
+**IMPORTANT**: Use ONLY the exact addresses below. NEVER invent or guess an address.
 
 **METRO MANILA AND NEARBY PROVINCES:**
-- **Bacoor, Cavite**: 0917 872 3189 | Play Logix Studio / 3DBotics Bacoor, 2F Main Square Mall Bacoor Blvd
-- **Cabuyao City, Laguna**: 0920-276-1204 | Unit 3C RLI Bldg., Southpoint Banay-Banay
-- **Imus City, Cavite**: 0956-895-0278 | Robofab 3DBotics Imus, 189 RCJ Commercial Bldg. Gen. Yengco St.
-- **Las Piñas**: 0998 530 9437 | 3DBotics Las Piñas x Mind Builderz, Unit 115 Vatican building BF Resort
-- **Makati City**: 09176726871 | Unit 127, Mile Long Building Amorosolo Corner, Rufino st. Legaspi Village
-- **Mandaluyong City**: 0917 578 1611 | 6F MG Tower II, Shaw Blvd.
-- **Muntinlupa**: 0927-572-2212 | IDEYA P-H Tutorial Services, Festival Mall Alabang
-- **Nuvali / Sta. Rosa, Laguna**: 0975 081 8303 | 2nd Floor (near Shopwise), Laguna Central, Sta. Rosa Laguna
-- **Parañaque**: 0995 861 8106 | Unit 2, 2nd Floor El Grande Arcade, 316 El Grande Avenue
-- **Pasay City**: 0929 374 3932 / 0976 149 2525 | 722 P. Santos St., Brgy. 169, Malibay
-- **Taguig**: 0917 557 2078 / 0927 647 8955 | 2nd Flr #72 MRT Avenue Central Signal Village
-
-**LUZON (OUTSIDE METRO MANILA):**
-- **Batangas City**: 0917 127 4167 | 2nd floor RL building P burgos st. Corner D silang st.
-- **Sto. Tomas, Batangas**: 0945 289 0343 | #19 A. Bonifacio St., Pob. 2
-- **San Pablo City, Laguna**: 0945-289-0343 | Tech Wiz Club-3DBotics, 4 Lt. R. Brion St
-- **Tarlac**: 0943 134 9368 | Bayanihan Institute, Saint Marys Subdivision, Matatalaib
-- **Urdaneta City, Pangasinan**: 0908 224 6367 | 3rd floor, RjR Building, San Vicente
-- **Cagayan De Oro**: 0976 176 5241 | ROOM 3D, H BUILDING, LOT 13, MASTERSON MILES
-
-**VISAYAS:**
-- **Bacolod**: 0919 065 2600 | 2nd Floor Mayfair Plaza 12th Lacson ST.
-- **Tagbilaran, Bohol**: 0905 225 1088 | G/F Konnichiwa Building, J.B. Gallares Street, Janssen Heights
-- **Ormoc City**: 0969 648 2744 | UG 113, Chinatown Eastgate, Lilia Ave., Brgy. Cogon
-- **Tacloban**: 0917 850 2008 | GF Primark Town Center, Caibaan
-
-**MINDANAO:**
-- **Occ. Mindoro**: 0968 524 4403 | SJ 3Dbotics Learning Hub, Tagumpay A, Bagong Sikat, San Jose
-
-**EASTERN VISAYAS:**
+- **Bacoor, Cavite**: 0917 872 3189 | Center Name: Play Logix Studio / 3DBotics Bacoor | 2F Main Square Mall Bacoor Blvd, Brgy Bayanan, Bacoor City
+- **Batangas City**: 0917 127 4167 | 2nd floor RL building P burgos st. Corner D silang st. Batangas city
+- **Cabuyao City**: 0920-276-1204 | Unit 3C RLI Bldg., Southpoint Banay-Banay
 - **Catanduanes**: 0968 602 7812 | Sta. Elena, Virac, Catanduanes
+- **Imus City**: 0956-895-0278 | Center Name: Robofab 3DBotics Imus | 189 RCJ Commercial Bldg. Gen. Yengco St. Bayan Luma 1 Imus City Cavite
+- **Las Piñas**: 0998 530 9437 | Scholl/Center Name: 3DBotics Las Piñas x Mind Builderz | Unit 115 Vatican building BF Resort Las Pinas
+- **Makati City**: 09176726871 | Unit 127, Mile Long Building Amorosolo Corner, Rufino st. Legaspi Village Makati City
+- **Mandaluyong City**: 0917 578 1611 | 6F MG Tower II, Shaw Blvd., Mandaluyong City
+- **Muntinlupa**: 0927-572-2212 | IDEYA P-H Tutorial Services | Festival Mall Alabang
+- **Nuvali**: 0975 081 8303 | 2nd Floor (near Shopwise), Laguna Central, Sta. Rosa Laguna
+- **Occ. Mindoro**: 0968 524 4403 | Scholl/Center Name: SJ 3Dbotics Learning Hub | Tagumpay A, Bagong Sikat, San Jose
+- **Ormoc City**: 0969 648 2744 | UG 113, Chinatown Eastgate, Lilia Ave., Brgy. Cogon, Ormoc City
+- **Parañaque**: 0995 861 8106 | Unit 2, 2nd Floor El Grande Arcade, 316 El Grande Avenue, BF Parañaque City, 1720
+- **Pasay City**: 0929 374 3932 / 0976 149 2525 | 722 P. Santos St., Brgy. 169, Malibay, Pasay City
+- **San Pablo City**: 0945-289-0343 | Tech Wiz Club-3DBotics, 4 Lt. R. Brion St, San Pablo City, Laguna
+- **Sto. Tomas Batangas**: 0945 289 0343 | #19 A. Bonifacio St., Pob. 2, Sto Tomas Batangas
+- **Tacloban**: 0917 850 2008 | GF Primark Town Center, Caibaan, Tacloban
+- **Tagbilaran**: 0905 225 1088 | G/F Konnichiwa Building, J.B. Gallares Street, Janssen Heights, Dampas, Tagbilaran City, Bohol 6300
+- **Taguig**: 0917 557 2078 / 0927 647 8955 | 2nd Flr #72 MRT Avenue Central Signal Village, Taguig City | Email: 3dboticstaguig@gmail.com
+- **Tarlac**: 0943 134 9368 | Bayanihan Institute, Saint Marys Subdivision, Matatalaib, Tarlac City
+- **Urdaneta City**: 0908 224 6367 | 3rd floor, RjR Building, San Vicente, Urdaneta City, Pangasinan
+- **Cagayan De Oro**: 0976 176 5241 | ROOM 3D, H BUILDING, LOT 13, MASTERSON MILES, MASTERSON AVENUE, UPPER CARMEN, CAGAYAN DE ORO CITY
+- **Bacolod**: 0919 065 2600 | 2nd Floor Mayfair Plaza 12th Lacson ST. Bacolod City
+
+**SPECIAL LOCATIONS:**
+- **3DBotics TechDojo - Calamba**: Unit 101, Ground Floor, E-Bloc Building, National Highway, Brgy. Real, Calamba City, Laguna
+- **3DBotics TechDojo - Sta. Rosa**: Unit 105, Ground Floor, SM City Sta. Rosa, National Highway, Brgy. Malitam, Sta. Rosa City, Laguna
 
 **MAIN OFFICE / HEADQUARTERS:**
 - **Address**: 2nd Floor Laguna Central Shopping Mall, Don Jose street Paseo De Sta Rosa Greenfield, Santa Rosa Laguna (Beside Shopwise)
 - **Email**: info@3DBotics.ph
 - **Phone**: (0966) 418 7054
 
-For the most up-to-date information, parents can also visit **www.3DBotics.ph/branches**
+For the most up-to-date information, parents can visit **www.3DBotics.ph/branches**
 
 ## Standards
 We follow China–Japan Standard Technology Education (中日标准科技教育 / 日中基準のテクノロジー教育)
