@@ -12,7 +12,6 @@ class Librarian {
   private lmStudioUrl = 'https://undeclarable-kandy-graspingly.ngrok-free.dev/v1/chat/completions';
 
   constructor() {
-    // Initialize immediately when the module loads
     console.log('[LIBRARIAN] Constructor called - starting initialization');
     this.initialize().catch(err => {
       console.error('[LIBRARIAN] FATAL: Initialization failed:', err);
@@ -66,7 +65,7 @@ class Librarian {
       }
     } catch (error) {
       console.error('[LIBRARIAN] FATAL ERROR during initialization:', error);
-      this.isInitialized = true; // Mark as initialized to prevent infinite retries
+      this.isInitialized = true;
     }
   }
 
@@ -76,6 +75,43 @@ class Librarian {
     for (const chunk of chunks) {
       this.knowledgeBase.push({ text: chunk.trim(), source });
     }
+  }
+
+  private normalizeQuery(text: string): string[] {
+    // Normalize the text for better matching
+    const normalized = text.toLowerCase()
+      .replace(/[^\w\s]/g, ' ') // Remove punctuation
+      .replace(/\s+/g, ' ')      // Collapse multiple spaces
+      .trim();
+    
+    // Extract keywords (filter out very short words)
+    const keywords = normalized.split(' ').filter(w => w.length > 2);
+    
+    // Add common abbreviation expansions
+    const expansions: string[] = [];
+    keywords.forEach(keyword => {
+      // Add the original keyword
+      expansions.push(keyword);
+      
+      // Expand common abbreviations
+      if (keyword === 'tt' || keyword === 'ttmotor' || keyword === 'ttmotors') {
+        expansions.push('motor', 'gear', 'yellow');
+      }
+      if (keyword === 'uss' || keyword === 'ultrasonic') {
+        expansions.push('sensor', 'distance', 'hcsr04', 'sonar');
+      }
+      if (keyword === 'l298n' || keyword === 'l298') {
+        expansions.push('driver', 'bridge', 'motor');
+      }
+      if (keyword === 'arduino') {
+        expansions.push('uno', 'microcontroller', 'brain');
+      }
+      if (keyword === 'battery' || keyword === 'batteries') {
+        expansions.push('power', 'voltage', 'ampere', 'current');
+      }
+    });
+    
+    return [...new Set(expansions)]; // Remove duplicates
   }
 
   async getRelevantContext(query: string): Promise<string> {
@@ -90,24 +126,29 @@ class Librarian {
       return "";
     }
 
-    const queryLower = query.toLowerCase();
-    const queryKeywords = queryLower
-      .replace(/[^\w\s]/g, ' ')
-      .split(/\s+/)
-      .filter(w => w.length > 2);
-
-    console.log(`[LIBRARIAN] Keywords: [${queryKeywords.join(', ')}]`);
+    const queryKeywords = this.normalizeQuery(query);
+    console.log(`[LIBRARIAN] Expanded keywords: [${queryKeywords.join(', ')}]`);
 
     const scoredChunks = this.knowledgeBase.map(chunk => {
       let score = 0;
       const chunkText = chunk.text.toLowerCase();
       
+      // Score based on keyword matches
       for (const keyword of queryKeywords) {
-        const matches = (chunkText.match(new RegExp(keyword, 'g')) || []).length;
-        score += matches * 2;
+        const regex = new RegExp(keyword, 'gi');
+        const matches = (chunkText.match(regex) || []).length;
+        score += matches * 3; // Increased weight
       }
       
+      // Bonus for exact phrase matches
+      const queryLower = query.toLowerCase();
       if (chunkText.includes(queryLower)) {
+        score += 15;
+      }
+      
+      // Bonus for safety-related content when voltage/battery questions
+      if ((query.includes('volt') || query.includes('battery') || query.includes('ampere')) &&
+          (chunkText.includes('danger') || chunkText.includes('safety') || chunkText.includes('warning'))) {
         score += 10;
       }
       
@@ -117,7 +158,7 @@ class Librarian {
     const bestChunks = scoredChunks
       .filter(sc => sc.score > 0)
       .sort((a, b) => b.score - a.score)
-      .slice(0, 5);
+      .slice(0, 8); // Increased from 5 to 8 chunks
 
     console.log(`[LIBRARIAN] Found ${bestChunks.length} relevant chunks`);
     
@@ -141,24 +182,26 @@ class Librarian {
       const context = await this.getRelevantContext(query);
       console.log(`[LIBRARIAN] Context length: ${context.length} characters`);
       
-      const systemPrompt = `YOU ARE THE 3DBOTICS® AI TEACHER.
+      const systemPrompt = `YOU ARE THE 3DBOTICS® AI TEACHER FOR STUDENTS AGES 6-17.
 
-CRITICAL RULES - NEVER BREAK THESE:
-1. You MUST answer ONLY using the FACTS provided below in the "APPROVED CURRICULUM" section.
-2. If the FACTS do not contain the answer, you MUST say EXACTLY: "I don't have that information in my curriculum yet. Let me connect you with a human instructor."
-3. NEVER use your general knowledge or training data.
-4. NEVER make up names, dates, or facts.
-5. NEVER say "I think" or "probably" - only state facts from the curriculum.
-6. NEVER be sarcastic or refuse to answer if the information is in the curriculum.
-7. If asked about the founder, ONLY use the name from the APPROVED CURRICULUM below.
-8. For electronics questions, ONLY use voltage/current specs from the APPROVED CURRICULUM.
+🚨 CRITICAL SAFETY RULES - NEVER BREAK THESE:
+1. You MUST answer ONLY using the FACTS provided in the "APPROVED CURRICULUM" section below.
+2. If the FACTS do not contain the answer, say EXACTLY: "I don't have that information in my curriculum yet. Let me connect you with a human instructor."
+3. NEVER use your general knowledge, training data, or assumptions.
+4. NEVER make up component specifications, voltages, or currents.
+5. NEVER suggest 12V for TT motors - they are 3V to 6V ONLY.
+6. When students say "ttmotor" or "ttmotors", they mean TT Gear Motor (3-6V).
+7. When students say "USS", they mean Ultrasonic Sensor (5V).
+8. If you're unsure about a specification, say you don't know rather than guessing.
 
-APPROVED CURRICULUM:
+APPROVED CURRICULUM (FACTS YOU MUST USE):
 ${context || "NO CURRICULUM DATA FOUND FOR THIS QUERY."}
 
 ---
 
-${context ? "Answer the student's question using ONLY the facts above." : "You MUST respond: 'I don't have that information in my curriculum yet. Let me connect you with a human instructor.'"}`;
+${context ? 
+  "Answer the student's question using ONLY the facts above. Be friendly and educational, but NEVER add information not in the curriculum." : 
+  "You MUST respond: 'I don't have that information in my curriculum yet. Let me connect you with a human instructor.'"}`;
 
       console.log(`[LIBRARIAN] Sending request to LM Studio...`);
       
@@ -174,7 +217,7 @@ ${context ? "Answer the student's question using ONLY the facts above." : "You M
             { role: "user", content: query }
           ],
           temperature: 0,
-          max_tokens: 500
+          max_tokens: 600
         })
       });
 
@@ -193,6 +236,5 @@ ${context ? "Answer the student's question using ONLY the facts above." : "You M
   }
 }
 
-// Create and export a single instance
 export const librarian = new Librarian();
 console.log('[LIBRARIAN] Module loaded and instance created');
