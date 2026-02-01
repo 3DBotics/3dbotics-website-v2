@@ -1,0 +1,37 @@
+3DBOTICS® COMPETITIONS - Tech Dojo #4: AI-ROBOTICS INTEGRATION
+
+What is Robotics?
+Robotics is the study of designing, building, and controlling machines that can do physical tasks.
+Key Characteristics of a Robot: Sensing, Processing, Acting, Programmable.
+
+What is a Robot?
+A robot is basically a machine that can sense, think, and act — either automatically or when controlled — to perform tasks.
+
+TYPES OF ROBOTS:
+- Industrial: Assembly arms in factories.
+- Service: Delivery bots, cleaning robots.
+- Exploration: Space rovers, underwater drones.
+- Humanoid: Robots that look or act human.
+- Educational: Lego Mindstorms EV3, Educational Robotic Kits.
+
+What is ChatGPT?
+ChatGPT is an AI-powered language model created by OpenAI that can understand and generate human-like text. It’s designed to have conversations, answer questions, write content, explain concepts, and even help solve problems across many topics. AI gives robots the power to “think” and ChatGPT gives YOU the power to create faster.
+
+What is a Prompt?
+A prompt is the instruction or input you give to an AI so it knows what to do. It’s like asking a question or giving directions to AI. The clearer the prompt, the better the AI’s answer.
+
+BASIC ROBOTIC COMPONENTS:
+- Microcontroller: The robot’s brain. Processes code and controls everything. Example: Arduino Nano and Arduino Uno.
+- Sensor: Detect the environment: distance, light, sound, etc. Example: Ultrasonic Sensor (for obstacle avoidance).
+- Motors: Move parts of the robot (arms, wheels, etc.). Example: Servo motor for robotic arms, DC motors for wheels.
+- Power Source: Provides energy to all components. Example: USB, battery packs, 9V batteries.
+- Breadboard and Jumper Wires: Temporary connections for prototyping circuits. Used to wire sensors and LEDs without soldering.
+- Passive Components: Resistors, LEDs, Buzzers. LEDs for feedback, resistors to protect circuits.
+
+Key Idea: Every robot follows this structure: Sensor → Microcontroller → Actuator (Input → Brain → Output). Example: Distance sensor detects obstacle → Arduino processes data → Motor stops the robot.
+
+What is AI-Robotics?
+The combination of Artificial Intelligence and robotics to create machines that can think, learn, and make decisions. It makes robots smart and adaptable, enabling automation and problem-solving without human intervention.
+
+Arduino IDE:
+The Arduino Integrated Development Environment (IDE) is a free, open-source software application that allows you to write, compile, and upload code to Arduino-compatible microcontrollers.
