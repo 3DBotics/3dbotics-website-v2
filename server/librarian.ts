@@ -66,23 +66,36 @@ class Librarian {
     }
   }
 
+  private isChatFile(filename: string): boolean {
+    const chatKeywords = ['slicer', 'arduino', 'breadboard', 'l298n', 'motor', 'component', 'techdojo', 'curriculum', 'ai_robotics', 'legacy', 'founder'];
+    return chatKeywords.some(keyword => filename.toLowerCase().includes(keyword));
+  }
+
+  private isConciergeFile(filename: string): boolean {
+    const conciergeKeywords = ['franchising', 'franchise'];
+    return conciergeKeywords.some(keyword => filename.toLowerCase().includes(keyword));
+  }
+
   private normalizeQuery(text: string): string[] {
     const normalized = text.toLowerCase().replace(/[^\w\s]/g, ' ').replace(/\s+/g, ' ').trim();
     const keywords = normalized.split(' ').filter(w => w.length > 2);
     const expansions: string[] = [];
     keywords.forEach(keyword => {
       expansions.push(keyword);
+      // CHAT-specific expansions (technical curriculum)
       if (keyword === 'tt' || keyword === 'ttmotor' || keyword === 'ttmotors') expansions.push('motor', 'gear', 'yellow', 'driver', 'l298n');
       if (keyword === 'uss' || keyword === 'ultrasonic') expansions.push('sensor', 'distance', 'hcsr04', 'sonar');
       if (keyword === 'l298n' || keyword === 'l298') expansions.push('driver', 'bridge', 'motor', 'wiring');
       if (keyword === 'arduino') expansions.push('uno', 'microcontroller', 'brain');
       if (keyword === 'battery' || keyword === 'batteries') expansions.push('power', 'voltage', 'ampere', 'current');
-      if (keyword === 'franchise' || keyword === 'franchis') expansions.push('email', 'contact', 'invest', 'opportunity');
-      if (keyword === 'email' || keyword === 'contact') expansions.push('franchise', 'call', 'phone');
       if (keyword === 'weight' || keyword === 'grams' || keyword === 'gram' || keyword === 'light' || keyword === 'lightweight') expansions.push('infill', 'perimeter', 'slicer', 'print', 'filament');
       if (keyword === 'height' || keyword === 'tall' || keyword === 'inches' || keyword === 'size') expansions.push('layer', 'slicer', 'print', 'model');
       if (keyword === 'print' || keyword === 'printing' || keyword === 'slicer') expansions.push('infill', 'perimeter', 'layer', 'nozzle', 'temperature', 'support', 'weight');
       if (keyword === 'infill' || keyword === 'perimeter' || keyword === 'layer') expansions.push('slicer', 'print', 'settings', 'quality');
+      // CONCIERGE-specific expansions (business/franchising)
+      if (keyword === 'franchise' || keyword === 'franchis') expansions.push('email', 'contact', 'invest', 'opportunity', 'investment', 'fee');
+      if (keyword === 'email' || keyword === 'contact') expansions.push('franchise', 'call', 'phone', 'inquiry');
+      if (keyword === 'enroll' || keyword === 'enrollment' || keyword === 'price' || keyword === 'cost') expansions.push('tuition', 'fee', 'program', 'techdojo');
     });
     return [...new Set(expansions)];
   }
@@ -103,7 +116,7 @@ class Librarian {
         .eq('category', category);
       
       if (!fetchError && allWisdom && allWisdom.length > 0) {
-        console.log(`[LIBRARIAN] Fetched ${allWisdom.length} total wisdom entries`);
+        console.log(`[LIBRARIAN] Fetched ${allWisdom.length} total wisdom entries for [${category}]`);
         
         // Score wisdom entries based on keyword matching
         const queryKeywords = this.normalizeQuery(query);
@@ -148,35 +161,53 @@ class Librarian {
       console.error("[LIBRARIAN] Supabase search error:", err);
     }
 
-    // 2. Search Static Files
+    // 2. Search Static Files (with STRICT category filtering)
     const queryKeywords = this.normalizeQuery(query);
-    const scoredChunks = this.knowledgeBase.map(chunk => {
-      let score = 0;
-      const chunkText = chunk.text.toLowerCase();
-      const chunkSource = chunk.source.toLowerCase();
-      
-      // Boost score if source contains relevant keywords
-      for (const keyword of queryKeywords) {
-        if (chunkSource.includes(keyword)) score += 10;
-      }
-      
-      for (const keyword of queryKeywords) {
-        const regex = new RegExp(keyword, 'gi');
-        const matches = (chunkText.match(regex) || []).length;
-        score += matches * 3;
-      }
-      if (chunkText.includes(query.toLowerCase())) score += 15;
-      return { chunk, score };
-    });
+    
+    const scoredChunks = this.knowledgeBase
+      .filter(chunk => {
+        const chunkSource = chunk.source.toLowerCase();
+        // STRICT filtering: only include files relevant to the category
+        if (category === 'chat') {
+          // For /chat: include curriculum files, EXCLUDE franchising files
+          return this.isChatFile(chunkSource) && !this.isConciergeFile(chunkSource);
+        } else if (category === 'concierge') {
+          // For /concierge: include ONLY franchising files
+          return this.isConciergeFile(chunkSource);
+        }
+        return false;
+      })
+      .map(chunk => {
+        let score = 0;
+        const chunkText = chunk.text.toLowerCase();
+        const chunkSource = chunk.source.toLowerCase();
+        
+        // Boost score if source contains relevant keywords
+        for (const keyword of queryKeywords) {
+          if (chunkSource.includes(keyword)) score += 10;
+        }
+        
+        for (const keyword of queryKeywords) {
+          const regex = new RegExp(keyword, 'gi');
+          const matches = (chunkText.match(regex) || []).length;
+          score += matches * 3;
+        }
+        if (chunkText.includes(query.toLowerCase())) score += 15;
+        return { chunk, score };
+      });
 
     const bestChunks = scoredChunks
       .filter(sc => sc.score > 0)
       .sort((a, b) => b.score - a.score)
       .slice(0, 12);
 
-    const fileContext = bestChunks.map(sc => sc.chunk.text).join('\n\n---\n\n');
+    const fileContext = bestChunks.length > 0 ? bestChunks.map(sc => sc.chunk.text).join('\n\n---\n\n') : '';
     
-    return wisdomContext + "APPROVED CURRICULUM/MANUALS:\n" + fileContext;
+    if (!fileContext && !wisdomContext) {
+      console.log(`[LIBRARIAN] ⚠️ No relevant content found for category [${category}]`);
+    }
+    
+    return wisdomContext + (fileContext ? "APPROVED CURRICULUM/MANUALS:\n" + fileContext : '');
   }
 
   async generateResponse(query: string, category: 'chat' | 'concierge' = 'chat'): Promise<string> {
