@@ -79,6 +79,10 @@ class Librarian {
       if (keyword === 'battery' || keyword === 'batteries') expansions.push('power', 'voltage', 'ampere', 'current');
       if (keyword === 'franchise' || keyword === 'franchis') expansions.push('email', 'contact', 'invest', 'opportunity');
       if (keyword === 'email' || keyword === 'contact') expansions.push('franchise', 'call', 'phone');
+      if (keyword === 'weight' || keyword === 'grams' || keyword === 'gram' || keyword === 'light' || keyword === 'lightweight') expansions.push('infill', 'perimeter', 'slicer', 'print', 'filament');
+      if (keyword === 'height' || keyword === 'tall' || keyword === 'inches' || keyword === 'size') expansions.push('layer', 'slicer', 'print', 'model');
+      if (keyword === 'print' || keyword === 'printing' || keyword === 'slicer') expansions.push('infill', 'perimeter', 'layer', 'nozzle', 'temperature', 'support', 'weight');
+      if (keyword === 'infill' || keyword === 'perimeter' || keyword === 'layer') expansions.push('slicer', 'print', 'settings', 'quality');
     });
     return [...new Set(expansions)];
   }
@@ -149,6 +153,13 @@ class Librarian {
     const scoredChunks = this.knowledgeBase.map(chunk => {
       let score = 0;
       const chunkText = chunk.text.toLowerCase();
+      const chunkSource = chunk.source.toLowerCase();
+      
+      // Boost score if source contains relevant keywords
+      for (const keyword of queryKeywords) {
+        if (chunkSource.includes(keyword)) score += 10;
+      }
+      
       for (const keyword of queryKeywords) {
         const regex = new RegExp(keyword, 'gi');
         const matches = (chunkText.match(regex) || []).length;
@@ -161,7 +172,7 @@ class Librarian {
     const bestChunks = scoredChunks
       .filter(sc => sc.score > 0)
       .sort((a, b) => b.score - a.score)
-      .slice(0, 8);
+      .slice(0, 12);
 
     const fileContext = bestChunks.map(sc => sc.chunk.text).join('\n\n---\n\n');
     
