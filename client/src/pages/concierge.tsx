@@ -3,7 +3,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Link } from "wouter";
-import { Home, Send, Bot, User, Loader2, Wifi, WifiOff } from "lucide-react";
+import { Home, Send, Bot, User, Loader2, Wifi, WifiOff, Edit2, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 
@@ -14,6 +14,13 @@ interface Message {
   timestamp: Date;
 }
 
+interface LearningModal {
+  isOpen: boolean;
+  question: string;
+  currentAnswer: string;
+  messageId: string;
+}
+
 const LM_STUDIO_URL = "https://undeclarable-kandy-graspingly.ngrok-free.dev/v1/chat/completions";
 
 export default function ConciergePage() {
@@ -21,6 +28,14 @@ export default function ConciergePage() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<"online" | "error">("online");
+  const [learningModal, setLearningModal] = useState<LearningModal>({
+    isOpen: false,
+    question: "",
+    currentAnswer: "",
+    messageId: ""
+  });
+  const [correctAnswer, setCorrectAnswer] = useState("");
+  const [isSubmittingWisdom, setIsSubmittingWisdom] = useState(false);
   const scrollContainer = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -54,7 +69,6 @@ export default function ConciergePage() {
   // Auto-scroll to latest message
   useEffect(() => {
     if (scrollContainer.current) {
-      // Use setTimeout to ensure the DOM has updated before scrolling
       setTimeout(() => {
         if (scrollContainer.current) {
           scrollContainer.current.scrollTop = scrollContainer.current.scrollHeight;
@@ -63,7 +77,7 @@ export default function ConciergePage() {
     }
   }, [messages]);
 
-  // Clear chat history (optional function for students to reset)
+  // Clear chat history
   const clearChatHistory = () => {
     setMessages([]);
     localStorage.removeItem("3dbotics-concierge-history");
@@ -271,6 +285,60 @@ We follow China–Japan Standard Technology Education (中日标准科技教育 
     setIsLoading(false);
   };
 
+  const openLearningModal = (question: string, answer: string, messageId: string) => {
+    setLearningModal({
+      isOpen: true,
+      question,
+      currentAnswer: answer,
+      messageId
+    });
+    setCorrectAnswer("");
+  };
+
+  const submitWisdom = async () => {
+    if (!correctAnswer.trim()) {
+      toast({
+        title: "Error",
+        description: "Please provide the correct answer.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSubmittingWisdom(true);
+    try {
+      const response = await fetch("/api/learn", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category: "concierge",
+          question: learningModal.question,
+          answer: correctAnswer
+        })
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Success!",
+          description: "Your wisdom has been saved. The AI will use this answer next time!",
+          variant: "default"
+        });
+        setLearningModal({ isOpen: false, question: "", currentAnswer: "", messageId: "" });
+        setCorrectAnswer("");
+      } else {
+        throw new Error("Failed to save wisdom");
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to save your wisdom. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmittingWisdom(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen bg-gradient-to-b from-blue-50 to-white">
       {/* Header with 3DBotics Branding */}
@@ -342,9 +410,9 @@ We follow China–Japan Standard Technology Education (中日标准科技教育 
                   animate={{ y: [0, -15, 0] }}
                   transition={{ duration: 3, repeat: Infinity }}
                 />
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Welcome to 3DBotics AI Classroom!</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">Welcome to 3DBotics AI Concierge!</h2>
                 <p className="text-gray-600 max-w-md">
-                  Hi! I'm your AI Robotics Teacher. Ask me anything about Arduino, motors, 3D printing, or robotics. Let's build something amazing together! 🤖
+                  Hi! I'm your enrollment assistant. Ask me about our programs, pricing, locations, and how to get started. Let's find the perfect fit for you! 🚀
                 </p>
               </motion.div>
             )}
@@ -360,7 +428,7 @@ We follow China–Japan Standard Technology Education (中日标准科技教育 
                 >
                   {message.role === "assistant" && (
                     <Avatar className="h-8 w-8 flex-shrink-0 mt-1">
-                      <AvatarImage src="/assets/characters/veni.png" alt="AI Teacher" />
+                      <AvatarImage src="/assets/characters/veni.png" alt="AI Concierge" />
                       <AvatarFallback className="bg-brand-teal text-white"><Bot size={16} /></AvatarFallback>
                     </Avatar>
                   )}
@@ -384,6 +452,20 @@ We follow China–Japan Standard Technology Education (中日标准科技教育 
                         {message.content}
                       </ReactMarkdown>
                     </div>
+                    {message.role === "assistant" && (
+                      <button
+                        onClick={() => {
+                          const userMessage = messages[messages.indexOf(message) - 1];
+                          if (userMessage) {
+                            openLearningModal(userMessage.content, message.content, message.id);
+                          }
+                        }}
+                        className="mt-2 text-xs text-gray-500 hover:text-brand-teal flex items-center gap-1 transition"
+                      >
+                        <Edit2 size={12} />
+                        Correct This
+                      </button>
+                    )}
                     <span className="text-[10px] text-gray-400 mt-1">
                       {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
@@ -403,7 +485,7 @@ We follow China–Japan Standard Technology Education (中日标准科技教育 
                   className="flex gap-3 justify-start"
                 >
                   <Avatar className="h-8 w-8 flex-shrink-0 mt-1">
-                    <AvatarImage src="/assets/characters/veni.png" alt="AI Teacher" />
+                    <AvatarImage src="/assets/characters/veni.png" alt="AI Concierge" />
                     <AvatarFallback className="bg-brand-teal text-white"><Bot size={16} /></AvatarFallback>
                   </Avatar>
                   <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-md">
@@ -450,6 +532,65 @@ We follow China–Japan Standard Technology Education (中日标准科技教育 
           </div>
         </div>
       </div>
+
+      {/* Learning Modal */}
+      {learningModal.isOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-lg shadow-2xl max-w-md w-full p-6"
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-gray-800">Teach the AI</h3>
+              <button
+                onClick={() => setLearningModal({ isOpen: false, question: "", currentAnswer: "", messageId: "" })}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-semibold text-gray-700">Question:</label>
+                <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded mt-1">{learningModal.question}</p>
+              </div>
+
+              <div>
+                <label className="text-sm font-semibold text-gray-700">Current Answer (from AI):</label>
+                <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded mt-1 max-h-24 overflow-y-auto">{learningModal.currentAnswer}</p>
+              </div>
+
+              <div>
+                <label className="text-sm font-semibold text-gray-700">Your Correct Answer:</label>
+                <textarea
+                  value={correctAnswer}
+                  onChange={(e) => setCorrectAnswer(e.target.value)}
+                  placeholder="Type the correct answer here..."
+                  className="w-full mt-1 p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-brand-teal text-sm resize-none h-24"
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setLearningModal({ isOpen: false, question: "", currentAnswer: "", messageId: "" })}
+                  className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={submitWisdom}
+                  disabled={isSubmittingWisdom}
+                  className="flex-1 px-4 py-2 bg-gradient-to-r from-brand-teal to-blue-500 text-white rounded-lg hover:from-brand-teal hover:to-blue-600 disabled:opacity-50 transition font-medium"
+                >
+                  {isSubmittingWisdom ? "Saving..." : "Save Wisdom"}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
