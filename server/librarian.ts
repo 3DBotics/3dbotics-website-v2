@@ -77,6 +77,8 @@ class Librarian {
       if (keyword === 'l298n' || keyword === 'l298') expansions.push('driver', 'bridge', 'motor', 'wiring');
       if (keyword === 'arduino') expansions.push('uno', 'microcontroller', 'brain');
       if (keyword === 'battery' || keyword === 'batteries') expansions.push('power', 'voltage', 'ampere', 'current');
+      if (keyword === 'franchise' || keyword === 'franchis') expansions.push('email', 'contact', 'invest', 'opportunity');
+      if (keyword === 'email' || keyword === 'contact') expansions.push('franchise', 'call', 'phone');
     });
     return [...new Set(expansions)];
   }
@@ -85,38 +87,58 @@ class Librarian {
     await this.initialize();
     
     console.log(`[LIBRARIAN] === SEARCH START [${category}] ===`);
+    console.log(`[LIBRARIAN] Query: "${query}"`);
     
-    // 1. Search Supabase Wisdom Log First (Priority)
+    // 1. Search Supabase Wisdom Log First (Priority) - WITH KEYWORD SCORING
     let wisdomContext = "";
     try {
-      // First try exact/partial match
-      const { data: exactData, error: exactError } = await this.supabase
+      // Fetch ALL wisdom entries for this category
+      const { data: allWisdom, error: fetchError } = await this.supabase
         .from('wisdom_log')
         .select('question, answer')
-        .eq('category', category)
-        .ilike('question', `%${query}%`)
-        .limit(5);
+        .eq('category', category);
       
-      let wisdomMatches = exactData || [];
-      
-      // If no exact match, try text search
-      if ((!exactData || exactData.length === 0) && !exactError) {
-        const { data: textData, error: textError } = await this.supabase
-          .from('wisdom_log')
-          .select('question, answer')
-          .eq('category', category)
-          .textSearch('question', query.split(' ').join(' | '))
-          .limit(5);
+      if (!fetchError && allWisdom && allWisdom.length > 0) {
+        console.log(`[LIBRARIAN] Fetched ${allWisdom.length} total wisdom entries`);
         
-        if (!textError && textData) {
-          wisdomMatches = textData;
+        // Score wisdom entries based on keyword matching
+        const queryKeywords = this.normalizeQuery(query);
+        console.log(`[LIBRARIAN] Query keywords: ${queryKeywords.join(', ')}`);
+        
+        const scoredWisdom = allWisdom.map((entry: any) => {
+          let score = 0;
+          const questionLower = entry.question.toLowerCase();
+          
+          // Check for exact substring match (highest priority)
+          if (questionLower.includes(query.toLowerCase())) {
+            score += 1000;
+            console.log(`[LIBRARIAN] Exact match found: "${entry.question}" (score: 1000)`);
+          }
+          
+          // Check for keyword matches in the question
+          for (const keyword of queryKeywords) {
+            if (questionLower.includes(keyword)) {
+              score += 50;
+            }
+          }
+          
+          return { entry, score };
+        });
+        
+        // Get top matches
+        const topMatches = scoredWisdom
+          .filter(sw => sw.score > 0)
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 5)
+          .map(sw => sw.entry);
+        
+        if (topMatches.length > 0) {
+          console.log(`[LIBRARIAN] Found ${topMatches.length} wisdom matches via keyword scoring`);
+          wisdomContext = "⭐ FOUNDER'S VERIFIED ANSWERS (ALWAYS USE THESE FIRST):\n" + 
+            topMatches.map((d: any) => `Q: ${d.question}\nA: ${d.answer}`).join('\n\n') + "\n\n";
+        } else {
+          console.log(`[LIBRARIAN] No wisdom matches found via keyword scoring`);
         }
-      }
-      
-      if (wisdomMatches && wisdomMatches.length > 0) {
-        console.log(`[LIBRARIAN] Found ${wisdomMatches.length} wisdom matches in Supabase`);
-        wisdomContext = "⭐ FOUNDER'S VERIFIED ANSWERS (ALWAYS USE THESE FIRST):\n" + 
-          wisdomMatches.map((d: any) => `Q: ${d.question}\nA: ${d.answer}`).join('\n\n') + "\n\n";
       }
     } catch (err) {
       console.error("[LIBRARIAN] Supabase search error:", err);
