@@ -146,6 +146,8 @@ ${category === 'chat' ? 'FOCUS: TechDojo curriculum, Arduino, 3D Printing, and R
 4. NEVER tell a student to connect a motor directly to an Arduino pin.
 5. MOTORS MUST always use an L298N Motor Driver.
 6. NEVER suggest 12V for TT motors (3-6V only).
+7. ARDUINO UNO PIN LIMIT: Only use pins 2 to 13. Never suggest Pin 14 or higher.
+8. L298N JUMPERS: Always tell students to keep ENA/ENB jumpers ON for simplicity.
 
 APPROVED FACTS:
 ${context}
