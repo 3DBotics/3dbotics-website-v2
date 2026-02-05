@@ -89,17 +89,34 @@ class Librarian {
     // 1. Search Supabase Wisdom Log First (Priority)
     let wisdomContext = "";
     try {
-      const { data, error } = await this.supabase
+      // First try exact/partial match
+      const { data: exactData, error: exactError } = await this.supabase
         .from('wisdom_log')
         .select('question, answer')
         .eq('category', category)
-        .textSearch('question', query.split(' ').join(' | '))
-        .limit(3);
+        .ilike('question', `%${query}%`)
+        .limit(5);
       
-      if (!error && data && data.length > 0) {
-        console.log(`[LIBRARIAN] Found ${data.length} wisdom matches in Supabase`);
-        wisdomContext = "PREVIOUS CORRECT ANSWERS (PRIORITY):\n" + 
-          data.map(d => `Q: ${d.question}\nA: ${d.answer}`).join('\n\n') + "\n\n";
+      let wisdomMatches = exactData || [];
+      
+      // If no exact match, try text search
+      if ((!exactData || exactData.length === 0) && !exactError) {
+        const { data: textData, error: textError } = await this.supabase
+          .from('wisdom_log')
+          .select('question, answer')
+          .eq('category', category)
+          .textSearch('question', query.split(' ').join(' | '))
+          .limit(5);
+        
+        if (!textError && textData) {
+          wisdomMatches = textData;
+        }
+      }
+      
+      if (wisdomMatches && wisdomMatches.length > 0) {
+        console.log(`[LIBRARIAN] Found ${wisdomMatches.length} wisdom matches in Supabase`);
+        wisdomContext = "⭐ FOUNDER'S VERIFIED ANSWERS (ALWAYS USE THESE FIRST):\n" + 
+          wisdomMatches.map((d: any) => `Q: ${d.question}\nA: ${d.answer}`).join('\n\n') + "\n\n";
       }
     } catch (err) {
       console.error("[LIBRARIAN] Supabase search error:", err);
@@ -139,20 +156,22 @@ class Librarian {
 
 ${category === 'chat' ? 'FOCUS: TechDojo curriculum, Arduino, 3D Printing, and Robotics.' : 'FOCUS: Enrollment, Franchising, Fees, and Business inquiries.'}
 
-🚨 CRITICAL RULES:
-1. Use ONLY the facts in the "PREVIOUS CORRECT ANSWERS" and "APPROVED CURRICULUM" sections below.
-2. If the answer is in "PREVIOUS CORRECT ANSWERS", use that style and information first.
-3. If the answer is not in the facts, say: "I don't have that information in my curriculum yet. Let me connect you with a human instructor."
-4. NEVER tell a student to connect a motor directly to an Arduino pin.
-5. MOTORS MUST always use an L298N Motor Driver.
-6. NEVER suggest 12V for TT motors (3-6V only).
-7. ARDUINO UNO PIN LIMIT: Only use pins 2 to 13. Never suggest Pin 14 or higher.
-8. L298N JUMPERS: Always tell students to keep ENA/ENB jumpers ON for simplicity.
+🚨 ABSOLUTE RULES (NON-NEGOTIABLE):
+1. **IF ANY ANSWER EXISTS IN "FOUNDER'S VERIFIED ANSWERS" SECTION, YOU MUST USE IT EXACTLY AS PROVIDED. DO NOT MODIFY, PARAPHRASE, OR IGNORE IT.**
+2. **NEVER GENERATE YOUR OWN ANSWER IF A FOUNDER'S VERIFIED ANSWER EXISTS FOR THAT QUESTION.**
+3. If the answer is NOT in "FOUNDER'S VERIFIED ANSWERS", then check "APPROVED CURRICULUM".
+4. If the answer is not in either section, say: "I don't have that information in my curriculum yet. Let me connect you with a human instructor."
+5. **NEVER HALLUCINATE PRICES, FEES, OR BUSINESS DETAILS.** If unsure, defer to a human.
+6. NEVER tell a student to connect a motor directly to an Arduino pin.
+7. MOTORS MUST always use an L298N Motor Driver.
+8. NEVER suggest 12V for TT motors (3-6V only).
+9. ARDUINO UNO PIN LIMIT: Only use pins 2 to 13. Never suggest Pin 14 or higher.
+10. L298N JUMPERS: Always tell students to keep ENA/ENB jumpers ON for simplicity.
 
 APPROVED FACTS:
 ${context}
 
-Answer the user's question accurately based ONLY on the facts above.`;
+**CRITICAL**: Answer the user's question using ONLY the facts above. If a "FOUNDER'S VERIFIED ANSWER" exists, use it word-for-word. Do not add, remove, or change anything.`;
 
       const response = await fetch(this.lmStudioUrl, {
         method: 'POST',
@@ -161,7 +180,7 @@ Answer the user's question accurately based ONLY on the facts above.`;
           model: "local-model",
           messages: [{ role: "system", content: systemPrompt }, { role: "user", content: query }],
           temperature: 0,
-          max_tokens: 600
+          max_tokens: 800
         })
       });
 
