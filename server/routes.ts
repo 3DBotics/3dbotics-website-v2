@@ -24,13 +24,33 @@ export async function registerRoutes(
 
   app.post("/api/chat", async (req, res) => {
     try {
-      const validatedData = chatMessageSchema.parse(req.body);
-      const query = validatedData.message;
+      const { message, category = 'chat' } = req.body;
+      if (!message) {
+        return res.status(400).json({ error: "Message is required" });
+      }
       
       // Use the Librarian to generate a factual, curriculum-based response
-      const response = await librarian.generateResponse(query);
+      const response = await librarian.generateResponse(message, category as 'chat' | 'concierge');
       
       res.json({ response });
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(400).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: "Internal server error" });
+      }
+    }
+  });
+
+  app.post("/api/learn", async (req, res) => {
+    try {
+      const { category, question, answer } = req.body;
+      if (!category || !question || !answer) {
+        return res.status(400).json({ error: "Category, question, and answer are required" });
+      }
+
+      await librarian.learn(category, question, answer);
+      res.json({ success: true, message: "Wisdom saved successfully!" });
     } catch (error) {
       if (error instanceof Error) {
         res.status(400).json({ error: error.message });
