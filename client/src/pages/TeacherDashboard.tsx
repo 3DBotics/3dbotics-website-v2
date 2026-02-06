@@ -1,80 +1,305 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Upload, FileText, CheckCircle, Clock, AlertCircle } from "lucide-react";
+import { Upload, FileText, CheckCircle, Clock, AlertCircle, Loader } from "lucide-react";
 import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
+
+interface ProcessingStage {
+  name: string;
+  status: "pending" | "processing" | "complete" | "error";
+  progress: number;
+}
+
+interface Lesson {
+  id: number;
+  title: string;
+  description: string;
+  status: "processing" | "ready" | "error";
+  pillar: "3d_modeling" | "ai" | "robotics";
+  stages?: ProcessingStage[];
+  processedContent?: string;
+}
 
 export default function TeacherDashboard() {
   const user = { name: "Teacher" }; // Mock user for demo
   const authLoading = false;
-  const [uploadProgress, setUploadProgress] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Mock lessons data
-  const [lessons, setLessons] = useState([
+  const [lessons, setLessons] = useState<Lesson[]>([
     {
       id: 1,
       title: "Introduction to 3D Modeling",
       description: "Learn the basics of 3D design",
-      status: "ready" as const,
-      pillar: "3d_modeling" as const,
+      status: "ready",
+      pillar: "3d_modeling",
+      processedContent: "Lesson successfully processed by LAILA",
     },
   ]);
 
-  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (!files || files.length === 0) return;
+  const processingStages: ProcessingStage[] = [
+    { name: "Analyzing lesson structure", status: "pending", progress: 0 },
+    { name: "Generating 60-minute timeline", status: "pending", progress: 0 },
+    { name: "Creating gamified activities", status: "pending", progress: 0 },
+    { name: "Preparing for students", status: "pending", progress: 0 },
+  ];
 
-    const file = files[0];
-    setUploadedFile(file);
-    setIsProcessing(true);
-    setUploadProgress(10);
+  const [currentStages, setCurrentStages] = useState<ProcessingStage[]>(processingStages);
 
+  const processLessonWithLMStudio = async (fileContent: string, fileName: string) => {
     try {
-      // Simulate upload progress
-      setUploadProgress(30);
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setUploadProgress(70);
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Reset stages
+      setCurrentStages(
+        processingStages.map((stage) => ({
+          ...stage,
+          status: "pending" as const,
+          progress: 0,
+        }))
+      );
 
-      toast({
-        title: "Success",
-        description: "Lesson plan uploaded successfully!",
+      // Stage 1: Analyzing lesson structure
+      setCurrentStages((prev) =>
+        prev.map((s, i) =>
+          i === 0 ? { ...s, status: "processing" as const, progress: 25 } : s
+        )
+      );
+
+      // Send to LM Studio for analysis
+      const analysisResponse = await fetch("http://192.168.1.49:1234/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "local-model",
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are LAILA, an AI education assistant. Analyze the lesson plan and structure it into a 60-minute learning experience with 10 minutes introduction, 30 minutes core skill building, and 20 minutes evaluated seatwork. Identify which pillar (3D Modeling, AI, or Robotics) this lesson belongs to.",
+            },
+            {
+              role: "user",
+              content: `Please analyze this lesson plan and structure it:\n\n${fileContent}`,
+            },
+          ],
+          temperature: 0.7,
+          max_tokens: 1000,
+        }),
       });
 
-      // Add to lessons list
-      const newLesson = {
+      if (!analysisResponse.ok) {
+        throw new Error("LM Studio analysis failed");
+      }
+
+      const analysisData = await analysisResponse.json();
+      const analysisResult = analysisData.choices?.[0]?.message?.content || "";
+
+      // Complete stage 1
+      setCurrentStages((prev) =>
+        prev.map((s, i) =>
+          i === 0 ? { ...s, status: "complete" as const, progress: 100 } : s
+        )
+      );
+
+      // Stage 2: Generating timeline
+      setCurrentStages((prev) =>
+        prev.map((s, i) =>
+          i === 1 ? { ...s, status: "processing" as const, progress: 25 } : s
+        )
+      );
+
+      const timelineResponse = await fetch("http://192.168.1.49:1234/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "local-model",
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are LAILA. Create a detailed 60-minute learning timeline with specific activities for each phase: Introduction (10min), Core Skill Building (30min), and Evaluated Seatwork (20min). Format as JSON.",
+            },
+            {
+              role: "user",
+              content: `Based on this analysis:\n${analysisResult}\n\nCreate a detailed timeline.`,
+            },
+          ],
+          temperature: 0.7,
+          max_tokens: 1000,
+        }),
+      });
+
+      const timelineData = await timelineResponse.json();
+      const timelineResult = timelineData.choices?.[0]?.message?.content || "";
+
+      // Complete stage 2
+      setCurrentStages((prev) =>
+        prev.map((s, i) =>
+          i === 1 ? { ...s, status: "complete" as const, progress: 100 } : s
+        )
+      );
+
+      // Stage 3: Creating gamified activities
+      setCurrentStages((prev) =>
+        prev.map((s, i) =>
+          i === 2 ? { ...s, status: "processing" as const, progress: 25 } : s
+        )
+      );
+
+      const activitiesResponse = await fetch("http://192.168.1.49:1234/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "local-model",
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are LAILA. Create engaging gamified activities for students learning this content. Include point systems, challenges, and interactive elements. Explain in 5th-grade friendly language.",
+            },
+            {
+              role: "user",
+              content: `Create gamified activities for:\n${timelineResult}`,
+            },
+          ],
+          temperature: 0.7,
+          max_tokens: 1000,
+        }),
+      });
+
+      const activitiesData = await activitiesResponse.json();
+      const activitiesResult = activitiesData.choices?.[0]?.message?.content || "";
+
+      // Complete stage 3
+      setCurrentStages((prev) =>
+        prev.map((s, i) =>
+          i === 2 ? { ...s, status: "complete" as const, progress: 100 } : s
+        )
+      );
+
+      // Stage 4: Preparing for students
+      setCurrentStages((prev) =>
+        prev.map((s, i) =>
+          i === 3 ? { ...s, status: "processing" as const, progress: 25 } : s
+        )
+      );
+
+      // Simulate final preparation
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Complete stage 4
+      setCurrentStages((prev) =>
+        prev.map((s, i) =>
+          i === 3 ? { ...s, status: "complete" as const, progress: 100 } : s
+        )
+      );
+
+      // Add processed lesson
+      const newLesson: Lesson = {
         id: lessons.length + 1,
-        title: file.name.replace(/\.[^/.]+$/, ""),
-        description: `Uploaded: ${file.name}`,
-        status: "ready" as const,
-        pillar: "3d_modeling" as const,
+        title: fileName.replace(/\.[^/.]+$/, ""),
+        description: `Processed by LAILA • ${new Date().toLocaleDateString()}`,
+        status: "ready",
+        pillar: "3d_modeling", // Could be determined from analysis
+        stages: currentStages,
+        processedContent: `Analysis:\n${analysisResult}\n\nTimeline:\n${timelineResult}\n\nActivities:\n${activitiesResult}`,
       };
+
       setLessons([...lessons, newLesson]);
 
-      setUploadProgress(100);
+      toast({
+        title: "✨ Lesson Ready!",
+        description: "LAILA has successfully processed your lesson plan. Students can now access it!",
+      });
+
+      // Send browser notification
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("LAILA Lesson Ready", {
+          body: `Your lesson "${fileName}" is ready for students!`,
+          icon: "🎓",
+        });
+      }
+
       setIsProcessing(false);
       setUploadedFile(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
     } catch (error) {
-      console.error("Upload error:", error);
+      console.error("Processing error:", error);
+
+      // Mark all stages as error
+      setCurrentStages((prev) =>
+        prev.map((s) => ({
+          ...s,
+          status: "error" as const,
+        }))
+      );
+
       toast({
-        title: "Error",
-        description: "Failed to upload file",
+        title: "Processing Error",
+        description: "Failed to process lesson with LAILA. Please try again.",
         variant: "destructive",
       });
+
       setIsProcessing(false);
-      setUploadProgress(0);
     }
   };
 
-  // Auth checks removed for demo version
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+
+    // Validate file type
+    const validTypes = [
+      "text/plain",
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+
+    if (!validTypes.includes(file.type)) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload PDF, DOC, DOCX, or TXT files only.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploadedFile(file);
+    setIsProcessing(true);
+
+    // Read file content
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const content = e.target?.result as string;
+      await processLessonWithLMStudio(content, file.name);
+    };
+    reader.readAsText(file);
+  };
+
+  const getStageIcon = (status: string) => {
+    switch (status) {
+      case "complete":
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case "processing":
+        return <Loader className="h-4 w-4 text-cyan-400 animate-spin" />;
+      case "error":
+        return <AlertCircle className="h-4 w-4 text-red-500" />;
+      default:
+        return <Clock className="h-4 w-4 text-muted-foreground" />;
+    }
+  };
+
+  const overallProgress = Math.round(
+    currentStages.reduce((sum, stage) => sum + stage.progress, 0) / currentStages.length
+  );
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -94,17 +319,15 @@ export default function TeacherDashboard() {
               <Upload className="h-5 w-5" />
               Upload Lesson Plan
             </CardTitle>
-            <CardDescription>
-              Click to browse or drag and drop your lesson plan file
-            </CardDescription>
+            <CardDescription>Click to browse or drag and drop your lesson plan file</CardDescription>
           </CardHeader>
           <CardContent>
             <div
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => !isProcessing && fileInputRef.current?.click()}
               className={`
-                border-2 border-dashed rounded-lg p-12 text-center cursor-pointer
+                border-2 border-dashed rounded-lg p-12 text-center
                 transition-colors duration-200
-                ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'border-border hover:border-primary/50'}
+                ${isProcessing ? "opacity-50 cursor-not-allowed border-border" : "border-border hover:border-primary/50 cursor-pointer"}
               `}
             >
               <input
@@ -117,103 +340,116 @@ export default function TeacherDashboard() {
               />
               <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
               <p className="text-lg font-medium mb-2">
-                {isProcessing ? "Processing..." : "Drop your lesson plan here"}
+                {isProcessing ? "Processing with LAILA..." : "Drop your lesson plan here"}
               </p>
-              <p className="text-sm text-muted-foreground">
-                Supports PDF, DOC, DOCX, and TXT files
-              </p>
+              <p className="text-sm text-muted-foreground">Supports PDF, DOC, DOCX, and TXT files</p>
             </div>
 
-            {/* Progress Bar */}
+            {/* Processing Stages */}
             {isProcessing && (
-              <div className="mt-6 space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium">
-                    {uploadProgress < 30 && "Preparing upload..."}
-                    {uploadProgress >= 30 && uploadProgress < 50 && "Uploading file..."}
-                    {uploadProgress >= 50 && uploadProgress < 70 && "Storing in cloud..."}
-                    {uploadProgress >= 70 && uploadProgress < 100 && "LAILA is deconstructing the lesson..."}
-                    {uploadProgress === 100 && "Complete!"}
-                  </span>
-                  <span className="text-muted-foreground">{uploadProgress}%</span>
+              <div className="mt-6 space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-medium">Overall Progress</span>
+                    <span className="text-muted-foreground">{overallProgress}%</span>
+                  </div>
+                  <Progress value={overallProgress} className="h-2" />
                 </div>
-                <Progress value={uploadProgress} className="h-2" />
-                {uploadProgress >= 70 && uploadProgress < 100 && (
-                  <p className="text-xs text-muted-foreground">
-                    Generating 60-minute timeline: 10min intro • 30min core • 20min seatwork
-                  </p>
-                )}
+
+                <div className="space-y-3 mt-4">
+                  {currentStages.map((stage, index) => (
+                    <div key={index} className="flex items-center gap-3 p-3 bg-card rounded-lg border border-border">
+                      {getStageIcon(stage.status)}
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">{stage.name}</p>
+                        {stage.status === "processing" && (
+                          <p className="text-xs text-muted-foreground">In progress...</p>
+                        )}
+                        {stage.status === "complete" && (
+                          <p className="text-xs text-green-500">Complete</p>
+                        )}
+                        {stage.status === "error" && (
+                          <p className="text-xs text-red-500">Failed</p>
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground">{stage.progress}%</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </CardContent>
         </Card>
 
-        {/* Lesson Plans List */}
+        {/* Lessons List */}
         <div className="space-y-4">
           <h2 className="text-2xl font-bold">Your Lesson Plans</h2>
 
-          {lessons && lessons.length > 0 ? (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {lessons.length === 0 ? (
+            <Card>
+              <CardContent className="pt-6">
+                <p className="text-center text-muted-foreground">No lesson plans yet. Upload one to get started!</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2">
               {lessons.map((lesson) => (
-                <Card key={lesson.id} className="hover:shadow-lg transition-shadow">
+                <Card key={lesson.id} className="relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-3">
+                    {lesson.status === "ready" && (
+                      <CheckCircle className="h-6 w-6 text-green-500" />
+                    )}
+                    {lesson.status === "processing" && (
+                      <Loader className="h-6 w-6 text-cyan-400 animate-spin" />
+                    )}
+                    {lesson.status === "error" && <AlertCircle className="h-6 w-6 text-red-500" />}
+                  </div>
+
                   <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <FileText className="h-5 w-5" />
-                        {lesson.title}
-                      </CardTitle>
-                      {lesson.status === "ready" && (
-                        <CheckCircle className="h-5 w-5 text-green-500" />
-                      )}
-                      {lesson.status === "processing" && (
-                        <Clock className="h-5 w-5 text-yellow-500 animate-pulse" />
-                      )}
-                      {lesson.status === "failed" && (
-                        <AlertCircle className="h-5 w-5 text-red-500" />
-                      )}
-                    </div>
-                    <CardDescription>
-                      {lesson.description || "No description"}
-                    </CardDescription>
+                    <CardTitle className="flex items-center gap-2 pr-8">
+                      <FileText className="h-5 w-5" />
+                      {lesson.title}
+                    </CardTitle>
+                    <CardDescription>{lesson.description}</CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Status:</span>
-                        <span className="font-medium capitalize">{lesson.status}</span>
-                      </div>
-                      {lesson.pillar && (
-                        <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">Pillar:</span>
-                          <span className="font-medium capitalize">
-                            {lesson.pillar.replace("_", " ")}
-                          </span>
-                        </div>
-                      )}
-                      <div className="pt-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="w-full"
-                          disabled={lesson.status !== "ready"}
+
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <p className="text-sm">
+                        <span className="font-medium">Status:</span>{" "}
+                        <span
+                          className={
+                            lesson.status === "ready"
+                              ? "text-green-500"
+                              : lesson.status === "processing"
+                                ? "text-cyan-400"
+                                : "text-red-500"
+                          }
                         >
-                          View Details
-                        </Button>
-                      </div>
+                          {lesson.status.charAt(0).toUpperCase() + lesson.status.slice(1)}
+                        </span>
+                      </p>
+                      <p className="text-sm">
+                        <span className="font-medium">Pillar:</span>{" "}
+                        <span className="inline-block px-2 py-1 bg-amber-500/20 text-amber-400 rounded text-xs">
+                          {lesson.pillar === "3d_modeling"
+                            ? "3D Modeling"
+                            : lesson.pillar === "ai"
+                              ? "AI"
+                              : "Robotics"}
+                        </span>
+                      </p>
                     </div>
+
+                    {lesson.status === "ready" && (
+                      <Button className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-semibold">
+                        View Details
+                      </Button>
+                    )}
                   </CardContent>
                 </Card>
               ))}
             </div>
-          ) : (
-            <Card>
-              <CardContent className="py-12 text-center">
-                <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-muted-foreground">
-                  No lesson plans yet. Upload your first lesson plan to get started!
-                </p>
-              </CardContent>
-            </Card>
           )}
         </div>
       </div>
