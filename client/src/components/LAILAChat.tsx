@@ -5,7 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { trpc } from "@/lib/trpc";
 import { MessageCircle, Send, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   role: "user" | "assistant";
@@ -23,6 +23,7 @@ export default function LAILAChat({ studentId, lessonPlanId }: LAILAChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   const { data: chatHistory } = trpc.chat.getHistory.useQuery(
     { studentId, lessonPlanId },
@@ -42,7 +43,11 @@ export default function LAILAChat({ studentId, lessonPlanId }: LAILAChatProps) {
       setInputMessage("");
     },
     onError: (error) => {
-      toast.error("Failed to send message: " + error.message);
+      toast({
+        title: "Error",
+        description: "Failed to send message: " + error.message,
+        variant: "destructive",
+      });
     },
   });
 
