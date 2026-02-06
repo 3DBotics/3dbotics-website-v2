@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Upload, FileText, CheckCircle, Clock, AlertCircle, Loader, X } from "lucide-react";
+import { Upload, FileText, CheckCircle, Clock, AlertCircle, Loader, X, Trash2, RotateCcw, AlertTriangle } from "lucide-react";
 import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -39,6 +39,9 @@ export default function TeacherDashboard() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [trashedLessons, setTrashedLessons] = useState<Lesson[]>([]);
+  const [showTrashBin, setShowTrashBin] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -309,6 +312,76 @@ export default function TeacherDashboard() {
     setShowDetailsModal(true);
   };
 
+  const handleMoveToTrash = (lessonId: number) => {
+    const lessonToTrash = lessons.find((l) => l.id === lessonId);
+    if (!lessonToTrash) return;
+
+    // Move to trash
+    const updatedLessons = lessons.filter((l) => l.id !== lessonId);
+    const updatedTrash = [...trashedLessons, lessonToTrash];
+
+    setLessons(updatedLessons);
+    setTrashedLessons(updatedTrash);
+
+    // Update localStorage
+    try {
+      localStorage.setItem("laila_processed_lessons", JSON.stringify(updatedLessons));
+      localStorage.setItem("laila_trashed_lessons", JSON.stringify(updatedTrash));
+    } catch (error) {
+      console.error("Error updating localStorage:", error);
+    }
+
+    toast({
+      title: "Moved to Trash",
+      description: "Lesson moved to trash bin. You can restore it later.",
+    });
+  };
+
+  const handleRestoreLesson = (lessonId: number) => {
+    const lessonToRestore = trashedLessons.find((l) => l.id === lessonId);
+    if (!lessonToRestore) return;
+
+    // Restore from trash
+    const updatedTrash = trashedLessons.filter((l) => l.id !== lessonId);
+    const updatedLessons = [lessonToRestore, ...lessons];
+
+    setTrashedLessons(updatedTrash);
+    setLessons(updatedLessons);
+
+    // Update localStorage
+    try {
+      localStorage.setItem("laila_processed_lessons", JSON.stringify(updatedLessons));
+      localStorage.setItem("laila_trashed_lessons", JSON.stringify(updatedTrash));
+    } catch (error) {
+      console.error("Error updating localStorage:", error);
+    }
+
+    toast({
+      title: "Lesson Restored",
+      description: "Lesson has been restored and is now available to students.",
+    });
+  };
+
+  const handlePermanentDelete = (lessonId: number) => {
+    const updatedTrash = trashedLessons.filter((l) => l.id !== lessonId);
+    setTrashedLessons(updatedTrash);
+
+    // Update localStorage
+    try {
+      localStorage.setItem("laila_trashed_lessons", JSON.stringify(updatedTrash));
+    } catch (error) {
+      console.error("Error updating localStorage:", error);
+    }
+
+    setDeleteConfirmId(null);
+
+    toast({
+      title: "Permanently Deleted",
+      description: "Lesson has been permanently deleted and cannot be recovered.",
+      variant: "destructive",
+    });
+  };
+
   const getStageIcon = (status: string) => {
     switch (status) {
       case "complete":
@@ -414,6 +487,96 @@ export default function TeacherDashboard() {
           </CardContent>
         </Card>
 
+        {/* Trash Bin Section */}
+        {trashedLessons.length > 0 && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold flex items-center gap-2">
+                <Trash2 className="h-6 w-6" />
+                Trash Bin ({trashedLessons.length})
+              </h2>
+              <Button
+                onClick={() => setShowTrashBin(!showTrashBin)}
+                variant="outline"
+              >
+                {showTrashBin ? "Hide" : "Show"} Trash
+              </Button>
+            </div>
+
+            {showTrashBin && (
+              <div className="grid gap-4 md:grid-cols-2">
+                {trashedLessons.map((lesson) => (
+                  <Card key={lesson.id} className="relative overflow-hidden border-red-500/30">
+                    <div className="absolute top-0 right-0 p-3">
+                      <Trash2 className="h-6 w-6 text-red-500" />
+                    </div>
+
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 pr-8">
+                        <FileText className="h-5 w-5" />
+                        {lesson.title}
+                      </CardTitle>
+                      <CardDescription>{lesson.description}</CardDescription>
+                    </CardHeader>
+
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        <p className="text-sm">
+                          <span className="font-medium">Subject:</span>{" "}
+                          <span className="inline-block px-2 py-1 bg-amber-500/20 text-amber-400 rounded text-xs">
+                            {lesson.subject}
+                          </span>
+                        </p>
+                      </div>
+
+                      {deleteConfirmId === lesson.id ? (
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 text-red-500 text-sm">
+                            <AlertTriangle className="h-4 w-4" />
+                            <span>Permanently delete this lesson?</span>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              onClick={() => handlePermanentDelete(lesson.id)}
+                              variant="destructive"
+                              className="flex-1"
+                            >
+                              Yes, Delete Forever
+                            </Button>
+                            <Button
+                              onClick={() => setDeleteConfirmId(null)}
+                              variant="outline"
+                              className="flex-1"
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => handleRestoreLesson(lesson.id)}
+                            className="flex-1 bg-green-600 hover:bg-green-700"
+                          >
+                            <RotateCcw className="h-4 w-4 mr-2" />
+                            Restore
+                          </Button>
+                          <Button
+                            onClick={() => setDeleteConfirmId(lesson.id)}
+                            variant="destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Lessons List */}
         <div className="space-y-4">
           <h2 className="text-2xl font-bold">Your Lesson Plans</h2>
@@ -471,12 +634,21 @@ export default function TeacherDashboard() {
                     </div>
 
                     {lesson.status === "ready" && (
-                      <Button
-                        onClick={() => handleViewDetails(lesson)}
-                        className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-semibold"
-                      >
-                        View Details
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => handleViewDetails(lesson)}
+                          className="flex-1 bg-cyan-500 hover:bg-cyan-600 text-black font-semibold"
+                        >
+                          View Details
+                        </Button>
+                        <Button
+                          onClick={() => handleMoveToTrash(lesson.id)}
+                          variant="outline"
+                          className="border-red-500/50 hover:bg-red-500/10 hover:text-red-500"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     )}
                   </CardContent>
                 </Card>

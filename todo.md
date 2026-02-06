@@ -29,3 +29,13 @@
 - [ ] Display gamified activities in Student Dashboard
 - [ ] Show lesson progress tracking for students
 - [ ] Add "Start Lesson" button to begin learning
+
+
+## Phase 5: Trash Bin System
+- [ ] Add delete button to lesson cards
+- [ ] Create trash bin section in Teacher Dashboard
+- [ ] Implement move to trash functionality
+- [ ] Add restore button for trashed lessons
+- [ ] Add permanent delete button with confirmation
+- [ ] Update localStorage to store trash separately
+- [ ] Ensure trashed lessons don't appear in student dashboard
