@@ -1,12 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { trpc } from "@/lib/trpc";
 import { CheckCircle, Circle, Clock, MessageCircle, Play } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
-import LAILAChat from "@/components/LAILAChat";
 
 interface Student {
   id: number;
@@ -26,7 +24,6 @@ interface MissionStage {
 export default function StudentDashboard() {
   const [, setLocation] = useLocation();
   const [student, setStudent] = useState<Student | null>(null);
-  const [currentLesson, setCurrentLesson] = useState<any>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -34,11 +31,11 @@ export default function StudentDashboard() {
     if (storedStudent) {
       setStudent(JSON.parse(storedStudent));
     } else {
-      setLocation("/student/login");
+      setLocation("/laila/student/login");
     }
   }, [setLocation]);
 
-  // Mock mission stages - in production, these would come from the lesson plan
+  // Mock mission stages
   const [missionStages, setMissionStages] = useState<MissionStage[]>([
     {
       id: "intro",
@@ -71,7 +68,6 @@ export default function StudentDashboard() {
       title: "Success",
       description: "Activity started!",
     });
-    // In production, this would update student progress in the database
   };
 
   const handleCompleteStage = (stageId: string) => {
@@ -106,165 +102,128 @@ export default function StudentDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b bg-card">
-        <div className="container max-w-7xl mx-auto p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold">Welcome, {student.name}!</h1>
-              <p className="text-sm text-muted-foreground">Your Learning Mission</p>
+    <div className="min-h-screen bg-background p-6">
+      <div className="container max-w-6xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold">Welcome, {student.name}!</h1>
+            <p className="text-muted-foreground">Your 60-minute learning journey</p>
+          </div>
+          <Button variant="outline" onClick={() => {
+            sessionStorage.removeItem("student");
+            setLocation("/laila/student/login");
+          }}>
+            Logout
+          </Button>
+        </div>
+
+        {/* Progress Overview */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Mission Progress</CardTitle>
+            <CardDescription>
+              {completedStages} of {missionStages.length} stages completed
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Progress value={progressPercentage} className="h-3" />
+          </CardContent>
+        </Card>
+
+        <div className="grid gap-8 md:grid-cols-2">
+          {/* Mission Timeline */}
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold">Mission Timeline</h2>
+            <div className="space-y-4">
+              {missionStages.map((stage, index) => (
+                <Card
+                  key={stage.id}
+                  className={`
+                    ${stage.status === "active" ? "border-primary shadow-lg" : ""}
+                    ${stage.status === "completed" ? "bg-muted/50" : ""}
+                  `}
+                >
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-3">
+                        {stage.status === "completed" && (
+                          <CheckCircle className="h-6 w-6 text-green-500 mt-1" />
+                        )}
+                        {stage.status === "active" && (
+                          <Clock className="h-6 w-6 text-primary mt-1 animate-pulse" />
+                        )}
+                        {stage.status === "pending" && (
+                          <Circle className="h-6 w-6 text-muted-foreground mt-1" />
+                        )}
+                        <div>
+                          <CardTitle className="text-lg">{stage.title}</CardTitle>
+                          <CardDescription>{stage.description}</CardDescription>
+                        </div>
+                      </div>
+                      <span className="text-sm font-medium text-muted-foreground">
+                        {stage.duration} min
+                      </span>
+                    </div>
+                  </CardHeader>
+                </Card>
+              ))}
             </div>
-            <div className="text-sm text-muted-foreground">
-              Click the chat bubble to ask LAILA for help!
-            </div>
+          </div>
+
+          {/* Learning Activity Area */}
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold">Learning Game</h2>
+            {activeStage ? (
+              <Card className="border-primary">
+                <CardHeader>
+                  <CardTitle>{activeStage.title}</CardTitle>
+                  <CardDescription>
+                    Duration: {activeStage.duration} minutes
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
+                    <div className="text-center space-y-4">
+                      <Play className="h-16 w-16 mx-auto text-primary" />
+                      <p className="text-lg font-medium">
+                        {activeStage.id === "intro" && "Interactive 3D Model Explorer"}
+                        {activeStage.id === "core" && "AI-Powered Design Challenge"}
+                        {activeStage.id === "seatwork" && "Build Your Own Robot"}
+                      </p>
+                      <Button onClick={() => handleStartActivity(activeStage.id)}>
+                        Start Activity
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button
+                      className="flex-1"
+                      onClick={() => handleCompleteStage(activeStage.id)}
+                    >
+                      Complete Stage
+                    </Button>
+                    <Button variant="outline" size="icon">
+                      <MessageCircle className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <CheckCircle className="h-16 w-16 mx-auto mb-4 text-green-500" />
+                  <h3 className="text-2xl font-bold mb-2">Mission Complete!</h3>
+                  <p className="text-muted-foreground">
+                    Great job! You've completed all stages of today's lesson.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
-
-      <div className="container max-w-7xl mx-auto p-6">
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Mission Timeline - Left Side */}
-          <div className="lg:col-span-1 space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5" />
-                  Mission Timeline
-                </CardTitle>
-                <CardDescription>60-minute learning journey</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Progress Overview */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium">Overall Progress</span>
-                    <span className="text-muted-foreground">{completedStages}/{missionStages.length}</span>
-                  </div>
-                  <Progress value={progressPercentage} className="h-2" />
-                </div>
-
-                {/* Timeline Stages */}
-                <div className="space-y-4">
-                  {missionStages.map((stage, index) => (
-                    <div key={stage.id} className="relative">
-                      {/* Connector Line */}
-                      {index < missionStages.length - 1 && (
-                        <div className="absolute left-4 top-10 bottom-0 w-0.5 bg-border" />
-                      )}
-                      
-                      <div className="flex gap-3">
-                        {/* Status Icon */}
-                        <div className="relative z-10">
-                          {stage.status === "completed" ? (
-                            <CheckCircle className="h-8 w-8 text-green-500 fill-green-500/20" />
-                          ) : stage.status === "active" ? (
-                            <Circle className="h-8 w-8 text-primary fill-primary/20 animate-pulse" />
-                          ) : (
-                            <Circle className="h-8 w-8 text-muted-foreground" />
-                          )}
-                        </div>
-
-                        {/* Stage Info */}
-                        <div className="flex-1 pb-4">
-                          <div className="font-medium">{stage.title}</div>
-                          <div className="text-sm text-muted-foreground">{stage.duration} minutes</div>
-                          <div className="text-xs text-muted-foreground mt-1">{stage.description}</div>
-                          
-                          {stage.status === "active" && (
-                            <Button
-                              size="sm"
-                              className="mt-2"
-                              onClick={() => handleStartActivity(stage.id)}
-                            >
-                              <Play className="h-3 w-3 mr-1" />
-                              Start
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Learning Game Area - Right Side */}
-          <div className="lg:col-span-2">
-            <Card className="min-h-[600px]">
-              <CardHeader>
-                <CardTitle>
-                  {activeStage ? activeStage.title : "Ready to Start"}
-                </CardTitle>
-                <CardDescription>
-                  {activeStage
-                    ? activeStage.description
-                    : "Begin your learning mission when you're ready!"}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {activeStage ? (
-                  <div className="space-y-6">
-                    {/* Activity Content Area */}
-                    <div className="border-2 border-dashed rounded-lg p-12 text-center min-h-[400px] flex flex-col items-center justify-center">
-                      <div className="space-y-4">
-                        <div className="text-6xl">🎮</div>
-                        <h3 className="text-2xl font-bold">Interactive Learning Activity</h3>
-                        <p className="text-muted-foreground max-w-md">
-                          {activeStage.id === "intro" &&
-                            "Get warmed up with a fun introduction to today's topic!"}
-                          {activeStage.id === "core" &&
-                            "Dive deep into the core concepts with hands-on activities."}
-                          {activeStage.id === "seatwork" &&
-                            "Time to show what you've learned! Complete the assessment."}
-                        </p>
-                        <div className="flex gap-3 justify-center pt-4">
-                          <Button
-                            size="lg"
-                            onClick={() => handleCompleteStage(activeStage.id)}
-                          >
-                            Complete Stage
-                          </Button>
-                          <div className="text-sm text-muted-foreground">
-                            Need help? Click the chat bubble below!
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Stage Timer */}
-                    <div className="bg-muted rounded-lg p-4">
-                      <div className="flex items-center justify-between text-sm mb-2">
-                        <span className="font-medium">Stage Time</span>
-                        <span className="text-muted-foreground">{activeStage.duration} minutes</span>
-                      </div>
-                      <Progress value={33} className="h-2" />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-20">
-                    <div className="text-6xl mb-4">🎯</div>
-                    <h3 className="text-2xl font-bold mb-2">
-                      {completedStages === missionStages.length
-                        ? "Mission Complete!"
-                        : "Ready to Begin?"}
-                    </h3>
-                    <p className="text-muted-foreground">
-                      {completedStages === missionStages.length
-                        ? "Congratulations! You've completed all stages."
-                        : "Start your first activity when you're ready."}
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </div>
-
-      {/* LAILA Chat Bubble */}
-      {student && <LAILAChat studentId={student.id} lessonPlanId={currentLesson?.id} />}
     </div>
   );
 }
