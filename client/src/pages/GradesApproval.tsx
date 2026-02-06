@@ -7,11 +7,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
 import { CheckCircle, Edit, Save } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 
 export default function GradesApproval() {
   const { user, loading: authLoading } = useAuth();
+  const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [selectedLesson, setSelectedLesson] = useState<number | null>(null);
   const [editingGrade, setEditingGrade] = useState<number | null>(null);
@@ -28,19 +30,30 @@ export default function GradesApproval() {
 
   const approveGrade = trpc.grades.approve.useMutation({
     onSuccess: () => {
-      toast.success("Grade approved successfully!");
+      toast({
+        title: "Success",
+        description: "Grade approved successfully!",
+      });
       refetchGrades();
       setEditingGrade(null);
     },
     onError: (error) => {
-      toast.error("Failed to approve grade: " + error.message);
+      toast({
+        title: "Error",
+        description: "Failed to approve grade: " + error.message,
+        variant: "destructive",
+      });
     },
   });
 
   const handleApprove = async (gradeId: number) => {
     const values = gradeValues[gradeId];
     if (!values) {
-      toast.error("Please enter grade and feedback");
+      toast({
+        title: "Error",
+        description: "Please enter grade and feedback",
+        variant: "destructive",
+      });
       return;
     }
 

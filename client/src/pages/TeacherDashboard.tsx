@@ -6,7 +6,7 @@ import { trpc } from "@/lib/trpc";
 import { Upload, FileText, CheckCircle, Clock, AlertCircle } from "lucide-react";
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 // Storage will be handled via tRPC mutation
 
 export default function TeacherDashboard() {
@@ -14,6 +14,7 @@ export default function TeacherDashboard() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const { toast } = useToast();
 
   const { data: lessons, isLoading, refetch } = trpc.lessons.list.useQuery(undefined, {
     enabled: !!user,
@@ -21,14 +22,21 @@ export default function TeacherDashboard() {
 
   const createLesson = trpc.lessons.create.useMutation({
     onSuccess: () => {
-      toast.success("Lesson plan uploaded successfully!");
+      toast({
+        title: "Success",
+        description: "Lesson plan uploaded successfully!",
+      });
       setUploadProgress(0);
       setIsProcessing(false);
       setUploadedFile(null);
       refetch();
     },
     onError: (error) => {
-      toast.error("Failed to upload lesson plan: " + error.message);
+      toast({
+        title: "Error",
+        description: "Failed to upload lesson plan: " + error.message,
+        variant: "destructive",
+      });
       setIsProcessing(false);
     },
   });
@@ -59,7 +67,11 @@ export default function TeacherDashboard() {
       setUploadProgress(100);
     } catch (error) {
       console.error("Upload error:", error);
-      toast.error("Failed to upload file");
+      toast({
+        title: "Error",
+        description: "Failed to upload file",
+        variant: "destructive",
+      });
       setIsProcessing(false);
       setUploadProgress(0);
     }

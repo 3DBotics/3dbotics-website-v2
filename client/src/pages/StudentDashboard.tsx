@@ -4,7 +4,7 @@ import { Progress } from "@/components/ui/progress";
 import { trpc } from "@/lib/trpc";
 import { CheckCircle, Circle, Clock, MessageCircle, Play } from "lucide-react";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import LAILAChat from "@/components/LAILAChat";
 
@@ -27,6 +27,7 @@ export default function StudentDashboard() {
   const [, setLocation] = useLocation();
   const [student, setStudent] = useState<Student | null>(null);
   const [currentLesson, setCurrentLesson] = useState<any>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const storedStudent = sessionStorage.getItem("student");
@@ -66,7 +67,10 @@ export default function StudentDashboard() {
   const totalTime = 60; // 60 minutes total
 
   const handleStartActivity = (stageId: string) => {
-    toast.success("Activity started!");
+    toast({
+      title: "Success",
+      description: "Activity started!",
+    });
     // In production, this would update student progress in the database
   };
 
@@ -83,7 +87,10 @@ export default function StudentDashboard() {
         return stage;
       })
     );
-    toast.success("Stage completed! Great job!");
+    toast({
+      title: "Success",
+      description: "Stage completed! Great job!",
+    });
   };
 
   const activeStage = missionStages.find((s) => s.status === "active");
