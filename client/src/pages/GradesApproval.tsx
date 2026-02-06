@@ -1,4 +1,3 @@
-import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,7 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 
 export default function GradesApproval() {
-  const { user, loading: authLoading } = useAuth();
+  const user = { name: "Teacher" }; // Mock user for demo
+  const authLoading = false;
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [selectedLesson, setSelectedLesson] = useState<number | null>(1);
@@ -71,26 +71,7 @@ export default function GradesApproval() {
     });
   };
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Authentication Required</CardTitle>
-            <CardDescription>Please log in to access the grades approval dashboard.</CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    );
-  }
+  // Auth checks removed for demo version
 
   return (
     <div className="min-h-screen bg-background p-6">
