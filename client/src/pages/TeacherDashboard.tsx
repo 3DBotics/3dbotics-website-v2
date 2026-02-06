@@ -1,7 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Upload, FileText, CheckCircle, Clock, AlertCircle, Loader } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Upload, FileText, CheckCircle, Clock, AlertCircle, Loader, X } from "lucide-react";
 import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -16,9 +23,13 @@ interface Lesson {
   title: string;
   description: string;
   status: "processing" | "ready" | "error";
-  pillar: "3d_modeling" | "ai" | "robotics";
+  subject: string; // Dynamic subject (Biology, Math, History, etc.)
   stages?: ProcessingStage[];
-  processedContent?: string;
+  processedContent?: {
+    analysis: string;
+    timeline: string;
+    activities: string;
+  };
 }
 
 export default function TeacherDashboard() {
@@ -26,6 +37,8 @@ export default function TeacherDashboard() {
   const authLoading = false;
   const [isProcessing, setIsProcessing] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -36,8 +49,12 @@ export default function TeacherDashboard() {
       title: "Introduction to 3D Modeling",
       description: "Learn the basics of 3D design",
       status: "ready",
-      pillar: "3d_modeling",
-      processedContent: "Lesson successfully processed by LAILA",
+      subject: "3D Modeling & Design",
+      processedContent: {
+        analysis: "This lesson introduces students to 3D modeling fundamentals...",
+        timeline: "Introduction (10min): Overview of 3D space...",
+        activities: "Gamified Challenge: Design your first 3D object...",
+      },
     },
   ]);
 
@@ -61,14 +78,12 @@ export default function TeacherDashboard() {
         }))
       );
 
-      // Stage 1: Analyzing lesson structure
+      // Stage 1: Analyzing lesson structure and identifying subject
       setCurrentStages((prev) =>
-        prev.map((s, i) =>
-          i === 0 ? { ...s, status: "processing" as const, progress: 25 } : s
-        )
+        prev.map((s, i) => (i === 0 ? { ...s, status: "processing" as const, progress: 25 } : s))
       );
 
-      // Send to LM Studio for analysis
+      // Send to LM Studio for analysis - NO RESTRICTIONS ON SUBJECT
       const analysisResponse = await fetch("http://192.168.1.49:1234/v1/chat/completions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -78,15 +93,15 @@ export default function TeacherDashboard() {
             {
               role: "system",
               content:
-                "You are LAILA, an AI education assistant. Analyze the lesson plan and structure it into a 60-minute learning experience with 10 minutes introduction, 30 minutes core skill building, and 20 minutes evaluated seatwork. Identify which pillar (3D Modeling, AI, or Robotics) this lesson belongs to.",
+                "You are LAILA (Local AI Leveraging Academe), an AI education assistant for 3DBotics®. You can process ANY subject matter - science, math, history, literature, arts, etc. Analyze the lesson plan and: 1) Identify the subject/topic, 2) Structure it into a 60-minute 3DBotics® learning experience with 10 minutes gamified introduction, 30 minutes core skill building, and 20 minutes evaluated seatwork. Use your general knowledge to understand the content, then apply 3DBotics® teaching methodology.",
             },
             {
               role: "user",
-              content: `Please analyze this lesson plan and structure it:\n\n${fileContent}`,
+              content: `Please analyze this lesson plan. Identify the subject and structure it for 3DBotics® teaching:\n\n${fileContent}`,
             },
           ],
           temperature: 0.7,
-          max_tokens: 1000,
+          max_tokens: 1500,
         }),
       });
 
@@ -99,16 +114,12 @@ export default function TeacherDashboard() {
 
       // Complete stage 1
       setCurrentStages((prev) =>
-        prev.map((s, i) =>
-          i === 0 ? { ...s, status: "complete" as const, progress: 100 } : s
-        )
+        prev.map((s, i) => (i === 0 ? { ...s, status: "complete" as const, progress: 100 } : s))
       );
 
-      // Stage 2: Generating timeline
+      // Stage 2: Generating 60-minute timeline
       setCurrentStages((prev) =>
-        prev.map((s, i) =>
-          i === 1 ? { ...s, status: "processing" as const, progress: 25 } : s
-        )
+        prev.map((s, i) => (i === 1 ? { ...s, status: "processing" as const, progress: 25 } : s))
       );
 
       const timelineResponse = await fetch("http://192.168.1.49:1234/v1/chat/completions", {
@@ -120,15 +131,15 @@ export default function TeacherDashboard() {
             {
               role: "system",
               content:
-                "You are LAILA. Create a detailed 60-minute learning timeline with specific activities for each phase: Introduction (10min), Core Skill Building (30min), and Evaluated Seatwork (20min). Format as JSON.",
+                "You are LAILA. Create a detailed 60-minute learning timeline with specific activities for each phase: Gamified Introduction (10min), Core Skill Building (30min), and Evaluated Seatwork (20min). Make it engaging and age-appropriate.",
             },
             {
               role: "user",
-              content: `Based on this analysis:\n${analysisResult}\n\nCreate a detailed timeline.`,
+              content: `Based on this analysis:\n${analysisResult}\n\nCreate a detailed 60-minute timeline with specific activities for each phase.`,
             },
           ],
           temperature: 0.7,
-          max_tokens: 1000,
+          max_tokens: 1500,
         }),
       });
 
@@ -137,16 +148,12 @@ export default function TeacherDashboard() {
 
       // Complete stage 2
       setCurrentStages((prev) =>
-        prev.map((s, i) =>
-          i === 1 ? { ...s, status: "complete" as const, progress: 100 } : s
-        )
+        prev.map((s, i) => (i === 1 ? { ...s, status: "complete" as const, progress: 100 } : s))
       );
 
       // Stage 3: Creating gamified activities
       setCurrentStages((prev) =>
-        prev.map((s, i) =>
-          i === 2 ? { ...s, status: "processing" as const, progress: 25 } : s
-        )
+        prev.map((s, i) => (i === 2 ? { ...s, status: "processing" as const, progress: 25 } : s))
       );
 
       const activitiesResponse = await fetch("http://192.168.1.49:1234/v1/chat/completions", {
@@ -158,15 +165,15 @@ export default function TeacherDashboard() {
             {
               role: "system",
               content:
-                "You are LAILA. Create engaging gamified activities for students learning this content. Include point systems, challenges, and interactive elements. Explain in 5th-grade friendly language.",
+                "You are LAILA. Create engaging gamified activities for students. Include point systems, challenges, and interactive elements. Explain concepts in 5th-grade friendly language. Make learning fun and memorable!",
             },
             {
               role: "user",
-              content: `Create gamified activities for:\n${timelineResult}`,
+              content: `Create gamified activities for this timeline:\n${timelineResult}`,
             },
           ],
           temperature: 0.7,
-          max_tokens: 1000,
+          max_tokens: 1500,
         }),
       });
 
@@ -175,26 +182,24 @@ export default function TeacherDashboard() {
 
       // Complete stage 3
       setCurrentStages((prev) =>
-        prev.map((s, i) =>
-          i === 2 ? { ...s, status: "complete" as const, progress: 100 } : s
-        )
+        prev.map((s, i) => (i === 2 ? { ...s, status: "complete" as const, progress: 100 } : s))
       );
 
       // Stage 4: Preparing for students
       setCurrentStages((prev) =>
-        prev.map((s, i) =>
-          i === 3 ? { ...s, status: "processing" as const, progress: 25 } : s
-        )
+        prev.map((s, i) => (i === 3 ? { ...s, status: "processing" as const, progress: 25 } : s))
       );
+
+      // Extract subject from analysis
+      const subjectMatch = analysisResult.match(/subject[:\s]+([^\n.]+)/i);
+      const detectedSubject = subjectMatch ? subjectMatch[1].trim() : "General Studies";
 
       // Simulate final preparation
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Complete stage 4
       setCurrentStages((prev) =>
-        prev.map((s, i) =>
-          i === 3 ? { ...s, status: "complete" as const, progress: 100 } : s
-        )
+        prev.map((s, i) => (i === 3 ? { ...s, status: "complete" as const, progress: 100 } : s))
       );
 
       // Add processed lesson
@@ -203,16 +208,20 @@ export default function TeacherDashboard() {
         title: fileName.replace(/\.[^/.]+$/, ""),
         description: `Processed by LAILA • ${new Date().toLocaleDateString()}`,
         status: "ready",
-        pillar: "3d_modeling", // Could be determined from analysis
+        subject: detectedSubject,
         stages: currentStages,
-        processedContent: `Analysis:\n${analysisResult}\n\nTimeline:\n${timelineResult}\n\nActivities:\n${activitiesResult}`,
+        processedContent: {
+          analysis: analysisResult,
+          timeline: timelineResult,
+          activities: activitiesResult,
+        },
       };
 
-      setLessons([...lessons, newLesson]);
+      setLessons([newLesson, ...lessons]);
 
       toast({
         title: "✨ Lesson Ready!",
-        description: "LAILA has successfully processed your lesson plan. Students can now access it!",
+        description: `LAILA has successfully processed your ${detectedSubject} lesson. Students can now access it!`,
       });
 
       // Send browser notification
@@ -221,6 +230,8 @@ export default function TeacherDashboard() {
           body: `Your lesson "${fileName}" is ready for students!`,
           icon: "🎓",
         });
+      } else if ("Notification" in window && Notification.permission === "default") {
+        Notification.requestPermission();
       }
 
       setIsProcessing(false);
@@ -241,7 +252,8 @@ export default function TeacherDashboard() {
 
       toast({
         title: "Processing Error",
-        description: "Failed to process lesson with LAILA. Please try again.",
+        description:
+          "Failed to process lesson with LAILA. Please check that LM Studio is running at http://192.168.1.49:1234",
         variant: "destructive",
       });
 
@@ -263,7 +275,7 @@ export default function TeacherDashboard() {
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ];
 
-    if (!validTypes.includes(file.type)) {
+    if (!validTypes.includes(file.type) && !file.name.endsWith(".txt")) {
       toast({
         title: "Invalid file type",
         description: "Please upload PDF, DOC, DOCX, or TXT files only.",
@@ -282,6 +294,11 @@ export default function TeacherDashboard() {
       await processLessonWithLMStudio(content, file.name);
     };
     reader.readAsText(file);
+  };
+
+  const handleViewDetails = (lesson: Lesson) => {
+    setSelectedLesson(lesson);
+    setShowDetailsModal(true);
   };
 
   const getStageIcon = (status: string) => {
@@ -308,7 +325,8 @@ export default function TeacherDashboard() {
         <div className="space-y-2">
           <h1 className="text-4xl font-bold">Night Prep</h1>
           <p className="text-muted-foreground">
-            Upload your lesson plans and let LAILA deconstruct them into engaging 60-minute learning experiences.
+            Upload your lesson plans and let LAILA deconstruct them into engaging 60-minute learning
+            experiences.
           </p>
         </div>
 
@@ -319,7 +337,9 @@ export default function TeacherDashboard() {
               <Upload className="h-5 w-5" />
               Upload Lesson Plan
             </CardTitle>
-            <CardDescription>Click to browse or drag and drop your lesson plan file</CardDescription>
+            <CardDescription>
+              Click to browse or drag and drop your lesson plan file
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div
@@ -342,7 +362,9 @@ export default function TeacherDashboard() {
               <p className="text-lg font-medium mb-2">
                 {isProcessing ? "Processing with LAILA..." : "Drop your lesson plan here"}
               </p>
-              <p className="text-sm text-muted-foreground">Supports PDF, DOC, DOCX, and TXT files</p>
+              <p className="text-sm text-muted-foreground">
+                Supports PDF, DOC, DOCX, and TXT files
+              </p>
             </div>
 
             {/* Processing Stages */}
@@ -358,7 +380,10 @@ export default function TeacherDashboard() {
 
                 <div className="space-y-3 mt-4">
                   {currentStages.map((stage, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 bg-card rounded-lg border border-border">
+                    <div
+                      key={index}
+                      className="flex items-center gap-3 p-3 bg-card rounded-lg border border-border"
+                    >
                       {getStageIcon(stage.status)}
                       <div className="flex-1">
                         <p className="text-sm font-medium">{stage.name}</p>
@@ -388,7 +413,9 @@ export default function TeacherDashboard() {
           {lessons.length === 0 ? (
             <Card>
               <CardContent className="pt-6">
-                <p className="text-center text-muted-foreground">No lesson plans yet. Upload one to get started!</p>
+                <p className="text-center text-muted-foreground">
+                  No lesson plans yet. Upload one to get started!
+                </p>
               </CardContent>
             </Card>
           ) : (
@@ -396,9 +423,7 @@ export default function TeacherDashboard() {
               {lessons.map((lesson) => (
                 <Card key={lesson.id} className="relative overflow-hidden">
                   <div className="absolute top-0 right-0 p-3">
-                    {lesson.status === "ready" && (
-                      <CheckCircle className="h-6 w-6 text-green-500" />
-                    )}
+                    {lesson.status === "ready" && <CheckCircle className="h-6 w-6 text-green-500" />}
                     {lesson.status === "processing" && (
                       <Loader className="h-6 w-6 text-cyan-400 animate-spin" />
                     )}
@@ -430,19 +455,18 @@ export default function TeacherDashboard() {
                         </span>
                       </p>
                       <p className="text-sm">
-                        <span className="font-medium">Pillar:</span>{" "}
+                        <span className="font-medium">Subject:</span>{" "}
                         <span className="inline-block px-2 py-1 bg-amber-500/20 text-amber-400 rounded text-xs">
-                          {lesson.pillar === "3d_modeling"
-                            ? "3D Modeling"
-                            : lesson.pillar === "ai"
-                              ? "AI"
-                              : "Robotics"}
+                          {lesson.subject}
                         </span>
                       </p>
                     </div>
 
                     {lesson.status === "ready" && (
-                      <Button className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-semibold">
+                      <Button
+                        onClick={() => handleViewDetails(lesson)}
+                        className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-semibold"
+                      >
                         View Details
                       </Button>
                     )}
@@ -453,6 +477,67 @@ export default function TeacherDashboard() {
           )}
         </div>
       </div>
+
+      {/* View Details Modal */}
+      <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">{selectedLesson?.title}</DialogTitle>
+            <DialogDescription>
+              Subject: {selectedLesson?.subject} • Processed by LAILA
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedLesson?.processedContent && (
+            <div className="space-y-6 mt-4">
+              {/* Analysis Section */}
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-green-500" />
+                  Lesson Analysis
+                </h3>
+                <div className="p-4 bg-muted rounded-lg">
+                  <p className="text-sm whitespace-pre-wrap">
+                    {selectedLesson.processedContent.analysis}
+                  </p>
+                </div>
+              </div>
+
+              {/* Timeline Section */}
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-cyan-400" />
+                  60-Minute Timeline
+                </h3>
+                <div className="p-4 bg-muted rounded-lg">
+                  <p className="text-sm whitespace-pre-wrap">
+                    {selectedLesson.processedContent.timeline}
+                  </p>
+                </div>
+              </div>
+
+              {/* Activities Section */}
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-amber-400" />
+                  Gamified Activities
+                </h3>
+                <div className="p-4 bg-muted rounded-lg">
+                  <p className="text-sm whitespace-pre-wrap">
+                    {selectedLesson.processedContent.activities}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="mt-6 flex justify-end">
+            <Button onClick={() => setShowDetailsModal(false)} variant="outline">
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

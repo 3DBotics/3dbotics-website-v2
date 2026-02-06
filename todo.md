@@ -9,3 +9,13 @@
 - [ ] Add email notifications to teacher when lesson is ready
 - [ ] Store processed lesson data in database
 - [ ] Display processed lesson details to students
+
+
+## Phase 3: Universal Subject Processing
+- [ ] Remove hardcoded pillar restrictions (allow any subject)
+- [ ] Update LM Studio prompts to handle any subject matter
+- [ ] Add dynamic subject/category detection from lesson content
+- [ ] Create View Details modal to display processed lesson content
+- [ ] Add 3DBotics® teaching methodology overlay to all lessons
+- [ ] Test with circulatory system lesson plan
+- [ ] Verify LAILA can process math, science, history, literature, etc.
