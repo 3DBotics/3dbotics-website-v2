@@ -217,7 +217,15 @@ export default function TeacherDashboard() {
         },
       };
 
-      setLessons([newLesson, ...lessons]);
+      const updatedLessons = [newLesson, ...lessons];
+      setLessons(updatedLessons);
+
+      // Save to localStorage for student access
+      try {
+        localStorage.setItem("laila_processed_lessons", JSON.stringify(updatedLessons));
+      } catch (error) {
+        console.error("Error saving lessons to localStorage:", error);
+      }
 
       toast({
         title: "✨ Lesson Ready!",
