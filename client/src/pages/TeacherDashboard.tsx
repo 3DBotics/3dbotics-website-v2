@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Upload, FileText, CheckCircle, Clock, AlertCircle, Loader, X, Trash2, RotateCcw, AlertTriangle } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 interface ProcessingStage {
@@ -45,21 +45,26 @@ export default function TeacherDashboard() {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Mock lessons data
-  const [lessons, setLessons] = useState<Lesson[]>([
-    {
-      id: 1,
-      title: "Introduction to 3D Modeling",
-      description: "Learn the basics of 3D design",
-      status: "ready",
-      subject: "3D Modeling & Design",
-      processedContent: {
-        analysis: "This lesson introduces students to 3D modeling fundamentals...",
-        timeline: "Introduction (10min): Overview of 3D space...",
-        activities: "Gamified Challenge: Design your first 3D object...",
-      },
-    },
-  ]);
+  // Load lessons from localStorage
+  const [lessons, setLessons] = useState<Lesson[]>([]);
+
+  // Load data from localStorage on mount
+  useEffect(() => {
+    try {
+      const storedLessons = localStorage.getItem("laila_processed_lessons");
+      const storedTrash = localStorage.getItem("laila_trashed_lessons");
+
+      if (storedLessons) {
+        setLessons(JSON.parse(storedLessons));
+      }
+
+      if (storedTrash) {
+        setTrashedLessons(JSON.parse(storedTrash));
+      }
+    } catch (error) {
+      console.error("Error loading lessons from localStorage:", error);
+    }
+  }, []);
 
   const processingStages: ProcessingStage[] = [
     { name: "Analyzing lesson structure", status: "pending", progress: 0 },

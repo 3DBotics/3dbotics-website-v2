@@ -32,10 +32,17 @@
 
 
 ## Phase 5: Trash Bin System
-- [ ] Add delete button to lesson cards
-- [ ] Create trash bin section in Teacher Dashboard
-- [ ] Implement move to trash functionality
-- [ ] Add restore button for trashed lessons
-- [ ] Add permanent delete button with confirmation
-- [ ] Update localStorage to store trash separately
-- [ ] Ensure trashed lessons don't appear in student dashboard
+- [x] Add delete button to lesson cards
+- [x] Create trash bin section in Teacher Dashboard
+- [x] Implement move to trash functionality
+- [x] Add restore button for trashed lessons
+- [x] Add permanent delete button with confirmation
+- [x] Update localStorage to store trash separately
+- [x] Ensure trashed lessons don't appear in student dashboard
+
+
+## Phase 6: Fix localStorage Persistence Bug
+- [ ] Remove mock data initialization
+- [ ] Load lessons from localStorage on page load
+- [ ] Load trashed lessons from localStorage on page load
+- [ ] Ensure deleted lessons stay deleted after page refresh
