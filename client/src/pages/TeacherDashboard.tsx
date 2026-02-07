@@ -92,7 +92,7 @@ export default function TeacherDashboard() {
       );
 
       // Send to LM Studio for analysis - NO RESTRICTIONS ON SUBJECT
-      const analysisResponse = await fetch("http://192.168.1.49:1234/v1/chat/completions", {
+      const analysisResponse = await fetch("https://undeclarable-kandy-graspingly.ngrok-free.dev/v1/chat/completions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -130,7 +130,7 @@ export default function TeacherDashboard() {
         prev.map((s, i) => (i === 1 ? { ...s, status: "processing" as const, progress: 25 } : s))
       );
 
-      const timelineResponse = await fetch("http://192.168.1.49:1234/v1/chat/completions", {
+      const timelineResponse = await fetch("https://undeclarable-kandy-graspingly.ngrok-free.dev/v1/chat/completions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -164,7 +164,7 @@ export default function TeacherDashboard() {
         prev.map((s, i) => (i === 2 ? { ...s, status: "processing" as const, progress: 25 } : s))
       );
 
-      const activitiesResponse = await fetch("http://192.168.1.49:1234/v1/chat/completions", {
+      const activitiesResponse = await fetch("https://undeclarable-kandy-graspingly.ngrok-free.dev/v1/chat/completions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -269,7 +269,7 @@ export default function TeacherDashboard() {
       toast({
         title: "Processing Error",
         description:
-          "Failed to process lesson with LAILA. Please check that LM Studio is running at http://192.168.1.49:1234",
+          "Failed to process lesson with LAILA. Please check that LM Studio is running and ngrok tunnel is active.",
         variant: "destructive",
       });
 

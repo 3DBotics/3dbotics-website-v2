@@ -42,7 +42,16 @@
 
 
 ## Phase 6: Fix localStorage Persistence Bug
-- [ ] Remove mock data initialization
-- [ ] Load lessons from localStorage on page load
-- [ ] Load trashed lessons from localStorage on page load
-- [ ] Ensure deleted lessons stay deleted after page refresh
+- [x] Remove mock data initialization
+- [x] Load lessons from localStorage on page load
+- [x] Load trashed lessons from localStorage on page load
+- [x] Ensure deleted lessons stay deleted after page refresh
+
+
+## Phase 7: Debug LM Studio Connection Error
+- [x] Check server-side LM Studio connection code
+- [x] Verify API endpoint configuration
+- [x] Test connection to http://192.168.1.49:1234
+- [ ] Replace local IP with ngrok public URL
+- [ ] Update all LM Studio fetch calls to use ngrok URL
+- [ ] Test lesson upload with ngrok connection
