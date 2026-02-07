@@ -6,12 +6,31 @@ import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import LAILAChat from "@/components/LAILAChat";
+import QuizActivity from "@/components/QuizActivity";
+import MatchingGame from "@/components/MatchingGame";
+import ChallengeActivity from "@/components/ChallengeActivity";
 
 interface Student {
   id: number;
   studentId: string;
   name: string;
   grade?: string;
+}
+
+interface ActivityData {
+  quiz?: {
+    question: string;
+    options: string[];
+    correct: number;
+  };
+  matching?: {
+    pairs: [string, string][];
+  };
+  challenge?: {
+    title: string;
+    description: string;
+    points: number;
+  };
 }
 
 interface ProcessedLesson {
@@ -22,6 +41,7 @@ interface ProcessedLesson {
     analysis: string;
     timeline: string;
     activities: string;
+    activityData?: ActivityData;
   };
 }
 
@@ -32,6 +52,8 @@ interface MissionStage {
   description: string;
   content: string;
   status: "pending" | "active" | "completed";
+  activityType?: "quiz" | "matching" | "challenge" | "text";
+  activityData?: ActivityData;
 }
 
 export default function StudentDashboard() {
@@ -103,6 +125,8 @@ export default function StudentDashboard() {
     }
 
     // Extract stages from timeline with actual lesson content
+    const activityData = lesson.processedContent.activityData;
+    
     return [
       {
         id: "intro",
@@ -111,22 +135,27 @@ export default function StudentDashboard() {
         description: `Introduction to ${lesson.subject}`,
         content: `${lesson.processedContent.analysis.substring(0, 400)}\n\n🎮 Get ready for an exciting learning adventure!`,
         status: "active",
+        activityType: "text",
       },
       {
         id: "core",
         title: "Core Skill Building",
         duration: 30,
         description: `Master ${lesson.subject} concepts`,
-        content: `${lesson.processedContent.timeline.substring(0, 600)}\n\n📚 Work through each activity to master the concepts.`,
+        content: `${lesson.processedContent.timeline.substring(0, 600)}`,
         status: "pending",
+        activityType: activityData?.quiz ? "quiz" : activityData?.matching ? "matching" : "text",
+        activityData: activityData,
       },
       {
         id: "seatwork",
         title: "Evaluated Seatwork",
         duration: 20,
         description: "Apply what you've learned!",
-        content: `${lesson.processedContent.activities.substring(0, 600)}\n\n✅ Complete these activities to show what you've learned!`,
+        content: `Complete the challenge to show what you've learned!`,
         status: "pending",
+        activityType: activityData?.challenge ? "challenge" : "text",
+        activityData: activityData,
       },
     ];
   };
@@ -346,30 +375,34 @@ export default function StudentDashboard() {
               </CardContent>
             </Card>
 
-            {/* Learning Game Area */}
-            {activeStage && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Learning Activity</CardTitle>
-                  <CardDescription>{activeStage.title}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="border-2 border-dashed border-border rounded-lg p-12 text-center">
-                    <Play className="h-16 w-16 mx-auto mb-4 text-cyan-400" />
-                    <h3 className="text-xl font-semibold mb-2">{activeStage.description}</h3>
-                    <p className="text-muted-foreground mb-6">
-                      Interactive activity will appear here
-                    </p>
-                    <Button
-                      onClick={() => handleStartActivity(activeStage.id)}
-                      className="bg-cyan-500 hover:bg-cyan-600 text-black font-semibold"
-                    >
-                      <Play className="h-4 w-4 mr-2" />
-                      Start Activity
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+            {/* Interactive Learning Activities */}
+            {activeStage && activeStage.activityType === "quiz" && activeStage.activityData?.quiz && (
+              <QuizActivity
+                question={activeStage.activityData.quiz.question}
+                options={activeStage.activityData.quiz.options}
+                correctIndex={activeStage.activityData.quiz.correct}
+                onComplete={(correct) => {
+                  if (correct) {
+                    handleCompleteStage(activeStage.id);
+                  }
+                }}
+              />
+            )}
+
+            {activeStage && activeStage.activityType === "matching" && activeStage.activityData?.matching && (
+              <MatchingGame
+                pairs={activeStage.activityData.matching.pairs}
+                onComplete={() => handleCompleteStage(activeStage.id)}
+              />
+            )}
+
+            {activeStage && activeStage.activityType === "challenge" && activeStage.activityData?.challenge && (
+              <ChallengeActivity
+                title={activeStage.activityData.challenge.title}
+                description={activeStage.activityData.challenge.description}
+                points={activeStage.activityData.challenge.points}
+                onComplete={() => handleCompleteStage(activeStage.id)}
+              />
             )}
           </>
         )}

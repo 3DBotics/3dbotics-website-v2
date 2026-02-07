@@ -187,6 +187,18 @@ export default function TeacherDashboard() {
 
       const activitiesData = await activitiesResponse.json();
       const activitiesResult = activitiesData.choices?.[0]?.message?.content || "";
+      
+      // Try to parse JSON activity data
+      let parsedActivityData = null;
+      try {
+        // Extract JSON from response (might have extra text)
+        const jsonMatch = activitiesResult.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          parsedActivityData = JSON.parse(jsonMatch[0]);
+        }
+      } catch (error) {
+        console.error("Failed to parse activity JSON:", error);
+      }
 
       // Complete stage 3
       setCurrentStages((prev) =>
@@ -222,6 +234,7 @@ export default function TeacherDashboard() {
           analysis: analysisResult,
           timeline: timelineResult,
           activities: activitiesResult,
+          activityData: parsedActivityData,
         },
       };
 
