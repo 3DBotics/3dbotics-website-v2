@@ -52,6 +52,15 @@
 - [x] Check server-side LM Studio connection code
 - [x] Verify API endpoint configuration
 - [x] Test connection to http://192.168.1.49:1234
-- [ ] Replace local IP with ngrok public URL
-- [ ] Update all LM Studio fetch calls to use ngrok URL
-- [ ] Test lesson upload with ngrok connection
+- [x] Replace local IP with ngrok public URL
+- [x] Update all LM Studio fetch calls to use ngrok URL
+- [x] Deployed to Railway - ready for testing
+
+
+## Phase 8: Fix Student Learning Experience (CRITICAL BUGS)
+- [ ] Fix chat bubble positioning - overlapping content
+- [ ] Add actual learning activities to mission timeline (not just descriptions)
+- [ ] Populate timeline with gamified activities from processed lesson
+- [ ] Improve LAILA chat responses - provide lesson-specific content, not generic replies
+- [ ] Add interactive elements to each mission phase (games, quizzes, activities)
+- [ ] Test complete student learning flow

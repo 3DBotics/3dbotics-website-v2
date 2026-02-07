@@ -88,7 +88,7 @@ export default function StudentDashboard() {
           title: "Core Skill Building",
           duration: 30,
           description: "Master key concepts",
-          content: "",
+          content: "Loading lesson content...",
           status: "pending",
         },
         {
@@ -96,25 +96,20 @@ export default function StudentDashboard() {
           title: "Evaluated Seatwork",
           duration: 20,
           description: "Show what you've learned!",
-          content: "",
+          content: "Loading assessment content...",
           status: "pending",
         },
       ];
     }
 
-    // Extract stages from timeline
-    const timeline = lesson.processedContent.timeline;
-    const activities = lesson.processedContent.activities;
-
+    // Extract stages from timeline with actual lesson content
     return [
       {
         id: "intro",
         title: "Gamified Introduction",
         duration: 10,
         description: `Introduction to ${lesson.subject}`,
-        content: timeline.includes("Introduction") 
-          ? timeline.split("Introduction")[1]?.split("\n\n")[0] || activities.substring(0, 200)
-          : activities.substring(0, 200),
+        content: `${lesson.processedContent.analysis.substring(0, 400)}\n\n🎮 Get ready for an exciting learning adventure!`,
         status: "active",
       },
       {
@@ -122,9 +117,7 @@ export default function StudentDashboard() {
         title: "Core Skill Building",
         duration: 30,
         description: `Master ${lesson.subject} concepts`,
-        content: timeline.includes("Core") || timeline.includes("Skill")
-          ? timeline.split(/Core|Skill/)[1]?.split("\n\n")[0] || activities.substring(200, 600)
-          : activities.substring(200, 600),
+        content: `${lesson.processedContent.timeline.substring(0, 600)}\n\n📚 Work through each activity to master the concepts.`,
         status: "pending",
       },
       {
@@ -132,9 +125,7 @@ export default function StudentDashboard() {
         title: "Evaluated Seatwork",
         duration: 20,
         description: "Apply what you've learned!",
-        content: timeline.includes("Seatwork") || timeline.includes("Assessment")
-          ? timeline.split(/Seatwork|Assessment/)[1] || activities.substring(600)
-          : activities.substring(600),
+        content: `${lesson.processedContent.activities.substring(0, 600)}\n\n✅ Complete these activities to show what you've learned!`,
         status: "pending",
       },
     ];
@@ -182,7 +173,7 @@ export default function StudentDashboard() {
         if (stage.id === stageId) {
           return { ...stage, status: "completed" };
         }
-        // Activate next stage
+        // Move to next stage
         if (prev[index - 1]?.id === stageId && stage.status === "pending") {
           return { ...stage, status: "active" };
         }
@@ -190,14 +181,12 @@ export default function StudentDashboard() {
       })
     );
 
-    const completedStage = missionStages.find((s) => s.id === stageId);
-    if (completedStage) {
-      setTimeElapsed((prev) => prev + completedStage.duration);
-    }
+    // Simulate time progression
+    setTimeElapsed((prev) => Math.min(prev + 20, totalTime));
 
     toast({
       title: "Stage Complete!",
-      description: "Great job! Moving to the next stage.",
+      description: "Great job! Moving to the next stage...",
     });
   };
 
@@ -337,8 +326,8 @@ export default function StudentDashboard() {
                         <p className="text-sm text-muted-foreground mb-2">{stage.description}</p>
 
                         {stage.status === "active" && stage.content && (
-                          <div className="mt-3 p-4 bg-muted rounded-lg">
-                            <p className="text-sm whitespace-pre-wrap">{stage.content}</p>
+                          <div className="mt-3 p-4 bg-muted rounded-lg border border-cyan-500/30">
+                            <p className="text-sm whitespace-pre-wrap leading-relaxed">{stage.content}</p>
                           </div>
                         )}
 
@@ -386,10 +375,16 @@ export default function StudentDashboard() {
         )}
       </div>
 
-      {/* LAILA Chat */}
+      {/* LAILA Chat Modal */}
       {showChat && (
-        <div className="fixed bottom-6 right-6 w-96 h-[600px] z-50">
-          <LAILAChat onClose={() => setShowChat(false)} />
+        <div className="fixed inset-0 bg-black/50 flex items-end justify-end z-50 p-6">
+          <div className="w-96 h-[600px] bg-background rounded-lg overflow-hidden">
+            <LAILAChat 
+              onClose={() => setShowChat(false)}
+              lessonContent={selectedLesson?.processedContent?.analysis}
+              lessonSubject={selectedLesson?.subject}
+            />
+          </div>
         </div>
       )}
     </div>

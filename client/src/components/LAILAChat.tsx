@@ -13,12 +13,14 @@ interface Message {
 }
 
 interface LAILAChatProps {
-  studentId: number;
-  lessonPlanId?: number;
+  onClose?: () => void;
+  isOpen?: boolean;
+  lessonContent?: string;
+  lessonSubject?: string;
 }
 
-export default function LAILAChat({ studentId, lessonPlanId }: LAILAChatProps) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function LAILAChat({ onClose, isOpen: initialOpen = false }: LAILAChatProps) {
+  const [isOpen, setIsOpen] = useState(initialOpen);
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
@@ -74,45 +76,33 @@ export default function LAILAChat({ studentId, lessonPlanId }: LAILAChatProps) {
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey && !isLoading) {
       e.preventDefault();
       handleSendMessage();
     }
   };
 
   return (
-    <>
-      {/* Floating Chat Button */}
-      {!isOpen && (
-        <Button
-          size="lg"
-          className="fixed bottom-6 right-6 rounded-full h-16 w-16 shadow-lg"
-          onClick={() => setIsOpen(true)}
-        >
-          <MessageCircle className="h-6 w-6" />
-        </Button>
-      )}
-
-      {/* Chat Window */}
-      {isOpen && (
-        <Card className="fixed bottom-6 right-6 w-96 shadow-2xl">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <MessageCircle className="h-5 w-5" />
-                Ask LAILA
-              </CardTitle>
-              <CardDescription>Your AI learning assistant</CardDescription>
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsOpen(false)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-4">
+    <Card className="w-full h-full flex flex-col shadow-2xl">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b">
+        <div>
+          <CardTitle className="flex items-center gap-2">
+            <MessageCircle className="h-5 w-5" />
+            Ask LAILA
+          </CardTitle>
+          <CardDescription>Your AI learning assistant</CardDescription>
+        </div>
+        {onClose && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        )}
+      </CardHeader>
+      <CardContent className="flex-1 flex flex-col space-y-4 overflow-hidden">
             {/* Messages */}
             <ScrollArea className="h-96 pr-4" ref={scrollRef}>
               <div className="space-y-4">
@@ -155,26 +145,24 @@ export default function LAILAChat({ studentId, lessonPlanId }: LAILAChatProps) {
               </div>
             </ScrollArea>
 
-            {/* Input */}
-            <div className="flex gap-2">
-              <Input
-                placeholder="Ask LAILA a question..."
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                disabled={isLoading}
-              />
-              <Button
-                size="icon"
-                onClick={handleSendMessage}
-                disabled={isLoading || !inputMessage.trim()}
-              >
-                <Send className="h-4 w-4" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-    </>
+        {/* Input */}
+        <div className="flex gap-2 border-t pt-4">
+          <Input
+            placeholder="Ask LAILA a question..."
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            onKeyPress={handleKeyPress}
+            disabled={isLoading}
+          />
+          <Button
+            size="icon"
+            onClick={handleSendMessage}
+            disabled={isLoading || !inputMessage.trim()}
+          >
+            <Send className="h-4 w-4" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
