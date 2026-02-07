@@ -19,7 +19,7 @@ interface LAILAChatProps {
   lessonSubject?: string;
 }
 
-export default function LAILAChat({ onClose, isOpen: initialOpen = false }: LAILAChatProps) {
+export default function LAILAChat({ onClose, isOpen: initialOpen = false, lessonContent, lessonSubject }: LAILAChatProps) {
   const [isOpen, setIsOpen] = useState(initialOpen);
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -54,12 +54,38 @@ export default function LAILAChat({ onClose, isOpen: initialOpen = false }: LAIL
     setIsLoading(true);
 
     try {
-      // Mock AI response - in production, this would call LM Studio API
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Call LM Studio with lesson context
+      const response = await fetch("https://undeclarable-kandy-graspingly.ngrok-free.dev/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "local-model",
+          messages: [
+            {
+              role: "system",
+              content: `You are LAILA, a friendly AI tutor helping a 5th-grade student learn about ${lessonSubject || "this topic"}. ${lessonContent ? `Here's the lesson context: ${lessonContent.substring(0, 500)}` : ""} Answer questions concisely in a helpful, encouraging tone. Use 5th-grade level language. Never give direct answers to seatwork questions; instead, guide them with clues.`,
+            },
+            ...messages.map(m => ({ role: m.role, content: m.content })),
+            {
+              role: "user",
+              content: inputMessage,
+            },
+          ],
+          temperature: 0.7,
+          max_tokens: 300,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to get response from LAILA");
+      }
+
+      const data = await response.json();
+      const aiContent = data.choices?.[0]?.message?.content || "I'm having trouble understanding. Can you ask that in a different way?";
 
       const aiResponse: Message = {
         role: "assistant",
-        content: `That's a great question! Let me explain it in a simple way. ${inputMessage.includes("3D") ? "3D modeling is like sculpting with digital clay - you can create anything you imagine!" : "Keep exploring and asking questions - that's how we learn best!"}`,
+        content: aiContent,
         timestamp: new Date(),
       };
 

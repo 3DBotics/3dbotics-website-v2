@@ -173,11 +173,11 @@ export default function TeacherDashboard() {
             {
               role: "system",
               content:
-                "You are LAILA. Create engaging gamified activities for students. Include point systems, challenges, and interactive elements. Explain concepts in 5th-grade friendly language. Make learning fun and memorable!",
+                "You are LAILA. Generate structured JSON data for interactive learning activities. Create 3 activities: 1 quiz (multiple choice), 1 drag-and-drop matching game, and 1 challenge. Use 5th-grade language. Return ONLY valid JSON in this format: {\"quiz\":{\"question\":\"...\",\"options\":[\"A\",\"B\",\"C\",\"D\"],\"correct\":0},\"matching\":{\"pairs\":[[\"term1\",\"def1\"],[\"term2\",\"def2\"]]},\"challenge\":{\"title\":\"...\",\"description\":\"...\",\"points\":100}}",
             },
             {
               role: "user",
-              content: `Create gamified activities for this timeline:\n${timelineResult}`,
+              content: `Create interactive activities for this lesson:\n${timelineResult}\n\nReturn ONLY the JSON object, no other text.`,
             },
           ],
           temperature: 0.7,

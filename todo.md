@@ -58,9 +58,20 @@
 
 
 ## Phase 8: Fix Student Learning Experience (CRITICAL BUGS)
-- [ ] Fix chat bubble positioning - overlapping content
-- [ ] Add actual learning activities to mission timeline (not just descriptions)
-- [ ] Populate timeline with gamified activities from processed lesson
+- [x] Fix chat bubble positioning - overlapping content
+- [x] Add actual learning activities to mission timeline (not just descriptions)
+- [x] Populate timeline with gamified activities from processed lesson
 - [ ] Improve LAILA chat responses - provide lesson-specific content, not generic replies
 - [ ] Add interactive elements to each mission phase (games, quizzes, activities)
 - [ ] Test complete student learning flow
+
+## Phase 9: Transform into Interactive Learning Platform (MAJOR REDESIGN)
+- [x] Connect LAILA chat to lesson content via ngrok/LM Studio
+- [x] Pass lesson context to chat for topic-specific responses
+- [ ] Improve LM Studio prompts to generate structured JSON activity data
+- [ ] Create quiz component with multiple choice questions
+- [ ] Create drag-and-drop activity component
+- [ ] Create interactive game component
+- [ ] Integrate interactive components into mission timeline
+- [ ] Replace text display with actual interactive activities
+- [ ] Test complete interactive learning flow
