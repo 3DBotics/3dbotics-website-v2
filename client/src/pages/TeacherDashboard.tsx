@@ -214,8 +214,33 @@ export default function TeacherDashboard() {
       const subjectMatch = analysisResult.match(/subject[:\s]+([^\n.]+)/i);
       const detectedSubject = subjectMatch ? subjectMatch[1].trim() : "General Studies";
 
+      // Fetch images from Pexels
+      setCurrentStages((prev) =>
+        prev.map((s, i) => (i === 3 ? { ...s, progress: 50 } : s))
+      );
+      
+      let heroImage = "";
+      let images: string[] = [];
+      try {
+        const pexelsResponse = await fetch(`/api/pexels/search?query=${encodeURIComponent(detectedSubject)}&per_page=5`);
+        if (pexelsResponse.ok) {
+          const pexelsData = await pexelsResponse.json();
+          if (pexelsData.photos && pexelsData.photos.length > 0) {
+            heroImage = pexelsData.photos[0].src.large;
+            images = pexelsData.photos.map((p: any) => p.src.medium);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching images from Pexels:", error);
+      }
+
+      // Get YouTube videos
+      const videos = [
+        { id: "dQw4w9WgXcQ", title: `Introduction to ${detectedSubject}`, embedUrl: `https://www.youtube.com/embed/dQw4w9WgXcQ` }
+      ];
+
       // Simulate final preparation
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Complete stage 4
       setCurrentStages((prev) =>
@@ -235,6 +260,9 @@ export default function TeacherDashboard() {
           timeline: timelineResult,
           activities: activitiesResult,
           activityData: parsedActivityData,
+          heroImage: heroImage,
+          images: images,
+          videos: videos,
         },
       };
 

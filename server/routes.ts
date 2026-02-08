@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { contactMessageSchema, chatMessageSchema, insertStudentChatSchema } from "@shared/schema";
 import { librarian } from "./librarian";
+import { searchPhotos } from "./pexels";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -71,6 +72,27 @@ export async function registerRoutes(
       } else {
         res.status(500).json({ success: false, error: "Internal server error" });
       }
+    }
+  });
+
+  app.get("/api/pexels/search", async (req, res) => {
+    try {
+      const { query, per_page = "5" } = req.query;
+      
+      if (!query || typeof query !== "string") {
+        return res.status(400).json({ error: "Query parameter is required" });
+      }
+
+      const perPage = parseInt(per_page as string, 10);
+      if (isNaN(perPage) || perPage < 1 || perPage > 80) {
+        return res.status(400).json({ error: "per_page must be between 1 and 80" });
+      }
+
+      const results = await searchPhotos(query, perPage);
+      res.json(results);
+    } catch (error) {
+      console.error("Pexels API error:", error);
+      res.status(500).json({ error: "Failed to fetch images from Pexels" });
     }
   });
 

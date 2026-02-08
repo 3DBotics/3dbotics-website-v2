@@ -516,7 +516,54 @@ export default function StudentDashboard() {
 
                         {stage.status === "active" && (
                           <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
+                            {/* Hero Image */}
+                            {selectedLesson.processedContent.heroImage && (
+                              <div className="mb-4 rounded-lg overflow-hidden">
+                                <img 
+                                  src={selectedLesson.processedContent.heroImage} 
+                                  alt={selectedLesson.subject}
+                                  className="w-full h-64 object-cover"
+                                />
+                              </div>
+                            )}
+                            
                             <p className="text-sm text-gray-300 whitespace-pre-wrap mb-4">{stage.content}</p>
+                            
+                            {/* Image Gallery */}
+                            {selectedLesson.processedContent.images && selectedLesson.processedContent.images.length > 0 && (
+                              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
+                                {selectedLesson.processedContent.images.slice(1).map((img, idx) => (
+                                  <img 
+                                    key={idx}
+                                    src={img} 
+                                    alt={`${selectedLesson.subject} ${idx + 1}`}
+                                    className="w-full h-32 object-cover rounded-lg"
+                                  />
+                                ))}
+                              </div>
+                            )}
+                            
+                            {/* Videos */}
+                            {selectedLesson.processedContent.videos && selectedLesson.processedContent.videos.length > 0 && (
+                              <div className="mb-4">
+                                <h4 className="text-sm font-semibold text-cyan-400 mb-2">📺 Watch & Learn</h4>
+                                {selectedLesson.processedContent.videos.map((video) => (
+                                  <div key={video.id} className="mb-2">
+                                    <div className="aspect-video rounded-lg overflow-hidden">
+                                      <iframe
+                                        width="100%"
+                                        height="100%"
+                                        src={video.embedUrl}
+                                        title={video.title}
+                                        frameBorder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                      />
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                             
                             {stage.activityType === "text" && (
                               <Button
