@@ -234,10 +234,10 @@ export default function TeacherDashboard() {
         console.error("Error fetching images from Pexels:", error);
       }
 
-      // Get YouTube videos
-      const videos = [
-        { id: "dQw4w9WgXcQ", title: `Introduction to ${detectedSubject}`, embedUrl: `https://www.youtube.com/embed/dQw4w9WgXcQ` }
-      ];
+      // Get educational YouTube videos based on subject
+      const videos = await fetch(`/api/videos/search?subject=${encodeURIComponent(detectedSubject)}`)
+        .then(res => res.ok ? res.json() : [])
+        .catch(() => []);
 
       // Simulate final preparation
       await new Promise((resolve) => setTimeout(resolve, 500));

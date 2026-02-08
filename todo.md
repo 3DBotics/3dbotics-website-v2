@@ -85,8 +85,12 @@
 - [x] Add Pexels API key to environment
 - [x] Validate Pexels API integration
 - [x] Create YouTube video helper with curated videos
-- [ ] Add image galleries to learning activities
-- [ ] Add video players with educational content
+- [x] Add image galleries to learning activities
+- [x] Add video players with educational content
+- [x] Fetch images during lesson processing
+- [x] Display hero images in mission stages
+- [x] Display image galleries in mission stages
+- [x] Embed YouTube videos in mission stages
 - [ ] Cache fetched media to avoid repeated API calls
 
 ### Gaming-Focused Student UI Redesign

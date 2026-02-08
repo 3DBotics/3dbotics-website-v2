@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { contactMessageSchema, chatMessageSchema, insertStudentChatSchema } from "@shared/schema";
 import { librarian } from "./librarian";
 import { searchPhotos } from "./pexels";
+import { getEducationalVideos } from "./educationalVideos";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -93,6 +94,22 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Pexels API error:", error);
       res.status(500).json({ error: "Failed to fetch images from Pexels" });
+    }
+  });
+
+  app.get("/api/videos/search", async (req, res) => {
+    try {
+      const { subject } = req.query;
+      
+      if (!subject || typeof subject !== "string") {
+        return res.status(400).json({ error: "Subject parameter is required" });
+      }
+
+      const videos = getEducationalVideos(subject);
+      res.json(videos);
+    } catch (error) {
+      console.error("Video search error:", error);
+      res.status(500).json({ error: "Failed to fetch educational videos" });
     }
   });
 
