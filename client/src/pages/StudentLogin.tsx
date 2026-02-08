@@ -27,12 +27,19 @@ export default function StudentLogin() {
     setIsLoading(true);
     // Mock login for now - replace with actual API call
     setTimeout(() => {
-      const mockStudent = { id: studentId, name: `Student ${studentId}` };
+      const mockStudent = { 
+        id: Date.now(), 
+        studentId: studentId, 
+        name: `Student ${studentId}`,
+        xp: 0,
+        level: 1,
+        badges: []
+      };
+      localStorage.setItem("laila_student", JSON.stringify(mockStudent));
       toast({
         title: "Success",
         description: `Welcome, ${mockStudent.name}!`,
       });
-      sessionStorage.setItem("student", JSON.stringify(mockStudent));
       setLocation("/laila/student/dashboard");
       setIsLoading(false);
     }, 500);
