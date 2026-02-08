@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { CheckCircle, Circle, Clock, MessageCircle, Play, BookOpen } from "lucide-react";
+import { CheckCircle, Circle, Clock, MessageCircle, Play, BookOpen, Trophy, Star, Zap, Award } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
@@ -15,6 +14,9 @@ interface Student {
   studentId: string;
   name: string;
   grade?: string;
+  xp: number;
+  level: number;
+  badges: string[];
 }
 
 interface ActivityData {
@@ -42,6 +44,9 @@ interface ProcessedLesson {
     timeline: string;
     activities: string;
     activityData?: ActivityData;
+    heroImage?: string;
+    images?: string[];
+    videos?: { id: string; title: string; embedUrl: string }[];
   };
 }
 
@@ -54,46 +59,19 @@ interface MissionStage {
   status: "pending" | "active" | "completed";
   activityType?: "quiz" | "matching" | "challenge" | "text";
   activityData?: ActivityData;
+  xpReward: number;
 }
 
 export default function StudentDashboard() {
   const [, setLocation] = useLocation();
   const [student, setStudent] = useState<Student | null>(null);
-  const [availableLessons, setAvailableLessons] = useState<ProcessedLesson[]>([]);
   const [selectedLesson, setSelectedLesson] = useState<ProcessedLesson | null>(null);
-  const [showChat, setShowChat] = useState(false);
+  const [lessons, setLessons] = useState<ProcessedLesson[]>([]);
   const { toast } = useToast();
+  const [showChat, setShowChat] = useState(false);
+  const [showLevelUp, setShowLevelUp] = useState(false);
+  const [newBadge, setNewBadge] = useState<string | null>(null);
 
-  useEffect(() => {
-    const storedStudent = sessionStorage.getItem("student");
-    if (storedStudent) {
-      setStudent(JSON.parse(storedStudent));
-    } else {
-      setLocation("/laila/student/login");
-    }
-
-    // Load processed lessons from localStorage (shared with Teacher)
-    loadAvailableLessons();
-  }, [setLocation]);
-
-  const loadAvailableLessons = () => {
-    try {
-      const lessonsData = localStorage.getItem("laila_processed_lessons");
-      if (lessonsData) {
-        const lessons = JSON.parse(lessonsData);
-        setAvailableLessons(lessons);
-        
-        // Auto-select the first lesson if none selected
-        if (lessons.length > 0 && !selectedLesson) {
-          setSelectedLesson(lessons[0]);
-        }
-      }
-    } catch (error) {
-      console.error("Error loading lessons:", error);
-    }
-  };
-
-  // Parse timeline from processed content to create mission stages
   const parseMissionStages = (lesson: ProcessedLesson | null): MissionStage[] => {
     if (!lesson) {
       return [
@@ -101,9 +79,10 @@ export default function StudentDashboard() {
           id: "intro",
           title: "Gamified Introduction",
           duration: 10,
-          description: "Get ready for an exciting learning adventure!",
-          content: "Select a lesson to begin your learning journey!",
+          description: "Get ready to start learning!",
+          content: "Select a lesson to begin your learning adventure!",
           status: "pending",
+          xpReward: 50,
         },
         {
           id: "core",
@@ -112,6 +91,7 @@ export default function StudentDashboard() {
           description: "Master key concepts",
           content: "Loading lesson content...",
           status: "pending",
+          xpReward: 150,
         },
         {
           id: "seatwork",
@@ -120,262 +100,443 @@ export default function StudentDashboard() {
           description: "Show what you've learned!",
           content: "Loading assessment content...",
           status: "pending",
+          xpReward: 100,
         },
       ];
     }
 
-    // Extract stages from timeline with actual lesson content
     const activityData = lesson.processedContent.activityData;
     
     return [
       {
         id: "intro",
-        title: "Gamified Introduction",
+        title: "🎮 Mission Briefing",
         duration: 10,
-        description: `Introduction to ${lesson.subject}`,
-        content: `${lesson.processedContent.analysis.substring(0, 400)}\n\n🎮 Get ready for an exciting learning adventure!`,
+        description: `Welcome to ${lesson.subject}`,
+        content: `${lesson.processedContent.analysis.substring(0, 400)}\n\n🚀 Ready to start your learning adventure?`,
         status: "active",
         activityType: "text",
+        xpReward: 50,
       },
       {
         id: "core",
-        title: "Core Skill Building",
+        title: "⚔️ Core Training",
         duration: 30,
-        description: `Master ${lesson.subject} concepts`,
+        description: `Master ${lesson.subject} skills`,
         content: `${lesson.processedContent.timeline.substring(0, 600)}`,
         status: "pending",
         activityType: activityData?.quiz ? "quiz" : activityData?.matching ? "matching" : "text",
         activityData: activityData,
+        xpReward: 150,
       },
       {
         id: "seatwork",
-        title: "Evaluated Seatwork",
+        title: "🏆 Final Challenge",
         duration: 20,
-        description: "Apply what you've learned!",
-        content: `Complete the challenge to show what you've learned!`,
+        description: "Prove your mastery!",
+        content: `Complete the final challenge to earn your badge!`,
         status: "pending",
         activityType: activityData?.challenge ? "challenge" : "text",
         activityData: activityData,
+        xpReward: 100,
       },
     ];
   };
 
   const [missionStages, setMissionStages] = useState<MissionStage[]>(parseMissionStages(null));
   const [timeElapsed, setTimeElapsed] = useState(0);
-  const totalTime = 60; // 60 minutes total
 
-  // Update mission stages when lesson is selected
+  useEffect(() => {
+    const storedStudent = localStorage.getItem("laila_student");
+    if (!storedStudent) {
+      setLocation("/laila/student/login");
+      return;
+    }
+
+    const studentData = JSON.parse(storedStudent);
+    // Initialize XP and level if not present
+    if (!studentData.xp) studentData.xp = 0;
+    if (!studentData.level) studentData.level = 1;
+    if (!studentData.badges) studentData.badges = [];
+    
+    setStudent(studentData);
+
+    const storedLessons = localStorage.getItem("laila_processed_lessons");
+    if (storedLessons) {
+      setLessons(JSON.parse(storedLessons));
+    }
+  }, [setLocation]);
+
   useEffect(() => {
     if (selectedLesson) {
       setMissionStages(parseMissionStages(selectedLesson));
-      setTimeElapsed(0);
     }
   }, [selectedLesson]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeElapsed((prev) => prev + 1);
+    }, 60000); // Update every minute
+
+    return () => clearInterval(timer);
+  }, []);
 
   const handleSelectLesson = (lesson: ProcessedLesson) => {
     setSelectedLesson(lesson);
     toast({
-      title: "Lesson Loaded",
-      description: `Ready to learn ${lesson.subject}!`,
-    });
-  };
-
-  const handleStartActivity = (stageId: string) => {
-    setMissionStages((prev) =>
-      prev.map((stage) => {
-        if (stage.id === stageId && stage.status === "active") {
-          return { ...stage, status: "active" };
-        }
-        return stage;
-      })
-    );
-
-    toast({
-      title: "Activity Started",
-      description: "Let's learn together!",
+      title: "🎯 Mission Started!",
+      description: `Get ready to master ${lesson.subject}!`,
     });
   };
 
   const handleCompleteStage = (stageId: string) => {
+    const stage = missionStages.find((s) => s.id === stageId);
+    if (!stage) return;
+
+    // Award XP
+    const newXP = (student?.xp || 0) + stage.xpReward;
+    const newLevel = Math.floor(newXP / 300) + 1;
+    const leveledUp = newLevel > (student?.level || 1);
+
     setMissionStages((prev) =>
-      prev.map((stage, index) => {
-        if (stage.id === stageId) {
-          return { ...stage, status: "completed" };
+      prev.map((s, index) => {
+        if (s.id === stageId) {
+          const nextStage = prev[index + 1];
+          if (nextStage) {
+            return [
+              { ...s, status: "completed" as const },
+              { ...nextStage, status: "active" as const },
+            ];
+          }
+          return [{ ...s, status: "completed" as const }];
         }
-        // Move to next stage
-        if (prev[index - 1]?.id === stageId && stage.status === "pending") {
-          return { ...stage, status: "active" };
-        }
-        return stage;
-      })
+        return [s];
+      }).flat()
     );
 
-    // Simulate time progression
-    setTimeElapsed((prev) => Math.min(prev + 20, totalTime));
+    // Update student XP and level
+    if (student) {
+      const updatedStudent = {
+        ...student,
+        xp: newXP,
+        level: newLevel,
+      };
+      setStudent(updatedStudent);
+      localStorage.setItem("laila_student", JSON.stringify(updatedStudent));
+
+      if (leveledUp) {
+        setShowLevelUp(true);
+        setTimeout(() => setShowLevelUp(false), 3000);
+      }
+    }
+
+    // Check if all stages complete - award badge
+    const allComplete = missionStages.every((s) => s.id === stageId || s.status === "completed");
+    if (allComplete && selectedLesson && student) {
+      const badgeName = `${selectedLesson.subject} Master`;
+      if (!student.badges.includes(badgeName)) {
+        const updatedStudent = {
+          ...student,
+          badges: [...student.badges, badgeName],
+        };
+        setStudent(updatedStudent);
+        localStorage.setItem("laila_student", JSON.stringify(updatedStudent));
+        setNewBadge(badgeName);
+        setTimeout(() => setNewBadge(null), 4000);
+      }
+    }
 
     toast({
-      title: "Stage Complete!",
-      description: "Great job! Moving to the next stage...",
+      title: `✨ +${stage.xpReward} XP!`,
+      description: "Great job! Keep going!",
     });
   };
 
   const handleLogout = () => {
-    sessionStorage.removeItem("student");
+    localStorage.removeItem("laila_student");
     setLocation("/laila/student/login");
   };
 
-  const progress = (timeElapsed / totalTime) * 100;
   const activeStage = missionStages.find((s) => s.status === "active");
+  const completedStages = missionStages.filter((s) => s.status === "completed").length;
+  const totalDuration = missionStages.reduce((sum, s) => sum + s.duration, 0);
+  const completedDuration = missionStages
+    .filter((s) => s.status === "completed")
+    .reduce((sum, s) => sum + s.duration, 0) + timeElapsed;
+  const progressPercentage = Math.min(100, (completedDuration / totalDuration) * 100);
 
-  if (!student) {
-    return null;
-  }
+  const xpToNextLevel = 300 - ((student?.xp || 0) % 300);
+  const xpProgress = ((student?.xp || 0) % 300) / 300 * 100;
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="container max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <h1 className="text-3xl font-bold">Welcome, {student.studentId}!</h1>
-            <p className="text-muted-foreground">Your 60-minute learning journey awaits</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white p-4 md:p-8">
+      {/* Level Up Animation */}
+      {showLevelUp && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 animate-in fade-in">
+          <div className="text-center animate-in zoom-in">
+            <div className="text-8xl mb-4">🎉</div>
+            <h1 className="text-6xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent mb-2">
+              LEVEL UP!
+            </h1>
+            <p className="text-4xl font-bold text-cyan-400">Level {student?.level}</p>
           </div>
-          <div className="flex gap-2">
+        </div>
+      )}
+
+      {/* New Badge Animation */}
+      {newBadge && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 animate-in fade-in">
+          <div className="text-center animate-in zoom-in">
+            <Award className="h-32 w-32 mx-auto mb-4 text-yellow-400 animate-pulse" />
+            <h2 className="text-4xl font-bold text-yellow-400 mb-2">New Badge Unlocked!</h2>
+            <p className="text-2xl text-white">{newBadge}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Header with Player Stats */}
+      <div className="max-w-7xl mx-auto mb-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-2">
+              Welcome back, {student?.name}!
+            </h1>
+            <p className="text-gray-400">Your epic learning journey continues...</p>
+          </div>
+          <div className="flex gap-4">
             <Button
-              onClick={() => setShowChat(!showChat)}
-              className="bg-cyan-500 hover:bg-cyan-600 text-black font-semibold"
+              onClick={() => setShowChat(true)}
+              className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold shadow-lg shadow-cyan-500/50"
             >
-              <MessageCircle className="h-4 w-4 mr-2" />
+              <MessageCircle className="h-5 w-5 mr-2" />
               Ask LAILA
             </Button>
-            <Button onClick={handleLogout} variant="outline">
+            <Button onClick={handleLogout} variant="outline" className="border-gray-700 text-gray-300">
               Logout
             </Button>
           </div>
         </div>
 
-        {/* Available Lessons */}
-        {availableLessons.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BookOpen className="h-5 w-5" />
-                Available Lessons
-              </CardTitle>
-              <CardDescription>Select a lesson to begin learning</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-3 md:grid-cols-3">
-                {availableLessons.map((lesson) => (
-                  <Card
-                    key={lesson.id}
-                    className={`cursor-pointer transition-all ${
-                      selectedLesson?.id === lesson.id
-                        ? "border-cyan-500 border-2 bg-cyan-500/10"
-                        : "hover:border-primary/50"
-                    }`}
-                    onClick={() => handleSelectLesson(lesson)}
-                  >
-                    <CardHeader>
-                      <CardTitle className="text-base">{lesson.title}</CardTitle>
-                      <CardDescription>
-                        <span className="inline-block px-2 py-1 bg-amber-500/20 text-amber-400 rounded text-xs">
-                          {lesson.subject}
-                        </span>
-                      </CardDescription>
-                    </CardHeader>
-                  </Card>
-                ))}
+        {/* Player Stats Bar */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <Card className="bg-gradient-to-br from-purple-900/50 to-purple-800/30 border-purple-500/30">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-400">Level</p>
+                  <p className="text-3xl font-bold text-purple-400">{student?.level || 1}</p>
+                </div>
+                <Zap className="h-12 w-12 text-purple-400" />
               </div>
             </CardContent>
           </Card>
-        )}
 
-        {!selectedLesson && availableLessons.length === 0 && (
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-center text-muted-foreground">
-                No lessons available yet. Your teacher will upload lessons soon!
-              </p>
+          <Card className="bg-gradient-to-br from-cyan-900/50 to-cyan-800/30 border-cyan-500/30">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-400">Total XP</p>
+                  <p className="text-3xl font-bold text-cyan-400">{student?.xp || 0}</p>
+                </div>
+                <Star className="h-12 w-12 text-cyan-400 fill-cyan-400" />
+              </div>
+              <div className="mt-2">
+                <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-500"
+                    style={{ width: `${xpProgress}%` }}
+                  />
+                </div>
+                <p className="text-xs text-gray-400 mt-1">{xpToNextLevel} XP to next level</p>
+              </div>
             </CardContent>
           </Card>
-        )}
 
-        {selectedLesson && (
+          <Card className="bg-gradient-to-br from-yellow-900/50 to-yellow-800/30 border-yellow-500/30">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-400">Badges</p>
+                  <p className="text-3xl font-bold text-yellow-400">{student?.badges.length || 0}</p>
+                </div>
+                <Trophy className="h-12 w-12 text-yellow-400" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-green-900/50 to-green-800/30 border-green-500/30">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-400">Missions</p>
+                  <p className="text-3xl font-bold text-green-400">{lessons.length}</p>
+                </div>
+                <BookOpen className="h-12 w-12 text-green-400" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto space-y-6">
+        {!selectedLesson ? (
           <>
-            {/* Mission Progress */}
-            <Card>
+            {/* Available Missions */}
+            <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur">
               <CardHeader>
-                <CardTitle>Mission Progress</CardTitle>
-                <CardDescription>
-                  Learning: {selectedLesson.title} ({selectedLesson.subject})
-                </CardDescription>
+                <CardTitle className="flex items-center gap-2 text-2xl">
+                  <BookOpen className="h-6 w-6 text-cyan-400" />
+                  Available Missions
+                </CardTitle>
+                <CardDescription className="text-gray-400">Choose your next learning adventure</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium">
-                      {timeElapsed} / {totalTime} minutes
-                    </span>
-                    <span className="text-muted-foreground">{Math.round(progress)}%</span>
+                {lessons.length === 0 ? (
+                  <div className="text-center py-12">
+                    <BookOpen className="h-16 w-16 mx-auto mb-4 text-gray-600" />
+                    <p className="text-gray-400 mb-2">No missions available yet</p>
+                    <p className="text-sm text-gray-500">Check back later for new learning adventures!</p>
                   </div>
-                  <Progress value={progress} className="h-3" />
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {lessons.map((lesson) => (
+                      <button
+                        key={lesson.id}
+                        onClick={() => handleSelectLesson(lesson)}
+                        className="group relative overflow-hidden rounded-lg border-2 border-cyan-500/30 bg-gradient-to-br from-slate-800/50 to-slate-900/50 p-6 text-left transition-all hover:border-cyan-500 hover:shadow-lg hover:shadow-cyan-500/20 hover:scale-105"
+                      >
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-cyan-500/20 to-purple-500/20 rounded-full blur-3xl group-hover:scale-150 transition-transform" />
+                        <div className="relative">
+                          <h3 className="text-xl font-bold mb-2 text-cyan-400">{lesson.title}</h3>
+                          <p className="text-sm text-yellow-400 mb-3">⭐ {lesson.subject}</p>
+                          <div className="flex items-center gap-2 text-sm text-gray-400">
+                            <Clock className="h-4 w-4" />
+                            <span>60 minutes</span>
+                            <span className="mx-2">•</span>
+                            <Trophy className="h-4 w-4 text-yellow-400" />
+                            <span className="text-yellow-400">300 XP</span>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </>
+        ) : (
+          <>
+            {/* Mission Progress */}
+            <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-2xl">Mission Progress</CardTitle>
+                    <CardDescription className="text-gray-400">
+                      Learning: {selectedLesson.title} ({selectedLesson.subject})
+                    </CardDescription>
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => setSelectedLesson(null)}
+                    className="border-gray-700"
+                  >
+                    Change Mission
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-2 flex items-center justify-between text-sm">
+                  <span className="text-gray-400">{completedDuration} / {totalDuration} minutes</span>
+                  <span className="text-cyan-400 font-semibold">{Math.round(progressPercentage)}%</span>
+                </div>
+                <div className="h-4 bg-gray-800 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 transition-all duration-500 relative"
+                    style={{ width: `${progressPercentage}%` }}
+                  >
+                    <div className="absolute inset-0 bg-white/20 animate-pulse" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Mission Timeline */}
-            <Card>
+            <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur">
               <CardHeader>
-                <CardTitle>Mission Timeline</CardTitle>
-                <CardDescription>Follow the path to complete your learning journey</CardDescription>
+                <CardTitle className="text-2xl">Mission Timeline</CardTitle>
+                <CardDescription className="text-gray-400">Follow the path to victory</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {missionStages.map((stage, index) => (
-                    <div key={stage.id} className="flex items-start gap-4">
-                      <div className="flex flex-col items-center">
+              <CardContent className="space-y-6">
+                {missionStages.map((stage, index) => (
+                  <div key={stage.id} className="relative">
+                    {/* Connector Line */}
+                    {index < missionStages.length - 1 && (
+                      <div className="absolute left-6 top-12 w-0.5 h-full bg-gradient-to-b from-cyan-500/50 to-purple-500/50" />
+                    )}
+
+                    <div className="flex gap-4">
+                      {/* Status Icon */}
+                      <div className="relative z-10">
                         {stage.status === "completed" ? (
-                          <CheckCircle className="h-8 w-8 text-green-500" />
+                          <div className="h-12 w-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-500/50">
+                            <CheckCircle className="h-6 w-6 text-white" />
+                          </div>
                         ) : stage.status === "active" ? (
-                          <Clock className="h-8 w-8 text-cyan-400 animate-pulse" />
+                          <div className="h-12 w-12 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/50 animate-pulse">
+                            <Clock className="h-6 w-6 text-white" />
+                          </div>
                         ) : (
-                          <Circle className="h-8 w-8 text-muted-foreground" />
-                        )}
-                        {index < missionStages.length - 1 && (
-                          <div className="w-0.5 h-16 bg-border mt-2" />
+                          <div className="h-12 w-12 rounded-full bg-gray-800 border-2 border-gray-700 flex items-center justify-center">
+                            <Circle className="h-6 w-6 text-gray-600" />
+                          </div>
                         )}
                       </div>
 
-                      <div className="flex-1 pb-8">
+                      {/* Stage Content */}
+                      <div className="flex-1">
                         <div className="flex items-center justify-between mb-2">
-                          <h3 className="font-semibold text-lg">{stage.title}</h3>
-                          <span className="text-sm text-muted-foreground">{stage.duration} min</span>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-2">{stage.description}</p>
-
-                        {stage.status === "active" && stage.content && (
-                          <div className="mt-3 p-4 bg-muted rounded-lg border border-cyan-500/30">
-                            <p className="text-sm whitespace-pre-wrap leading-relaxed">{stage.content}</p>
+                          <h3 className={`text-lg font-semibold ${
+                            stage.status === "active" ? "text-cyan-400" : 
+                            stage.status === "completed" ? "text-green-400" : 
+                            "text-gray-400"
+                          }`}>
+                            {stage.title}
+                          </h3>
+                          <div className="flex items-center gap-4 text-sm">
+                            <span className="text-gray-400">{stage.duration} min</span>
+                            <span className="flex items-center gap-1 text-yellow-400">
+                              <Star className="h-4 w-4 fill-yellow-400" />
+                              {stage.xpReward} XP
+                            </span>
                           </div>
-                        )}
+                        </div>
+                        <p className="text-sm text-gray-400 mb-3">{stage.description}</p>
 
                         {stage.status === "active" && (
-                          <Button
-                            onClick={() => handleCompleteStage(stage.id)}
-                            className="mt-3 bg-cyan-500 hover:bg-cyan-600 text-black font-semibold"
-                          >
-                            Complete Stage
-                          </Button>
+                          <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
+                            <p className="text-sm text-gray-300 whitespace-pre-wrap mb-4">{stage.content}</p>
+                            
+                            {stage.activityType === "text" && (
+                              <Button
+                                onClick={() => handleCompleteStage(stage.id)}
+                                className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold"
+                              >
+                                <Play className="h-4 w-4 mr-2" />
+                                Complete Stage
+                              </Button>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </CardContent>
             </Card>
 
-            {/* Interactive Learning Activities */}
+            {/* Interactive Activities */}
             {activeStage && activeStage.activityType === "quiz" && activeStage.activityData?.quiz && (
               <QuizActivity
                 question={activeStage.activityData.quiz.question}
@@ -410,8 +571,8 @@ export default function StudentDashboard() {
 
       {/* LAILA Chat Modal */}
       {showChat && (
-        <div className="fixed inset-0 bg-black/50 flex items-end justify-end z-50 p-6">
-          <div className="w-96 h-[600px] bg-background rounded-lg overflow-hidden">
+        <div className="fixed inset-0 bg-black/50 flex items-end justify-end z-50 p-6 backdrop-blur-sm">
+          <div className="w-96 h-[600px] bg-slate-900 rounded-lg overflow-hidden border border-cyan-500/30 shadow-2xl shadow-cyan-500/20">
             <LAILAChat 
               onClose={() => setShowChat(false)}
               lessonContent={selectedLesson?.processedContent?.analysis}
