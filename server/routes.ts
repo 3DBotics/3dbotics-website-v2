@@ -118,7 +118,7 @@ export async function registerRoutes(
   app.use(
     "/laila",
     createProxyMiddleware({
-      target: "http://laila-education-platform.railway.internal:3000",
+      target: "https://laila-education-platform-production.up.railway.app",
       changeOrigin: true,
       pathRewrite: {
         "^/laila": "", // Remove /laila prefix when forwarding to LAILA service
