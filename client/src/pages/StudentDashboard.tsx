@@ -3,11 +3,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CheckCircle, Circle, Clock, MessageCircle, Play, BookOpen, Trophy, Star, Zap, Award } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { renderMarkdown } from "@/lib/markdown";
 import { useLocation } from "wouter";
 import LAILAChat from "@/components/LAILAChat";
 import QuizActivity from "@/components/QuizActivity";
 import MatchingGame from "@/components/MatchingGame";
 import ChallengeActivity from "@/components/ChallengeActivity";
+
+// Helper function to clean markdown formatting
+function cleanMarkdown(text: string): string {
+  return text
+    .replace(/\*\*([^*]+)\*\*/g, '$1') // Remove **bold**
+    .replace(/\*([^*]+)\*/g, '$1')     // Remove *italic*
+    .replace(/#{1,6}\s/g, '')          // Remove # headers
+    .trim();
+}
 
 interface Student {
   id: number;
@@ -71,6 +81,10 @@ export default function StudentDashboard() {
   const [showChat, setShowChat] = useState(false);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [newBadge, setNewBadge] = useState<string | null>(null);
+  const [stageStartTime, setStageStartTime] = useState<number | null>(null);
+  const [canComplete, setCanComplete] = useState(false);
+  const [videoWatchProgress, setVideoWatchProgress] = useState<Record<string, number>>({});
+  const [requiredVideoWatchPercentage] = useState(80); // Require 80% watch time
 
   const parseMissionStages = (lesson: ProcessedLesson | null): MissionStage[] => {
     if (!lesson) {
@@ -192,6 +206,32 @@ export default function StudentDashboard() {
   const handleCompleteStage = (stageId: string) => {
     const stage = missionStages.find((s) => s.id === stageId);
     if (!stage) return;
+    
+    // Check if minimum time requirement is met
+    if (!canComplete) {
+      toast({
+        title: "Not Ready Yet!",
+        description: "Please spend more time engaging with the content before completing this stage.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Check if all videos have been watched (if stage has videos)
+    if (selectedLesson?.processedContent.videos && selectedLesson.processedContent.videos.length > 0) {
+      const unwatchedVideos = selectedLesson.processedContent.videos.filter(
+        video => (videoWatchProgress[video.id] || 0) < requiredVideoWatchPercentage
+      );
+      
+      if (unwatchedVideos.length > 0) {
+        toast({
+          title: "Videos Not Watched!",
+          description: `Please watch all ${selectedLesson.processedContent.videos.length} videos before completing this stage.`,
+          variant: "destructive",
+        });
+        return;
+      }
+    }
 
     // Award XP
     const newXP = (student?.xp || 0) + stage.xpReward;
@@ -256,6 +296,22 @@ export default function StudentDashboard() {
     localStorage.removeItem("laila_student");
     setLocation("/laila/student/login");
   };
+
+  // Track stage engagement time
+  useEffect(() => {
+    const activeStage = missionStages.find((s) => s.status === "active");
+    if (activeStage) {
+      setStageStartTime(Date.now());
+      setCanComplete(false);
+      
+      // Enable complete button after minimum duration (in seconds, converted to ms)
+      const timer = setTimeout(() => {
+        setCanComplete(true);
+      }, activeStage.duration * 1000); // duration is in minutes, convert to ms
+      
+      return () => clearTimeout(timer);
+    }
+  }, [missionStages]);
 
   const activeStage = missionStages.find((s) => s.status === "active");
   const completedStages = missionStages.filter((s) => s.status === "completed").length;
@@ -512,7 +568,7 @@ export default function StudentDashboard() {
                             </span>
                           </div>
                         </div>
-                        <p className="text-sm text-gray-400 mb-3">{stage.description}</p>
+                        <p className="text-sm text-gray-400 mb-3" dangerouslySetInnerHTML={{ __html: renderMarkdown(stage.description) }} />
 
                         {stage.status === "active" && (
                           <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
@@ -527,7 +583,7 @@ export default function StudentDashboard() {
                               </div>
                             )}
                             
-                            <p className="text-sm text-gray-300 whitespace-pre-wrap mb-4">{stage.content}</p>
+                            <div className="text-sm text-gray-300 mb-4" dangerouslySetInnerHTML={{ __html: renderMarkdown(stage.content) }} />
                             
                             {/* Image Gallery */}
                             {selectedLesson.processedContent.images && selectedLesson.processedContent.images.length > 0 && (
@@ -547,32 +603,77 @@ export default function StudentDashboard() {
                             {selectedLesson.processedContent.videos && selectedLesson.processedContent.videos.length > 0 && (
                               <div className="mb-4">
                                 <h4 className="text-sm font-semibold text-cyan-400 mb-2">📺 Watch & Learn</h4>
-                                {selectedLesson.processedContent.videos.map((video) => (
-                                  <div key={video.id} className="mb-2">
-                                    <div className="aspect-video rounded-lg overflow-hidden">
-                                      <iframe
-                                        width="100%"
-                                        height="100%"
-                                        src={video.embedUrl}
-                                        title={video.title}
-                                        frameBorder="0"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowFullScreen
-                                      />
+                                <p className="text-xs text-yellow-400 mb-2">
+                                  ⚠️ Watch at least {requiredVideoWatchPercentage}% of each video to complete this stage
+                                </p>
+                                {selectedLesson.processedContent.videos.map((video, idx) => {
+                                  const watchProgress = videoWatchProgress[video.id] || 0;
+                                  const isWatched = watchProgress >= requiredVideoWatchPercentage;
+                                  return (
+                                    <div key={video.id} className="mb-4">
+                                      <div className="flex items-center justify-between mb-1">
+                                        <p className="text-sm text-gray-300">{video.title}</p>
+                                        {isWatched ? (
+                                          <span className="text-xs text-green-400 flex items-center gap-1">
+                                            <CheckCircle className="h-3 w-3" /> Watched
+                                          </span>
+                                        ) : (
+                                          <span className="text-xs text-gray-400">
+                                            {Math.round(watchProgress)}% watched
+                                          </span>
+                                        )}
+                                      </div>
+                                      <div className="aspect-video rounded-lg overflow-hidden bg-slate-900">
+                                        <iframe
+                                          width="100%"
+                                          height="100%"
+                                          src={`${video.embedUrl}?enablejsapi=1`}
+                                          title={video.title}
+                                          frameBorder="0"
+                                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                          allowFullScreen
+                                          id={`video-${video.id}`}
+                                        />
+                                      </div>
+                                      {/* Manual watch confirmation for now (YouTube API requires additional setup) */}
+                                      {!isWatched && (
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          onClick={() => {
+                                            setVideoWatchProgress(prev => ({ ...prev, [video.id]: 100 }));
+                                            toast({
+                                              title: "Video Marked as Watched",
+                                              description: "Great job watching the video!",
+                                            });
+                                          }}
+                                          className="mt-2 text-xs"
+                                        >
+                                          ✓ I finished watching this video
+                                        </Button>
+                                      )}
                                     </div>
-                                  </div>
-                                ))}
+                                  );
+                                })}
                               </div>
                             )}
                             
                             {stage.activityType === "text" && (
-                              <Button
-                                onClick={() => handleCompleteStage(stage.id)}
-                                className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold"
-                              >
-                                <Play className="h-4 w-4 mr-2" />
-                                Complete Stage
-                              </Button>
+                              <div className="space-y-2">
+                                {!canComplete && (
+                                  <p className="text-sm text-yellow-400">
+                                    ⏱️ Please engage with the content for at least {stage.duration} seconds before completing.
+                                  </p>
+                                )}
+                                <Button
+                                  onClick={() => handleCompleteStage(stage.id)}
+                                  disabled={!canComplete}
+                                  className={`bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold ${!canComplete ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                >
+                                  <Play className="h-4 w-4 mr-2" />
+                                  {canComplete ? 'Complete Stage' : 'Engaging with Content...'}
+                                </Button>
+                              </div>
                             )}
                           </div>
                         )}

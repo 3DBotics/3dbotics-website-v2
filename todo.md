@@ -124,3 +124,14 @@
 - [ ] Add print-friendly styling
 - [ ] Include LAILA branding and metadata
 - [ ] Make suitable for faculty submission
+
+
+## Phase 11: Fix Text Formatting & Engagement Tracking (URGENT)
+- [x] Strip markdown asterisks from LM Studio responses (** bold ** formatting)
+- [x] Render markdown properly or convert to plain text
+- [ ] Add video watch time tracking (require 80% completion)
+- [ ] Add timer-based stage completion (minimum time before "Complete" button activates)
+- [ ] Disable "Complete" button until engagement requirements met
+- [ ] Fix broken video IDs in educational video database
+- [ ] Verify all curated videos are accessible
+- [ ] Add visual feedback for engagement progress (video watch percentage, timer countdown)

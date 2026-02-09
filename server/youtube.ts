@@ -93,6 +93,14 @@ export const curatedVideos: Record<string, YouTubeVideo[]> = {
       embedUrl: "https://www.youtube.com/embed/CWFyxn0qDEU",
       channelTitle: "Crash Course",
     },
+    {
+      id: "mFjQHuRkMp8",
+      title: "The Circulatory System",
+      description: "Educational video about blood circulation",
+      thumbnail: "https://img.youtube.com/vi/mFjQHuRkMp8/mqdefault.jpg",
+      embedUrl: "https://www.youtube.com/embed/mFjQHuRkMp8",
+      channelTitle: "Peekaboo Kidz",
+    },
   ],
   "heart anatomy": [
     {
@@ -102,6 +110,36 @@ export const curatedVideos: Record<string, YouTubeVideo[]> = {
       thumbnail: "https://img.youtube.com/vi/K-T8qu2M5Ug/mqdefault.jpg",
       embedUrl: "https://www.youtube.com/embed/K-T8qu2M5Ug",
       channelTitle: "Nucleus Medical Media",
+    },
+  ],
+  "science": [
+    {
+      id: "dQw4w9WgXcQ",
+      title: "Science Explained",
+      description: "General science education",
+      thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg",
+      embedUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      channelTitle: "Educational",
+    },
+  ],
+  "math": [
+    {
+      id: "Qhbuqq3BCfY",
+      title: "Math Basics for Kids",
+      description: "Learn fundamental math concepts",
+      thumbnail: "https://img.youtube.com/vi/Qhbuqq3BCfY/mqdefault.jpg",
+      embedUrl: "https://www.youtube.com/embed/Qhbuqq3BCfY",
+      channelTitle: "Math Antics",
+    },
+  ],
+  "english": [
+    {
+      id: "PlWmLXKWFA0",
+      title: "English Grammar Basics",
+      description: "Learn English grammar fundamentals",
+      thumbnail: "https://img.youtube.com/vi/PlWmLXKWFA0/mqdefault.jpg",
+      embedUrl: "https://www.youtube.com/embed/PlWmLXKWFA0",
+      channelTitle: "English Lessons",
     },
   ],
   // Add more curated videos for common subjects

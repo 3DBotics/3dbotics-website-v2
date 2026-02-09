@@ -5,6 +5,7 @@ import { contactMessageSchema, chatMessageSchema, insertStudentChatSchema } from
 import { librarian } from "./librarian";
 import { searchPhotos } from "./pexels";
 import { getEducationalVideos } from "./educationalVideos";
+import { createProxyMiddleware } from "http-proxy-middleware";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -112,6 +113,19 @@ export async function registerRoutes(
       res.status(500).json({ error: "Failed to fetch educational videos" });
     }
   });
+
+  // Proxy /laila requests to LAILA service on Railway
+  app.use(
+    "/laila",
+    createProxyMiddleware({
+      target: "http://laila-education-platform.railway.internal:3000",
+      changeOrigin: true,
+      pathRewrite: {
+        "^/laila": "", // Remove /laila prefix when forwarding to LAILA service
+      },
+      ws: true, // Support WebSocket connections
+    })
+  );
 
   return httpServer;
 }
