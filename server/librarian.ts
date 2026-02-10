@@ -324,9 +324,6 @@ ${context}`;
     if (error) throw error;
     return true;
   }
-}
-
-export const librarian = new Librarian();
 
   private async detectAndLearnFromCorrection(query: string, category: 'chat' | 'concierge'): Promise<void> {
     // Patterns that indicate the user is correcting the AI
@@ -379,3 +376,6 @@ export const librarian = new Librarian();
       console.error(`[LIBRARIAN] Failed to save correction:`, err);
     }
   }
+}
+
+export const librarian = new Librarian();
