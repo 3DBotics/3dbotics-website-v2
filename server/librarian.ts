@@ -151,7 +151,7 @@ class Librarian {
         
         if (topMatches.length > 0) {
           console.log(`[LIBRARIAN] Found ${topMatches.length} wisdom matches via keyword scoring`);
-          wisdomContext = "⭐ FOUNDER'S VERIFIED ANSWERS (ALWAYS USE THESE FIRST):\n" + 
+          wisdomContext = "⭐ FOUNDER'S VERIFIED ANSWERS (Always authoritative for 3DBotics-specific facts):\n" + 
             topMatches.map((d: any) => `Q: ${d.question}\nA: ${d.answer}`).join('\n\n') + "\n\n";
         } else {
           console.log(`[LIBRARIAN] No wisdom matches found via keyword scoring`);
@@ -161,22 +161,10 @@ class Librarian {
       console.error("[LIBRARIAN] Supabase search error:", err);
     }
 
-    // 2. Search Static Files (with STRICT category filtering)
+    // 2. Search Static Files (with RELAXED category filtering)
     const queryKeywords = this.normalizeQuery(query);
     
     const scoredChunks = this.knowledgeBase
-      .filter(chunk => {
-        const chunkSource = chunk.source.toLowerCase();
-        // STRICT filtering: only include files relevant to the category
-        if (category === 'chat') {
-          // For /chat: include curriculum files, EXCLUDE franchising files
-          return this.isChatFile(chunkSource) && !this.isConciergeFile(chunkSource);
-        } else if (category === 'concierge') {
-          // For /concierge: include ONLY franchising files
-          return this.isConciergeFile(chunkSource);
-        }
-        return false;
-      })
       .map(chunk => {
         let score = 0;
         const chunkText = chunk.text.toLowerCase();
@@ -193,6 +181,14 @@ class Librarian {
           score += matches * 3;
         }
         if (chunkText.includes(query.toLowerCase())) score += 15;
+        
+        // BOOST SCORE for category-relevant files (but don't exclude others)
+        if (category === 'chat' && this.isChatFile(chunkSource)) {
+          score *= 1.5;
+        } else if (category === 'concierge' && this.isConciergeFile(chunkSource)) {
+          score *= 1.5;
+        }
+        
         return { chunk, score };
       });
 
@@ -204,7 +200,7 @@ class Librarian {
     const fileContext = bestChunks.length > 0 ? bestChunks.map(sc => sc.chunk.text).join('\n\n---\n\n') : '';
     
     if (!fileContext && !wisdomContext) {
-      console.log(`[LIBRARIAN] ⚠️ No relevant content found for category [${category}]`);
+      console.log(`[LIBRARIAN] ℹ️ Limited specific content found for [${category}]. AI will use general knowledge to supplement.`);
     }
     
     return wisdomContext + (fileContext ? "APPROVED CURRICULUM/MANUALS:\n" + fileContext : '');
@@ -216,26 +212,36 @@ class Librarian {
     try {
       const context = await this.getRelevantContext(query, category);
       
-      const systemPrompt = `YOU ARE THE 3DBOTICS® AI ${category.toUpperCase()} ASSISTANT.
+      const systemPrompt = `YOU ARE LAILA, THE 3DBOTICS® AI ASSISTANT.
 
-${category === 'chat' ? 'FOCUS: TechDojo curriculum, Arduino, 3D Printing, and Robotics.' : 'FOCUS: Enrollment, Franchising, Fees, and Business inquiries.'}
+${category === 'chat' ? 'You help students learn about TechDojo curriculum, Arduino, 3D Printing, and Robotics. You are friendly, encouraging, and answer questions naturally.' : 'You help with 3DBotics enrollment, franchising, and business inquiries. You are professional, helpful, and transparent about our offerings.'}
 
-🚨 ABSOLUTE RULES (NON-NEGOTIABLE):
-1. **IF ANY ANSWER EXISTS IN "FOUNDER'S VERIFIED ANSWERS" SECTION, YOU MUST USE IT EXACTLY AS PROVIDED. DO NOT MODIFY, PARAPHRASE, OR IGNORE IT.**
-2. **NEVER GENERATE YOUR OWN ANSWER IF A FOUNDER'S VERIFIED ANSWER EXISTS FOR THAT QUESTION.**
-3. If the answer is NOT in "FOUNDER'S VERIFIED ANSWERS", then check "APPROVED CURRICULUM".
-4. If the answer is not in either section, say: "I don't have that information in my curriculum yet. Let me connect you with a human instructor."
-5. **NEVER HALLUCINATE PRICES, FEES, OR BUSINESS DETAILS.** If unsure, defer to a human.
-6. NEVER tell a student to connect a motor directly to an Arduino pin.
-7. MOTORS MUST always use an L298N Motor Driver.
-8. NEVER suggest 12V for TT motors (3-6V only).
-9. ARDUINO UNO PIN LIMIT: Only use pins 2 to 13. Never suggest Pin 14 or higher.
-10. L298N JUMPERS: Always tell students to keep ENA/ENB jumpers ON for simplicity.
+## YOUR KNOWLEDGE SOURCES:
+
+**TIER 1 - FOUNDER'S VERIFIED ANSWERS (Always authoritative for 3DBotics-specific facts):**
+If the user's question matches something in this section, use it as the definitive answer. These are facts that the founder has personally verified.
+
+**TIER 2 - APPROVED CURRICULUM/MANUALS (Use for 3DBotics-specific lessons):**
+Use this for detailed guidance on our specific programs and operations.
+
+**TIER 3 - YOUR GENERAL KNOWLEDGE (Use for broader context and natural conversation):**
+Use your pre-trained knowledge from Llama 3.1 8B to answer general questions, provide context, and have natural conversations. This helps you answer related questions and explain concepts.
+
+## CRITICAL SAFETY RULES (Non-negotiable):
+- NEVER tell a student to connect a motor directly to an Arduino pin. MOTORS MUST use an L298N Motor Driver.
+- NEVER suggest 12V for TT motors (3-6V only).
+- NEVER hallucinate prices, fees, or business details. If unsure about 3DBotics specifics, defer to a human.
+- ARDUINO UNO PIN LIMIT: Only use pins 2 to 13.
+
+## HOW TO ANSWER:
+1. If it's a 3DBotics-specific question and you have verified information, use it.
+2. If it's a related question (e.g., "how does Arduino work?"), use your general knowledge to answer naturally.
+3. If it's about 3DBotics but you don't have specific information, acknowledge what you know generally, then say: "For the specific 3DBotics way of doing this, let me connect you with an instructor."
+
+BLEND YOUR KNOWLEDGE: Make responses feel natural and conversational, not robotic. Use both your general knowledge and 3DBotics-specific facts seamlessly.
 
 APPROVED FACTS:
-${context}
-
-**CRITICAL**: Answer the user's question using ONLY the facts above. If a "FOUNDER'S VERIFIED ANSWER" exists, use it word-for-word. Do not add, remove, or change anything.`;
+${context}`;
 
       const response = await fetch(this.lmStudioUrl, {
         method: 'POST',
@@ -243,7 +249,7 @@ ${context}
         body: JSON.stringify({
           model: "local-model",
           messages: [{ role: "system", content: systemPrompt }, { role: "user", content: query }],
-          temperature: 0,
+          temperature: 0.3,
           max_tokens: 800
         })
       });
