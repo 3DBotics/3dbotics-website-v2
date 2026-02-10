@@ -106,6 +106,45 @@ class Librarian {
     console.log(`[LIBRARIAN] === SEARCH START [${category}] ===`);
     console.log(`[LIBRARIAN] Query: "${query}"`);
     
+    // MASTER OVERRIDE: Hard-coded 3DBotics Franchise Package (Non-Negotiable)
+    const franchiseKeywords = ['franchise', 'cost', 'price', 'investment', 'fee', 'package', 'how much', 'quanto'];
+    const isAboutFranchise = franchiseKeywords.some(kw => query.toLowerCase().includes(kw));
+    
+    if (isAboutFranchise && category === 'concierge') {
+      const masterFranchiseOverride = `⭐⭐⭐ MASTER OVERRIDE - FOUNDER'S DEFINITIVE ANSWER ⭐⭐⭐
+
+The 3DBotics Franchise Package (₱660,000 ALL-IN) includes:
+
+EQUIPMENT:
+✔️ 5 Brand New 3D Printers (calibrated)
+✔️ 7 Kilos of 3D Filament (assorted colors)
+✔️ 43" Smart TV for classroom instructions
+✔️ 5 Complete 3D Printing Toolkits
+✔️ 5 Storage Devices for file transfers
+
+SOFTWARE & CONTENT:
+✔️ 3 Major Apps for 3D modeling & robotics
+✔️ Per Course Level Robot Projects for marketing & Display
+✔️ Best Selling "ready-to-3DPrint" Files as your immediate products to be sold
+✔️ Official Marketing Materials: HD logos and editable posters
+
+TRAINING & SUPPORT:
+✅ INTENSIVE Training for Branch Owner + Facilitators (face-to-face and weekly Zoom sessions)
+✅ Full access to replicable module outlines, guides, and manuals
+✅ Lifetime tech and business support from the 3DBotics Main Office
+✅ Instant ACCESS to our state-of-the-art AI web-platform for duplicable branch operations
+
+OPERATIONAL COSTS:
+✔️ Rental Space Security Deposit
+✔️ 1st Two Months Rent fee
+
+TOTAL ALL-IN COST: ₱660,000
+
+⚠️ THIS IS THE ONLY CORRECT INFORMATION. NO OTHER PRICES ARE VALID.`;
+      
+      return masterFranchiseOverride;
+    }
+    
     // 1. Search Supabase Wisdom Log First (Priority) - WITH KEYWORD SCORING
     let wisdomContext = "";
     try {
@@ -125,6 +164,7 @@ class Librarian {
         const scoredWisdom = allWisdom.map((entry: any) => {
           let score = 0;
           const questionLower = entry.question.toLowerCase();
+          const answerLower = entry.answer.toLowerCase();
           
           // Check for exact substring match (highest priority)
           if (questionLower.includes(query.toLowerCase())) {
@@ -132,21 +172,20 @@ class Librarian {
             console.log(`[LIBRARIAN] Exact match found: "${entry.question}" (score: 1000)`);
           }
           
-          // Check for keyword matches in the question
+          // Check for keyword matches in the question AND answer
           for (const keyword of queryKeywords) {
-            if (questionLower.includes(keyword)) {
-              score += 50;
-            }
+            if (questionLower.includes(keyword)) score += 50;
+            if (answerLower.includes(keyword)) score += 30;
           }
           
           return { entry, score };
         });
         
-        // Get top matches
+        // Get top matches (increased from 5 to 10 for better coverage)
         const topMatches = scoredWisdom
           .filter(sw => sw.score > 0)
           .sort((a, b) => b.score - a.score)
-          .slice(0, 5)
+          .slice(0, 10)
           .map(sw => sw.entry);
         
         if (topMatches.length > 0) {
@@ -208,6 +247,9 @@ class Librarian {
 
   async generateResponse(query: string, category: 'chat' | 'concierge' = 'chat'): Promise<string> {
     console.log(`[LIBRARIAN] >>> generateResponse [${category}] for: "${query}"`);
+    
+    // CONVERSATIONAL LEARNING: Detect if user is correcting the AI
+    await this.detectAndLearnFromCorrection(query, category);
     
     try {
       const context = await this.getRelevantContext(query, category);
@@ -281,3 +323,55 @@ ${context}`;
 }
 
 export const librarian = new Librarian();
+
+  private async detectAndLearnFromCorrection(query: string, category: 'chat' | 'concierge'): Promise<void> {
+    // Patterns that indicate the user is correcting the AI
+    const correctionPatterns = [
+      /^(actually|no,|wrong|incorrect|that.s wrong|that.s incorrect|not correct|the correct|the right|it.s actually|actually,|correction:|you said|you mentioned)/i,
+      /^(the (correct|right|actual|true) .+ is)/i,
+      /(is actually|should be|must be|is really|is truly)/i,
+      /^(i said|i told you|i mentioned|remember i said)/i
+    ];
+    
+    const isCorrection = correctionPatterns.some(pattern => pattern.test(query));
+    
+    if (!isCorrection) return;
+    
+    console.log(`[LIBRARIAN] CONVERSATIONAL LEARNING DETECTED: "${query}"`);
+    
+    // Extract key information from the correction
+    let extractedAnswer = query;
+    let extractedQuestion = "User Correction";
+    
+    // Try to extract a price if mentioned
+    const priceMatch = query.match(/₱([0-9,]+)/);
+    if (priceMatch) {
+      extractedAnswer = `The correct price is ₱${priceMatch[1]}.`;
+      extractedQuestion = "What is the 3DBotics franchise cost?";
+      console.log(`[LIBRARIAN] Extracted price correction: ₱${priceMatch[1]}`);
+    }
+    
+    // Try to extract email if mentioned
+    const emailMatch = query.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+    if (emailMatch) {
+      extractedAnswer = `The correct email is ${emailMatch[1]}.`;
+      extractedQuestion = "What is the 3DBotics contact email?";
+      console.log(`[LIBRARIAN] Extracted email correction: ${emailMatch[1]}`);
+    }
+    
+    // Try to extract phone if mentioned
+    const phoneMatch = query.match(/(\d{4}[-.]?\d{3}[-.]?\d{4}|0\d{3}[-.]?\d{3}[-.]?\d{4})/);
+    if (phoneMatch) {
+      extractedAnswer = `The correct phone is ${phoneMatch[1]}.`;
+      extractedQuestion = "What is the 3DBotics contact phone?";
+      console.log(`[LIBRARIAN] Extracted phone correction: ${phoneMatch[1]}`);
+    }
+    
+    // Save the correction as wisdom
+    try {
+      await this.learn(category, extractedQuestion, extractedAnswer);
+      console.log(`[LIBRARIAN] Saved correction to wisdom log`);
+    } catch (err) {
+      console.error(`[LIBRARIAN] Failed to save correction:`, err);
+    }
+  }
