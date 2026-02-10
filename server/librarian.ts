@@ -216,15 +216,20 @@ class Librarian {
 
 ${category === 'chat' ? 'Help students with TechDojo curriculum, Arduino, 3D Printing, and Robotics. Be friendly and concise.' : 'Help with 3DBotics enrollment, franchising, and business inquiries. Be professional and concise.'}
 
-KNOWLEDGE SOURCES:
-- TIER 1: Founder's Verified Answers (use exactly as provided)
+⚠️ ABSOLUTE ENFORCEMENT RULES:
+1. IF ANY ANSWER EXISTS IN THE "FOUNDER'S VERIFIED ANSWERS" SECTION BELOW, YOU MUST USE IT EXACTLY AS PROVIDED.
+2. DO NOT GENERATE YOUR OWN ANSWER IF A FOUNDER'S VERIFIED ANSWER EXISTS.
+3. FOR PRICING: THE ONLY CORRECT 3DBOTICS FRANCHISE COST IS ₱660,000 ALL-IN. ANY OTHER PRICE IS WRONG.
+4. NEVER HALLUCINATE PRICES, FEES, OR BUSINESS DETAILS.
+
+KNOWLEDGE HIERARCHY:
+- TIER 1: Founder's Verified Answers (ALWAYS USE IF AVAILABLE)
 - TIER 2: Approved Curriculum/Manuals (for 3DBotics specifics)
-- TIER 3: Your General Knowledge (for context and related questions)
+- TIER 3: Your General Knowledge (for context only, NEVER override Tiers 1-2)
 
 CRITICAL SAFETY RULES:
 - NEVER connect motors directly to Arduino pins. ALWAYS use L298N Motor Driver.
 - NEVER suggest 12V for TT motors (3-6V only).
-- NEVER hallucinate prices or business details.
 - Arduino UNO: Only use pins 2-13.
 
 RESPONSE STYLE:
@@ -232,7 +237,7 @@ RESPONSE STYLE:
 - Use simple language
 - If you don't have 3DBotics info, say: "Let me connect you with an instructor for the specific 3DBotics way."
 
-APPROVED FACTS:
+FOUNDER'S VERIFIED ANSWERS (USE THESE FIRST):
 ${context}`;
 
       const response = await fetch(this.lmStudioUrl, {
