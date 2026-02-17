@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import express, { type Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { contactMessageSchema, chatMessageSchema, insertStudentChatSchema } from "@shared/schema";
@@ -33,7 +33,29 @@ export async function registerRoutes(
       }
       
       // Use the Librarian to generate a factual, curriculum-based response
-      const response = await librarian.generateResponse(message, category as 'chat' | 'concierge');
+      let response = await librarian.generateResponse(message, category as 'chat' | 'concierge');
+      
+      // CRITICAL SAFETY FILTER: Block hallucinated prices and enforce PHP 660,000
+      if (category === 'concierge') {
+        // Block any incorrect franchise prices
+        const incorrectPrices = ['1,995,000', '1995000', '500,000', '750,000', '200,000', '1.995', '1.99'];
+        for (const price of incorrectPrices) {
+          const escapedPrice = price.replace(/,/g, ',?');
+          const regex = new RegExp(`PHP ${escapedPrice}|₱${escapedPrice}|${escapedPrice}`, 'gi');
+          if (regex.test(response)) {
+            console.log(`[SAFETY FILTER] Blocked hallucinated price: ${price}`);
+            response = response.replace(regex, '₱660,000');
+          }
+        }
+        
+        // If question is about pricing and response doesn't mention 660,000, inject it
+        const pricingKeywords = ['cost', 'price', 'fee', 'investment', 'how much', 'franchise', 'initial'];
+        const isAboutPricing = pricingKeywords.some(kw => message.toLowerCase().includes(kw));
+        if (isAboutPricing && !response.includes('660,000')) {
+          console.log(`[SAFETY FILTER] Injecting ₱660,000 into response`);
+          response = `The 3DBotics franchise package costs ₱660,000 all-in. ${response}`;
+        }
+      }
       
       res.json({ response });
     } catch (error) {
@@ -78,18 +100,17 @@ export async function registerRoutes(
   });
 
   app.get("/api/pexels/search", async (req, res) => {
+
     try {
       const { query, per_page = "5" } = req.query;
       
       if (!query || typeof query !== "string") {
         return res.status(400).json({ error: "Query parameter is required" });
       }
-
       const perPage = parseInt(per_page as string, 10);
       if (isNaN(perPage) || perPage < 1 || perPage > 80) {
         return res.status(400).json({ error: "per_page must be between 1 and 80" });
       }
-
       const results = await searchPhotos(query, perPage);
       res.json(results);
     } catch (error) {
@@ -105,7 +126,6 @@ export async function registerRoutes(
       if (!subject || typeof subject !== "string") {
         return res.status(400).json({ error: "Subject parameter is required" });
       }
-
       const videos = getEducationalVideos(subject);
       res.json(videos);
     } catch (error) {
