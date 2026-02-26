@@ -25,6 +25,30 @@ export async function registerRoutes(
     }
   });
 
+  // NUCLEAR OVERRIDE: Franchise questions bypass AI entirely
+  const FRANCHISE_RESPONSE = `✅ **3DBotics Franchise Package - ₱660,000 All-In**
+
+**What's Included:**
+• 5 Brand New 3D Printers (calibrated & ready to use)
+• 7 Kilos of 3D Filament (assorted colors)
+• 43" Smart TV for classroom instructions
+• 5 Complete 3DPrinting Toolkits
+• 5 Storage Devices for file transfers
+• 3 Major Apps for 3D modeling & robotics
+• Per Course Level Robot Projects for marketing & Display
+• Best Selling "ready-to-3DPrint" Files as immediate products
+• Official Marketing Materials (HD logos, editable posters)
+
+**Plus:**
+✅ INTENSIVE Training for Branch Owner + Facilitators (face-to-face and weekly Zoom)
+✅ Full access to replicable module outlines, guides, and manuals
+✅ Lifetime tech and business support from 3DBotics Main Office
+✅ Instant ACCESS to state-of-the-art AI web-platform for branch operations
+✅ Rental Space Security Deposit
+✅ 1st Two Months Rent fee
+
+**Contact us:** 3DBotics.LC@gmail.com | 0995-836-2249`;
+
   app.post("/api/chat", async (req, res) => {
     try {
       const { message, category = 'chat' } = req.body;
@@ -32,42 +56,64 @@ export async function registerRoutes(
         return res.status(400).json({ error: "Message is required" });
       }
       
-      // WHITELIST-ONLY MODE FOR CONCIERGE: Only show verified information
+      // NUCLEAR OVERRIDE FOR CONCIERGE: Franchise questions bypass AI entirely
       if (category === 'concierge') {
-        // Check if this is a franchise-related question
-        const franchiseKeywords = ['franchise', 'cost', 'price', 'fee', 'investment', 'how much', 'package', 'included', 'what do i get', 'what is included'];
-        const isFranchiseQuestion = franchiseKeywords.some(kw => message.toLowerCase().includes(kw));
+        const lowerMessage = message.toLowerCase();
+        const franchiseKeywords = ['franchise', 'cost', 'price', 'fee', 'investment', 'how much', 'package', 'included', 'what do i get', 'what is included', 'cash out', 'initial', 'total', 'all-in'];
+        const isFranchiseQuestion = franchiseKeywords.some(kw => lowerMessage.includes(kw));
         
         if (isFranchiseQuestion) {
-          // ONLY use verified Founder's Wisdom for franchise questions
-          const verifiedResponse = await librarian.getVerifiedFranchiseInfo(message);
-          if (verifiedResponse && verifiedResponse.trim().length > 0) {
-            console.log(`[WHITELIST MODE] Using verified franchise information`);
-            return res.json({ response: verifiedResponse });
-          } else {
-            // If no verified info exists, show safe fallback
-            console.log(`[WHITELIST MODE] No verified info found, using fallback`);
-            const fallback = `For detailed franchise information, please contact us at 3DBotics.LC@gmail.com or call 0995-836-2249. The 3DBotics franchise package costs ₱660,000 all-in and includes everything you need to start your TechDojo location.`;
-            return res.json({ response: fallback });
-          }
+          console.log(`[NUCLEAR OVERRIDE] Franchise question detected: "${message}"`);
+          return res.json({ response: FRANCHISE_RESPONSE });
         }
       }
       
       // For non-franchise questions or /chat, use normal Librarian
       let response = await librarian.generateResponse(message, category as 'chat' | 'concierge');
       
-      // Additional safety filter for any remaining responses
+      // FINAL SAFETY FILTER: Block ALL incorrect prices in /concierge
       if (category === 'concierge') {
-        // Block any number that looks like a price (except 660,000)
-        const pricePattern = /₱\s*([0-9,]+)|PHP\s*([0-9,]+)/gi;
-        response = response.replace(pricePattern, (match, p1, p2) => {
-          const price = (p1 || p2).replace(/,/g, '');
-          if (price !== '660000') {
-            console.log(`[SAFETY FILTER] Replacing price ${price} with ₱660,000`);
+        // List of WRONG prices that must be blocked
+        const blockedPrices = [
+          '1,995,000', '1995000', '1.995 million', '1.995m',
+          '500,000', '500000',
+          '1,500,000', '1500000', '1.5 million', '1.5m',
+          '750,000', '750000',
+          '200,000', '200000',
+          '1,200,000', '1200000',
+          '2,000,000', '2000000',
+          '2.5 million', '2.5m'
+        ];
+        
+        for (const wrongPrice of blockedPrices) {
+          // Create a case-insensitive regex for each wrong price
+          const regex = new RegExp(
+            wrongPrice.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+            'gi'
+          );
+          if (regex.test(response)) {
+            console.log(`[FINAL SAFETY FILTER] BLOCKED WRONG PRICE: ${wrongPrice}`);
+            response = response.replace(regex, '₱660,000');
+          }
+        }
+        
+        // Also catch any PHP/₱ followed by numbers (except 660,000)
+        const currencyPattern = /(?:PHP|₱)\s*([0-9,]+(?:\.[0-9]{2})?)/gi;
+        response = response.replace(currencyPattern, (match, price) => {
+          const cleanPrice = price.replace(/[^0-9]/g, '');
+          if (cleanPrice !== '660000') {
+            console.log(`[FINAL SAFETY FILTER] Replacing ${match} with ₱660,000`);
             return '₱660,000';
           }
           return match;
         });
+        
+        // Also catch written-out numbers like "one million nine hundred ninety five thousand"
+        const writtenPattern = /(?:one|two|three|four|five|six|seven|eight|nine)\s+(?:million|thousand|hundred)/gi;
+        if (writtenPattern.test(response)) {
+          console.log(`[FINAL SAFETY FILTER] Detected written-out price, replacing with ₱660,000`);
+          response = response.replace(writtenPattern, '₱660,000');
+        }
       }
       
       res.json({ response });
@@ -83,29 +129,7 @@ export async function registerRoutes(
   // Get verified franchise information (whitelist-only)
   app.post("/api/franchise-info", async (req, res) => {
     try {
-      const franchiseInfo = `✅ 3DBotics Franchise Package - ₱660,000 All-In
-
-What's Included:
-✔️ 5 Brand New 3D Printers (calibrated)
-✔️ 7 Kilos of 3D Filament (assorted colors)
-✔️ 43" Smart TV for classroom instructions
-✔️ 5 Complete 3DPrinting Toolkits
-✔️ 5 Storage Device for file transfers
-✔️ 3 Major Apps for 3D modeling & robotics
-✔️ Per Course Level Robot Projects for marketing & Display
-✔️ Best Selling "ready-to-3DPrint" Files as immediate products
-✔️ Official Marketing Materials (HD logos, editable posters)
-
-Plus:
-✅ INTENSIVE Training for Branch Owner + Facilitators (face-to-face and weekly Zoom)
-✅ Full access to replicable module outlines, guides, and manuals
-✅ Lifetime tech and business support from 3DBotics Main Office
-✅ Instant ACCESS to state-of-the-art AI web-platform for branch operations
-✔️ Rental Space Security Deposit
-✔️ 1st Two Months Rent fee
-
-Contact us: 3DBotics.LC@gmail.com | 0995-836-2249`;
-      res.json({ info: franchiseInfo });
+      res.json({ info: FRANCHISE_RESPONSE });
     } catch (error) {
       res.status(500).json({ error: "Failed to retrieve franchise information" });
     }
