@@ -325,6 +325,37 @@ ${context}`;
     return true;
   }
 
+  async getVerifiedFranchiseInfo(query: string): Promise<string> {
+    console.log(`[LIBRARIAN] Getting verified franchise info for: "${query}"`);
+    
+    try {
+      // Query Supabase for verified franchise wisdom
+      const { data, error } = await this.supabase
+        .from('wisdom_log')
+        .select('answer')
+        .eq('category', 'concierge')
+        .eq('is_verified', true)
+        .ilike('question', '%franchise%')
+        .limit(1);
+      
+      if (error) {
+        console.error(`[LIBRARIAN] Error querying wisdom:`, error);
+        return '';
+      }
+      
+      if (data && data.length > 0) {
+        console.log(`[LIBRARIAN] Found verified franchise info`);
+        return data[0].answer;
+      }
+      
+      console.log(`[LIBRARIAN] No verified franchise info found`);
+      return '';
+    } catch (err) {
+      console.error(`[LIBRARIAN] Error in getVerifiedFranchiseInfo:`, err);
+      return '';
+    }
+  }
+
   private async detectAndLearnFromCorrection(query: string, category: 'chat' | 'concierge'): Promise<void> {
     // Patterns that indicate the user is correcting the AI
     const correctionPatterns = [

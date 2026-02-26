@@ -32,29 +32,42 @@ export async function registerRoutes(
         return res.status(400).json({ error: "Message is required" });
       }
       
-      // Use the Librarian to generate a factual, curriculum-based response
-      let response = await librarian.generateResponse(message, category as 'chat' | 'concierge');
-      
-      // CRITICAL SAFETY FILTER: Block hallucinated prices and enforce PHP 660,000
+      // WHITELIST-ONLY MODE FOR CONCIERGE: Only show verified information
       if (category === 'concierge') {
-        // Block any incorrect franchise prices
-        const incorrectPrices = ['1,995,000', '1995000', '500,000', '750,000', '200,000', '1.995', '1.99'];
-        for (const price of incorrectPrices) {
-          const escapedPrice = price.replace(/,/g, ',?');
-          const regex = new RegExp(`PHP ${escapedPrice}|₱${escapedPrice}|${escapedPrice}`, 'gi');
-          if (regex.test(response)) {
-            console.log(`[SAFETY FILTER] Blocked hallucinated price: ${price}`);
-            response = response.replace(regex, '₱660,000');
+        // Check if this is a franchise-related question
+        const franchiseKeywords = ['franchise', 'cost', 'price', 'fee', 'investment', 'how much', 'package', 'included', 'what do i get', 'what is included'];
+        const isFranchiseQuestion = franchiseKeywords.some(kw => message.toLowerCase().includes(kw));
+        
+        if (isFranchiseQuestion) {
+          // ONLY use verified Founder's Wisdom for franchise questions
+          const verifiedResponse = await librarian.getVerifiedFranchiseInfo(message);
+          if (verifiedResponse && verifiedResponse.trim().length > 0) {
+            console.log(`[WHITELIST MODE] Using verified franchise information`);
+            return res.json({ response: verifiedResponse });
+          } else {
+            // If no verified info exists, show safe fallback
+            console.log(`[WHITELIST MODE] No verified info found, using fallback`);
+            const fallback = `For detailed franchise information, please contact us at 3DBotics.LC@gmail.com or call 0995-836-2249. The 3DBotics franchise package costs ₱660,000 all-in and includes everything you need to start your TechDojo location.`;
+            return res.json({ response: fallback });
           }
         }
-        
-        // If question is about pricing and response doesn't mention 660,000, inject it
-        const pricingKeywords = ['cost', 'price', 'fee', 'investment', 'how much', 'franchise', 'initial'];
-        const isAboutPricing = pricingKeywords.some(kw => message.toLowerCase().includes(kw));
-        if (isAboutPricing && !response.includes('660,000')) {
-          console.log(`[SAFETY FILTER] Injecting ₱660,000 into response`);
-          response = `The 3DBotics franchise package costs ₱660,000 all-in. ${response}`;
-        }
+      }
+      
+      // For non-franchise questions or /chat, use normal Librarian
+      let response = await librarian.generateResponse(message, category as 'chat' | 'concierge');
+      
+      // Additional safety filter for any remaining responses
+      if (category === 'concierge') {
+        // Block any number that looks like a price (except 660,000)
+        const pricePattern = /₱\s*([0-9,]+)|PHP\s*([0-9,]+)/gi;
+        response = response.replace(pricePattern, (match, p1, p2) => {
+          const price = (p1 || p2).replace(/,/g, '');
+          if (price !== '660000') {
+            console.log(`[SAFETY FILTER] Replacing price ${price} with ₱660,000`);
+            return '₱660,000';
+          }
+          return match;
+        });
       }
       
       res.json({ response });
@@ -67,11 +80,54 @@ export async function registerRoutes(
     }
   });
 
+  // Get verified franchise information (whitelist-only)
+  app.post("/api/franchise-info", async (req, res) => {
+    try {
+      const franchiseInfo = `✅ 3DBotics Franchise Package - ₱660,000 All-In
+
+What's Included:
+✔️ 5 Brand New 3D Printers (calibrated)
+✔️ 7 Kilos of 3D Filament (assorted colors)
+✔️ 43" Smart TV for classroom instructions
+✔️ 5 Complete 3DPrinting Toolkits
+✔️ 5 Storage Device for file transfers
+✔️ 3 Major Apps for 3D modeling & robotics
+✔️ Per Course Level Robot Projects for marketing & Display
+✔️ Best Selling "ready-to-3DPrint" Files as immediate products
+✔️ Official Marketing Materials (HD logos, editable posters)
+
+Plus:
+✅ INTENSIVE Training for Branch Owner + Facilitators (face-to-face and weekly Zoom)
+✅ Full access to replicable module outlines, guides, and manuals
+✅ Lifetime tech and business support from 3DBotics Main Office
+✅ Instant ACCESS to state-of-the-art AI web-platform for branch operations
+✔️ Rental Space Security Deposit
+✔️ 1st Two Months Rent fee
+
+Contact us: 3DBotics.LC@gmail.com | 0995-836-2249`;
+      res.json({ info: franchiseInfo });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to retrieve franchise information" });
+    }
+  });
+
   app.post("/api/learn", async (req, res) => {
     try {
       const { category, question, answer } = req.body;
       if (!category || !question || !answer) {
         return res.status(400).json({ error: "Category, question, and answer are required" });
+      }
+
+      // For concierge, validate that franchise info is accurate
+      if (category === 'concierge') {
+        const pricePattern = /₱\s*([0-9,]+)|PHP\s*([0-9,]+)/;
+        const priceMatch = answer.match(pricePattern);
+        if (priceMatch) {
+          const price = (priceMatch[1] || priceMatch[2]).replace(/,/g, '');
+          if (price !== '660000') {
+            return res.status(400).json({ error: `Invalid price. The 3DBotics franchise cost is ₱660,000, not ₱${price}` });
+          }
+        }
       }
 
       await librarian.learn(category, question, answer);
@@ -82,6 +138,21 @@ export async function registerRoutes(
       } else {
         res.status(500).json({ error: "Internal server error" });
       }
+    }
+  });
+
+  // Validate franchise pricing before allowing any wisdom to be saved
+  app.post("/api/validate-franchise-price", async (req, res) => {
+    try {
+      const { price } = req.body;
+      const cleanPrice = String(price).replace(/[^0-9]/g, '');
+      if (cleanPrice === '660000') {
+        res.json({ valid: true, message: "Price is correct" });
+      } else {
+        res.json({ valid: false, message: `Invalid price. The correct 3DBotics franchise cost is ₱660,000` });
+      }
+    } catch (error) {
+      res.status(500).json({ error: "Validation failed" });
     }
   });
 
