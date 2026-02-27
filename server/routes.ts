@@ -59,7 +59,7 @@ export async function registerRoutes(
       // NUCLEAR OVERRIDE FOR CONCIERGE: Franchise questions bypass AI entirely
       if (category === 'concierge') {
         const lowerMessage = message.toLowerCase();
-        const franchiseKeywords = ['franchise', 'cost', 'price', 'fee', 'investment', 'how much', 'package', 'included', 'what do i get', 'what is included', 'cash out', 'initial', 'total', 'all-in'];
+        const franchiseKeywords = ['franchise', 'cost', 'price', 'fee', 'investment', 'how much', 'package', 'included', 'what do i get', 'what is included', 'cash out', 'initial', 'total', 'all-in', 'downpayment', 'payment', 'startup', 'partnership'];
         const isFranchiseQuestion = franchiseKeywords.some(kw => lowerMessage.includes(kw));
         
         if (isFranchiseQuestion) {
@@ -82,7 +82,9 @@ export async function registerRoutes(
           '200,000', '200000',
           '1,200,000', '1200000',
           '2,000,000', '2000000',
-          '2.5 million', '2.5m'
+          '2.5 million', '2.5m',
+          '350,000', '350000',
+          '350', '200'
         ];
         
         for (const wrongPrice of blockedPrices) {
@@ -113,6 +115,12 @@ export async function registerRoutes(
         if (writtenPattern.test(response)) {
           console.log(`[FINAL SAFETY FILTER] Detected written-out price, replacing with ₱660,000`);
           response = response.replace(writtenPattern, '₱660,000');
+        }
+        
+        // EMERGENCY: If response contains "partnership" or "non-refundable", it's definitely wrong - replace entire response
+        if (response.toLowerCase().includes('partnership') || response.toLowerCase().includes('non-refundable')) {
+          console.log(`[EMERGENCY OVERRIDE] Detected hallucinated partnership/non-refundable response - replacing with correct franchise info`);
+          return res.json({ response: FRANCHISE_RESPONSE });
         }
       }
       
