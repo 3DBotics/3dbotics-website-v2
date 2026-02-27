@@ -21,6 +21,7 @@ interface LearningModal {
   messageId: string;
 }
 
+// NOTE: This is for non-franchise questions only. Franchise questions are handled by the FRONTEND SAFETY SHIELD.
 const LM_STUDIO_URL = "https://undeclarable-kandy-graspingly.ngrok-free.dev/v1/chat/completions";
 
 export default function ConciergePage() {
@@ -157,11 +158,17 @@ TechDojo is a hands-on robotics journey where students design, build, and battle
 - **Weekly Sparring**: Friendly competition among students
 - **Semi-Annual Tournaments**: All branches nationwide compete
 
-## Pricing (ALWAYS PROVIDE THESE EXACT FIGURES)
+## Pricing (ALWAYS PROVIDE THESE EXACT FIGURES - NEVER MENTION FRANCHISE PRICING)
 - **Monthly Tuition**: PHP 3,995 per month per student
   - Breakdown: PHP 3,500 (tuition) + PHP 495 (access fee)
 - **Starter Kit**: PHP 1,100 (one-time purchase)
   - Includes: Sketchpad & Pencil, 3DBotics Bag, and White Lab Gown
+
+## CRITICAL: FRANCHISE QUESTIONS
+IF THE USER ASKS ABOUT FRANCHISE PRICING, COST, FEES, OR INVESTMENT:
+- DO NOT ANSWER. The frontend will intercept this and show the correct information.
+- The franchise cost is ₱660,000 all-in (handled by frontend, not by you).
+- You should never be asked this question because the frontend intercepts it.
 
 ## Lab Gown Promotion System
 Every student starts with the **White Lab Gown** and progresses through the colors as they master skills and reach age milestones:
@@ -258,6 +265,30 @@ We follow China–Japan Standard Technology Education (中日标准科技教育 
     }
   };
 
+  // FRONTEND SAFETY SHIELD: Hard-coded franchise response
+  const FRANCHISE_RESPONSE = `✅ **3DBotics Franchise Package - ₱660,000 All-In**
+
+**What's Included:**
+• 5 Brand New 3D Printers (calibrated & ready to use)
+• 7 Kilos of 3D Filament (assorted colors)
+• 43" Smart TV for classroom instructions
+• 5 Complete 3DPrinting Toolkits
+• 5 Storage Devices for file transfers
+• 3 Major Apps for 3D modeling & robotics
+• Per Course Level Robot Projects for marketing & Display
+• Best Selling "ready-to-3DPrint" Files as immediate products
+• Official Marketing Materials (HD logos, editable posters)
+
+**Plus:**
+✅ INTENSIVE Training for Branch Owner + Facilitators (face-to-face and weekly Zoom)
+✅ Full access to replicable module outlines, guides, and manuals
+✅ Lifetime tech and business support from 3DBotics Main Office
+✅ Instant ACCESS to state-of-the-art AI web-platform for branch operations
+✅ Rental Space Security Deposit
+✅ 1st Two Months Rent fee
+
+**Contact us:** 3DBotics.LC@gmail.com | 0995-836-2249`;
+
   const handleSendMessage = async () => {
     if (!input.trim()) return;
 
@@ -272,7 +303,21 @@ We follow China–Japan Standard Technology Education (中日标准科技教育 
     setInput("");
     setIsLoading(true);
 
-    const aiResponse = await ask3DBoticsAI(input, [...messages, userMessage]);
+    // FRONTEND SAFETY SHIELD: Check if this is a franchise question
+    const lowerInput = input.toLowerCase();
+    const franchiseKeywords = ['franchise', 'cost', 'price', 'fee', 'investment', 'how much', 'package', 'included', 'what do i get', 'what is included', 'cash out', 'initial', 'total', 'all-in', 'downpayment', 'payment', 'startup'];
+    const isFranchiseQuestion = franchiseKeywords.some(kw => lowerInput.includes(kw));
+
+    let aiResponse: string;
+    
+    if (isFranchiseQuestion) {
+      // BYPASS AI ENTIRELY FOR FRANCHISE QUESTIONS
+      console.log(`[FRONTEND SHIELD] Franchise question detected: "${input}" - Using hard-coded response`);
+      aiResponse = FRANCHISE_RESPONSE;
+    } else {
+      // For non-franchise questions, use the AI
+      aiResponse = await ask3DBoticsAI(input, [...messages, userMessage]);
+    }
 
     const assistantMessage: Message = {
       id: (Date.now() + 1).toString(),
