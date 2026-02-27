@@ -37,6 +37,7 @@ export default function ConciergePage() {
   });
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [isSubmittingWisdom, setIsSubmittingWisdom] = useState(false);
+  const [franchiseResponse, setFranchiseResponse] = useState<string>("");
   const scrollContainer = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -54,6 +55,49 @@ export default function ConciergePage() {
     } catch (err) {
       console.warn("Failed to load chat history from localStorage:", err);
     }
+    
+    // FRONTEND SAFETY SHIELD: Fetch franchise response from API (always fresh)
+    const fetchFranchiseInfo = async () => {
+      try {
+        const response = await fetch("/api/franchise-info", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({})
+        });
+        const data = await response.json();
+        if (data.info) {
+          setFranchiseResponse(data.info);
+          console.log("[FRONTEND SHIELD] Franchise response loaded from API");
+        }
+      } catch (err) {
+        console.error("Failed to load franchise info:", err);
+        // Fallback to hard-coded response if API fails
+        setFranchiseResponse(`✅ **3DBotics Franchise Package - ₱660,000 All-In**
+
+**What's Included:**
+• 5 Brand New 3D Printers (calibrated & ready to use)
+• 7 Kilos of 3D Filament (assorted colors)
+• 43" Smart TV for classroom instructions
+• 5 Complete 3DPrinting Toolkits
+• 5 Storage Devices for file transfers
+• 3 Major Apps for 3D modeling & robotics
+• Per Course Level Robot Projects for marketing & Display
+• Best Selling "ready-to-3DPrint" Files as immediate products
+• Official Marketing Materials (HD logos, editable posters)
+
+**Plus:**
+✅ INTENSIVE Training for Branch Owner + Facilitators (face-to-face and weekly Zoom)
+✅ Full access to replicable module outlines, guides, and manuals
+✅ Lifetime tech and business support from 3DBotics Main Office
+✅ Instant ACCESS to state-of-the-art AI web-platform for branch operations
+✅ Rental Space Security Deposit
+✅ 1st Two Months Rent fee
+
+**Contact us:** 3DBotics.LC@gmail.com | 0995-836-2249`);
+      }
+    };
+    
+    fetchFranchiseInfo();
   }, []);
 
   // Save messages to localStorage whenever they change
@@ -265,29 +309,7 @@ We follow China–Japan Standard Technology Education (中日标准科技教育 
     }
   };
 
-  // FRONTEND SAFETY SHIELD: Hard-coded franchise response
-  const FRANCHISE_RESPONSE = `✅ **3DBotics Franchise Package - ₱660,000 All-In**
 
-**What's Included:**
-• 5 Brand New 3D Printers (calibrated & ready to use)
-• 7 Kilos of 3D Filament (assorted colors)
-• 43" Smart TV for classroom instructions
-• 5 Complete 3DPrinting Toolkits
-• 5 Storage Devices for file transfers
-• 3 Major Apps for 3D modeling & robotics
-• Per Course Level Robot Projects for marketing & Display
-• Best Selling "ready-to-3DPrint" Files as immediate products
-• Official Marketing Materials (HD logos, editable posters)
-
-**Plus:**
-✅ INTENSIVE Training for Branch Owner + Facilitators (face-to-face and weekly Zoom)
-✅ Full access to replicable module outlines, guides, and manuals
-✅ Lifetime tech and business support from 3DBotics Main Office
-✅ Instant ACCESS to state-of-the-art AI web-platform for branch operations
-✅ Rental Space Security Deposit
-✅ 1st Two Months Rent fee
-
-**Contact us:** 3DBotics.LC@gmail.com | 0995-836-2249`;
 
   const handleSendMessage = async () => {
     if (!input.trim()) return;
@@ -312,8 +334,8 @@ We follow China–Japan Standard Technology Education (中日标准科技教育 
     
     if (isFranchiseQuestion) {
       // BYPASS AI ENTIRELY FOR FRANCHISE QUESTIONS
-      console.log(`[FRONTEND SHIELD] Franchise question detected: "${input}" - Using hard-coded response`);
-      aiResponse = FRANCHISE_RESPONSE;
+      console.log(`[FRONTEND SHIELD] Franchise question detected: "${input}" - Using API response`);
+      aiResponse = franchiseResponse || "Loading franchise information...";
     } else {
       // For non-franchise questions, use the AI
       aiResponse = await ask3DBoticsAI(input, [...messages, userMessage]);
