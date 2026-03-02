@@ -47,6 +47,11 @@ export async function registerRoutes(
 ✅ Rental Space Security Deposit
 ✅ 1st Two Months Rent fee
 
+**Payment Schedule:**
+📌 **Reservation (10%) - ₱66,000** — Secures your promo and city target
+📌 **After 2 Weeks (40%) - ₱264,000** — Equipment placement begins
+📌 **After 3 Weeks (50%) - ₱330,000** — Full payment before delivery of equipment
+
 **Contact us:** 3DBotics.LC@gmail.com | 0995-836-2249`;
 
   app.post("/api/chat", async (req, res) => {
@@ -59,7 +64,7 @@ export async function registerRoutes(
       // NUCLEAR OVERRIDE FOR CONCIERGE: Franchise questions bypass AI entirely
       if (category === 'concierge') {
         const lowerMessage = message.toLowerCase();
-        const franchiseKeywords = ['franchise', 'cost', 'price', 'fee', 'investment', 'how much', 'package', 'included', 'what do i get', 'what is included', 'cash out', 'initial', 'total', 'all-in', 'downpayment', 'payment', 'startup', 'partnership'];
+        const franchiseKeywords = ['franchise', 'cost', 'price', 'fee', 'investment', 'how much', 'package', 'included', 'what do i get', 'what is included', 'cash out', 'initial', 'total', 'all-in', 'downpayment', 'payment', 'startup', 'partnership', 'reservation', 'deposit', 'schedule', 'terms', 'installment', 'balance', 'remaining', 'next steps', 'move forward', 'open a branch', 'open branch', 'start a branch'];
         const isFranchiseQuestion = franchiseKeywords.some(kw => lowerMessage.includes(kw));
         
         if (isFranchiseQuestion) {
