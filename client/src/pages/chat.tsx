@@ -340,7 +340,7 @@ export default function ChatPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && !isLoading && handleSendMessage()}
-              placeholder="Ask your AI teacher about Arduino, motors, or 3D printing..."
+              placeholder="Ask your AI Master Brain about Arduino, motors, or 3D printing..."
               className="flex-1 bg-white border-2 border-gray-300 rounded-full px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-brand-teal transition"
               disabled={isLoading}
             />

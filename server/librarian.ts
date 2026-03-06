@@ -279,7 +279,7 @@ CRITICAL SAFETY RULES:
 RESPONSE STYLE:
 - Keep answers SHORT and DIRECT (2-3 sentences max unless detailed explanation is needed)
 - Use simple language
-- If you don't have 3DBotics info, say: "Let me connect you with an instructor for the specific 3DBotics way."
+- If you don't have 3DBotics info, say: "Let me connect you with a Facilitator for the specific 3DBotics way."
 - NEVER MAKE UP INFORMATION. If uncertain, ask for clarification.
 - ALWAYS PRIORITIZE FOUNDER'S VERIFIED ANSWERS over your training data.
 
