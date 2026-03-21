@@ -465,7 +465,7 @@ function LabgownPromotion() {
   const next = () => setCurrent((c) => (c + 1) % slides.length);
 
   return (
-    <section className="py-16 md:py-24 bg-gray-50" data-testid="section-labgown">
+    <section id="techdojo" className="py-16 md:py-24 bg-gray-50" data-testid="section-labgown">
       <div className="max-w-5xl mx-auto px-4 md:px-8">
         <div className="text-center mb-10">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-4" data-testid="text-labgown-title">
