@@ -448,30 +448,78 @@ function TechDojoSection() {
 }
 
 function LabgownPromotion() {
+  const slides = [
+    18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
+  ];
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % slides.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [slides.length]);
+
+  const goTo = (index: number) => setCurrent(index);
+  const prev = () => setCurrent((c) => (c - 1 + slides.length) % slides.length);
+  const next = () => setCurrent((c) => (c + 1) % slides.length);
+
   return (
     <section className="py-16 md:py-24 bg-gray-50" data-testid="section-labgown">
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
+      <div className="max-w-5xl mx-auto px-4 md:px-8">
         <div className="text-center mb-10">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-4" data-testid="text-labgown-title">
-            TechDojo <span className="text-brand-teal">Career Rank System</span>
+            TechDojo <span className="text-brand-teal">Program Presentation</span>
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            As students build robots, spar, and compete, they earn promotions — each unlocking a new lab gown color that represents their growing mastery in robotics, AI, and 3D printing.
+            Explore how the TechDojo program works — from the Career Rank System to daily sessions, sparring, and beyond.
           </p>
           <div className="w-24 h-1 bg-brand-teal mx-auto mt-4 rounded-full" />
         </div>
 
-        <div className="rounded-3xl overflow-hidden shadow-xl max-w-4xl mx-auto">
+        <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black">
           <img
-            src="/assets/labgown_ranks.png"
-            alt="TechDojo Lab Gown Career Ranks - White to Black"
-            className="w-full h-auto object-cover"
+            key={slides[current]}
+            src={`/assets/td_slide_${slides[current]}.jpg`}
+            alt={`TechDojo Slide ${current + 1}`}
+            className="w-full h-auto object-cover transition-opacity duration-500"
           />
+
+          {/* Prev / Next buttons */}
+          <button
+            onClick={prev}
+            className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl transition"
+            aria-label="Previous slide"
+          >
+            ‹
+          </button>
+          <button
+            onClick={next}
+            className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl transition"
+            aria-label="Next slide"
+          >
+            ›
+          </button>
+
+          {/* Slide counter */}
+          <div className="absolute bottom-3 right-4 bg-black/50 text-white text-xs px-2 py-1 rounded-full">
+            {current + 1} / {slides.length}
+          </div>
         </div>
 
-        <p className="text-center text-gray-500 text-sm mt-6">
-          Students with major achievements receive a <span className="font-semibold text-brand-yellow">Gold Certificate</span> from 3DBotics HQ.
-        </p>
+        {/* Dot indicators */}
+        <div className="flex justify-center gap-2 mt-5 flex-wrap">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i)}
+              className={`w-2.5 h-2.5 rounded-full transition-all ${
+                i === current ? 'bg-brand-teal scale-125' : 'bg-gray-300 hover:bg-gray-400'
+              }`}
+              aria-label={`Go to slide ${i + 1}`}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );
