@@ -291,7 +291,7 @@ function FounderSection() {
             </h2>
             
             <p className="text-gray-700 text-base md:text-lg leading-relaxed mb-6" data-testid="text-founder-bio-1">
-              3DBotics was founded by Veni Flores, an internationally recognized public speaker, bestselling author, and business mentor. With over 14 years of experience empowering corporations to achieve exponential growth, Veni has now focused his passion for technology and education to create 3DBotics—a movement designed to equip Filipino youth with future-ready skills in 3D printing, robotics, and artificial intelligence.
+              3DBotics was founded by Veni Flores, an internationally recognized public speaker, bestselling author, and business mentor. With over 30 years of experience empowering individuals and corporations to achieve exponential growth, Veni has now focused his passion for technology and education to create 3DBotics—a movement designed to equip Filipino youth with future-ready skills in 3D printing, robotics, and artificial intelligence.
             </p>
             
             <p className="text-gray-700 text-base md:text-lg leading-relaxed" data-testid="text-founder-bio-2">
