@@ -168,17 +168,10 @@ function HeroSection() {
             size="lg" 
             className="bg-brand-yellow text-gray-800 font-bold px-8 py-6 text-lg rounded-xl shadow-lg"
             data-testid="button-explore-programs"
+            onClick={() => document.getElementById('techdojo')?.scrollIntoView({ behavior: 'smooth' })}
           >
-            Explore Programs
+            Explore TechDojo Program
             <ChevronRight className="ml-2 w-5 h-5" />
-          </Button>
-          <Button 
-            size="lg" 
-            variant="outline" 
-            className="border-2 border-gray-800 text-gray-800 font-bold px-8 py-6 text-lg bg-white/50 rounded-xl"
-            data-testid="button-learn-more"
-          >
-            Learn More
           </Button>
         </div>
       </div>
@@ -449,6 +442,66 @@ function TechDojoSection() {
             </Button>
           </Card>
         </div>
+      </div>
+    </section>
+  );
+}
+
+function LabgownPromotion() {
+  const ranks = [
+    { color: "White", label: "Beginner Innovator", bg: "bg-gray-100", text: "text-gray-700", border: "border-gray-300" },
+    { color: "Green", label: "Young Builder", bg: "bg-green-100", text: "text-green-700", border: "border-green-400" },
+    { color: "Blue", label: "Robo Explorer", bg: "bg-blue-100", text: "text-blue-700", border: "border-blue-400" },
+    { color: "Yellow", label: "Robo Challenger", bg: "bg-yellow-100", text: "text-yellow-700", border: "border-yellow-400" },
+    { color: "Red", label: "Robo Competitor", bg: "bg-red-100", text: "text-red-700", border: "border-red-400" },
+    { color: "Black", label: "RoboMaster", bg: "bg-gray-800", text: "text-white", border: "border-gray-900" },
+  ];
+
+  return (
+    <section className="py-16 md:py-24 bg-gray-50" data-testid="section-labgown">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-4" data-testid="text-labgown-title">
+            TechDojo <span className="text-brand-teal">Lab Gown Promotion</span>
+          </h2>
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-2">
+            Earn your rank through robot creation and sparring matches. Each promotion unlocks a new lab gown color — a badge of your growing expertise.
+          </p>
+          <div className="w-24 h-1 bg-brand-teal mx-auto mt-4 rounded-full" />
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
+          {ranks.map((rank, index) => (
+            <div
+              key={index}
+              className={`rounded-2xl border-2 ${rank.bg} ${rank.border} p-4 text-center shadow-sm`}
+            >
+              <div className={`text-lg font-bold ${rank.text} mb-1`}>{rank.color}</div>
+              <div className="text-sm text-gray-600">{rank.label}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+          <div className="bg-white rounded-2xl border-2 p-6 shadow-sm text-center" style={{ borderColor: '#7DD3D8' }}>
+            <div className="text-4xl font-bold text-brand-teal mb-1">₱950</div>
+            <div className="text-gray-700 font-semibold text-lg mb-2">Per Promotion</div>
+            <p className="text-gray-500 text-sm">Charged only upon promotion — not every month.</p>
+          </div>
+          <div className="bg-white rounded-2xl border-2 p-6 shadow-sm" style={{ borderColor: '#EAB93F' }}>
+            <h4 className="text-brand-yellow font-bold text-lg mb-3">How to Get Promoted</h4>
+            <ul className="text-gray-600 text-sm space-y-2 text-left">
+              <li>✅ Project Milestones (Qualifications)</li>
+              <li>✅ Weekly Sparring Performance</li>
+              <li>✅ Quarterly Tournament Results</li>
+              <li>✅ Written Exam + Robot Demonstration</li>
+            </ul>
+          </div>
+        </div>
+
+        <p className="text-center text-gray-500 text-sm mt-8">
+          Students with major achievements receive a <span className="font-semibold text-brand-yellow">Gold Certificate</span> from 3DBotics HQ.
+        </p>
       </div>
     </section>
   );
@@ -802,6 +855,7 @@ export default function Home() {
         <FounderSection />
         <ProgramsSection />
         <TechDojoSection />
+        <LabgownPromotion />
         <TestimonialsSection />
         <VideosSection />
         <Branches />
