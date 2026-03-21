@@ -41,7 +41,7 @@ function Navigation() {
     { label: "Programs", href: "#programs" },
     { label: "TechDojo", href: "#techdojo" },
     { label: "Videos", href: "#videos" },
-    { label: "Branches", href: "#branches" },
+    { label: "Operational Branches", href: "#branches" },
     { label: "Contact", href: "#contact" },
   ];
 
@@ -653,7 +653,7 @@ function Branches() {
     <section id="branches" className="py-16 md:py-24 bg-white" data-testid="branches-section">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-12" data-testid="text-branches-title">
-          Branches
+          Operational Branches
         </h2>
         <div className="grid md:grid-cols-2 gap-6">
           {branches.map((branch, index) => (
