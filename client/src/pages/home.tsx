@@ -291,7 +291,7 @@ function FounderSection() {
             </p>
 
             <p className="text-gray-700 text-base md:text-lg leading-relaxed mt-6" data-testid="text-founder-bio-3">
-              On March 17, 2026, on its 2nd anniversary, 3DBotics achieved a company valuation of <span className="font-semibold text-gray-900">₱316 Million</span> — a testament to Veni Flores's vision of building a world-class technology education company rooted in the Philippines.
+              On March 17, 2026, on its 2nd anniversary, 3DBotics achieved a company valuation of <span className="font-semibold text-gray-900">₱316 Million</span>. As the majority owner with a 91% stake, this places Veni Flores's net worth from 3DBotics at approximately <span className="font-semibold text-gray-900">₱287.56 Million</span> — a remarkable milestone for a company built from the ground up in just two years.
             </p>
           </div>
           
