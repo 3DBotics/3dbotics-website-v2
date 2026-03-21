@@ -39,7 +39,6 @@ function Navigation() {
     { label: "Home", href: "#home" },
     { label: "About", href: "#about" },
     { label: "Programs", href: "#programs" },
-    { label: "TechDojo", href: "#techdojo" },
     { label: "Videos", href: "#videos" },
     { label: "Operational Branches", href: "#branches" },
     { label: "Contact", href: "#contact" },
@@ -872,7 +871,6 @@ export default function Home() {
         <AboutSection />
         <FounderSection />
         <ProgramsSection />
-        <TechDojoSection />
         <LabgownPromotion />
         <TestimonialsSection />
         <VideosSection />
