@@ -6,6 +6,7 @@ import { librarian } from "./librarian";
 import { searchPhotos } from "./pexels";
 import { getEducationalVideos } from "./educationalVideos";
 import { createProxyMiddleware } from "http-proxy-middleware";
+import { sendContactEmail } from "./email";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -15,6 +16,10 @@ export async function registerRoutes(
     try {
       const validatedData = contactMessageSchema.parse(req.body);
       const submission = await storage.createContactSubmission(validatedData);
+      // Send email notification to 3dbotics.LC@gmail.com
+      sendContactEmail(validatedData.name, validatedData.email, validatedData.message).catch((err) => {
+        console.error("[Email] Failed to send contact email:", err);
+      });
       res.json({ success: true, id: submission.id });
     } catch (error) {
       if (error instanceof Error) {
