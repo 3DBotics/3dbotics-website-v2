@@ -447,8 +447,9 @@ function TechDojoSection() {
 }
 
 function LabgownPromotion() {
+  // Slide 21 removed — contains pricing (PHP 950)
   const slides = [
-    18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
+    18, 19, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
   ];
   const [current, setCurrent] = useState(0);
 
@@ -476,18 +477,27 @@ function LabgownPromotion() {
           <div className="w-24 h-1 bg-brand-teal mx-auto mt-4 rounded-full" />
         </div>
 
-        <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black">
-          <img
-            key={slides[current]}
-            src={`/assets/td_slide_${slides[current]}.jpg`}
-            alt={`TechDojo Slide ${current + 1}`}
-            className="w-full h-auto object-cover transition-opacity duration-500"
-          />
+        {/* Slideshow — stacked images with CSS fade, no DOM remount */}
+        <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black" style={{ aspectRatio: '16/9' }}>
+          {slides.map((num, i) => (
+            <img
+              key={num}
+              src={`/assets/td_slide_${num}.jpg`}
+              alt={`TechDojo Slide ${i + 1}`}
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{
+                opacity: i === current ? 1 : 0,
+                transition: 'opacity 0.6s ease-in-out',
+                zIndex: i === current ? 1 : 0,
+              }}
+            />
+          ))}
 
           {/* Prev / Next buttons */}
           <button
             onClick={prev}
             className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl transition"
+            style={{ zIndex: 10 }}
             aria-label="Previous slide"
           >
             ‹
@@ -495,13 +505,14 @@ function LabgownPromotion() {
           <button
             onClick={next}
             className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl transition"
+            style={{ zIndex: 10 }}
             aria-label="Next slide"
           >
             ›
           </button>
 
           {/* Slide counter */}
-          <div className="absolute bottom-3 right-4 bg-black/50 text-white text-xs px-2 py-1 rounded-full">
+          <div className="absolute bottom-3 right-4 bg-black/50 text-white text-xs px-2 py-1 rounded-full" style={{ zIndex: 10 }}>
             {current + 1} / {slides.length}
           </div>
         </div>
