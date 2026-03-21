@@ -289,6 +289,10 @@ function FounderSection() {
             <p className="text-gray-700 text-base md:text-lg leading-relaxed" data-testid="text-founder-bio-2">
               Veni's innovation journey began during the pandemic with the success of Toydemic, the largest home-based 3D printing farm in the Philippines. From this venture, 3DBotics was born, combining his expertise in entrepreneurship with a mission to prepare the next generation for the demands of Industry 4.0.
             </p>
+
+            <p className="text-gray-700 text-base md:text-lg leading-relaxed mt-6" data-testid="text-founder-bio-3">
+              On March 17, 2026, on its 2nd anniversary, 3DBotics achieved a company valuation of <span className="font-semibold text-gray-900">₱316 Million</span> — a testament to Veni Flores's vision of building a world-class technology education company rooted in the Philippines.
+            </p>
           </div>
           
           <div className="flex flex-col items-center">
