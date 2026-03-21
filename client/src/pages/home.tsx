@@ -643,7 +643,7 @@ function ContactSection() {
                 <div>
                   <p className="text-gray-800 font-medium mb-1">Email</p>
                   <p className="text-gray-600" data-testid="text-contact-email">
-                    info@3DBotics.ph
+                    3dbotics.LC@gmail.com
                   </p>
                 </div>
               </div>
@@ -654,7 +654,7 @@ function ContactSection() {
                 <div>
                   <p className="text-gray-800 font-medium mb-1">Phone</p>
                   <p className="text-gray-600" data-testid="text-contact-phone">
-                    (0966) 418 7054
+                    09199727899
                   </p>
                 </div>
               </div>
