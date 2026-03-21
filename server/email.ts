@@ -1,37 +1,21 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 const RECIPIENT_EMAIL = "3dbotics.LC@gmail.com";
 
-function createTransporter() {
-  const gmailUser = process.env.GMAIL_USER;
-  const gmailAppPassword = process.env.GMAIL_APP_PASSWORD;
-
-  if (!gmailUser || !gmailAppPassword) {
-    console.warn("[Email] GMAIL_USER or GMAIL_APP_PASSWORD env vars not set. Emails will not be sent.");
-    return null;
-  }
-
-  return nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: gmailUser,
-      pass: gmailAppPassword,
-    },
-  });
-}
-
 export async function sendContactEmail(name: string, email: string, message: string): Promise<void> {
-  const transporter = createTransporter();
+  const apiKey = process.env.RESEND_API_KEY;
 
-  if (!transporter) {
-    console.warn("[Email] Skipping email send — transporter not configured.");
+  if (!apiKey) {
+    console.warn("[Email] RESEND_API_KEY env var not set. Emails will not be sent.");
     return;
   }
 
-  const mailOptions = {
-    from: `"3DBotics Website" <${process.env.GMAIL_USER}>`,
-    to: RECIPIENT_EMAIL,
-    replyTo: email,
+  const resend = new Resend(apiKey);
+
+  const { error } = await resend.emails.send({
+    from: "3DBotics Website <onboarding@resend.dev>",
+    to: [RECIPIENT_EMAIL],
+    reply_to: email,
     subject: `New Contact Form Message from ${name}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #7DD3D8; border-radius: 12px;">
@@ -47,8 +31,11 @@ export async function sendContactEmail(name: string, email: string, message: str
         <p style="color: #aaa; font-size: 12px;">This message was sent via the contact form on <a href="https://3dbotics.ph" style="color: #7DD3D8;">3dbotics.ph</a></p>
       </div>
     `,
-  };
+  });
 
-  await transporter.sendMail(mailOptions);
+  if (error) {
+    throw new Error(`Resend error: ${JSON.stringify(error)}`);
+  }
+
   console.log(`[Email] Contact form email sent to ${RECIPIENT_EMAIL} from ${email}`);
 }
