@@ -683,6 +683,11 @@ function Branches() {
             </div>
           ))}
         </div>
+        <div className="text-center mt-10">
+          <p className="text-lg font-semibold text-brand-teal" data-testid="text-branches-coming-soon">
+            40 more branches are opening soon!
+          </p>
+        </div>
       </div>
     </section>
   );
