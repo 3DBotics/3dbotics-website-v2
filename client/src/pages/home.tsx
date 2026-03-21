@@ -515,47 +515,6 @@ function TestimonialsSection() {
 }
 
 function ContactSection() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: ""
-  });
-  const { toast } = useToast();
-
-  const contactMutation = useMutation({
-    mutationFn: async (data: { name: string; email: string; message: string }) => {
-      const response = await apiRequest("POST", "/api/contact", data);
-      return response.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Message Sent!",
-        description: "Thank you for contacting us. We'll get back to you soon.",
-      });
-      setFormData({ name: "", email: "", message: "" });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.name || !formData.email || !formData.message) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all fields.",
-        variant: "destructive",
-      });
-      return;
-    }
-    contactMutation.mutate(formData);
-  };
-
   return (
     <section id="contact" className="py-16 md:py-24 bg-white" data-testid="section-contact">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
@@ -566,60 +525,8 @@ function ContactSection() {
           <div className="w-24 h-1 bg-brand-teal mx-auto rounded-full" />
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
-          <Card className="bg-gray-50 border-2 rounded-2xl p-6 md:p-8 shadow-lg" style={{ borderColor: '#7DD3D8' }} data-testid="card-contact-form">
-            <h3 className="text-xl font-bold text-gray-800 mb-6">Send us a Message</h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Input
-                  placeholder="Your Name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="bg-white border-gray-300 text-gray-800 placeholder:text-gray-400"
-                  data-testid="input-contact-name"
-                />
-              </div>
-              <div>
-                <Input
-                  type="email"
-                  placeholder="Your Email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="bg-white border-gray-300 text-gray-800 placeholder:text-gray-400"
-                  data-testid="input-contact-email"
-                />
-              </div>
-              <div>
-                <Textarea
-                  placeholder="Your Message"
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className="bg-white border-gray-300 text-gray-800 placeholder:text-gray-400 min-h-32"
-                  data-testid="input-contact-message"
-                />
-              </div>
-              <Button 
-                type="submit"
-                className="w-full bg-brand-teal text-white font-bold py-6 rounded-xl"
-                disabled={contactMutation.isPending}
-                data-testid="button-submit-contact"
-              >
-                {contactMutation.isPending ? (
-                  <>
-                    <Loader2 className="mr-2 w-4 h-4 animate-spin" />
-                    Sending...
-                  </>
-                ) : (
-                  <>
-                    Send Message
-                    <Send className="ml-2 w-4 h-4" />
-                  </>
-                )}
-              </Button>
-            </form>
-          </Card>
-
-          <Card className="bg-gray-50 border-2 rounded-2xl p-6 md:p-8 shadow-lg" style={{ borderColor: '#7DD3D8' }} data-testid="card-contact-info">
+        <div className="flex justify-center">
+          <Card className="bg-gray-50 border-2 rounded-2xl p-6 md:p-8 shadow-lg w-full max-w-lg" style={{ borderColor: '#7DD3D8' }} data-testid="card-contact-info">
             <h3 className="text-xl font-bold text-gray-800 mb-6">Contact Information</h3>
             <div className="space-y-6">
               <div className="flex items-start gap-4">
@@ -726,29 +633,19 @@ function VideosSection() {
 }
 
 const branches = [
-  { name: "3DBotics Cagayan De Oro", contact: "0976 176 5241", address: "ROOM 3D, H BUILDING, LOT 13, MASTERSON MILES, MASTERSON AVENUE, UPPER CARMEN, CAGAYAN DE ORO CITY" },
-  { name: "3DBotics Bacolod", contact: "0919 065 2600", address: "2nd Floor Mayfair Plaza 12th Lacson ST. Bacolod City" },
-  { name: "3DBotics Bacoor, Cavite", contact: "0917 872 3189", address: "Center Name: Play Logix Studio /3DBotics Bacoor Address: 2F Main Square Mall Bacoor Blvd, Brgy Bayanan, Bacoor City" },
-  { name: "3DBotics Batangas City", contact: "0917 127 4167", address: "2nd floor RL building P burgos st. Corner D silang st. Batangas city" },
-  { name: "3DBotics Cabuyao City", contact: "0920-276-1204", address: "Unit 3C RLI Bldg., Southpoint Banay-Banay, Cabuyao City, Laguna" },
-  { name: "3DBotics Catanduanes", contact: "0968 602 7812", address: "Sta. Elena, Virac, Catanduanes" },
-  { name: "3DBotics Imus City", contact: "0956-895-0278", address: "Center Name: Robofab 3DBotics Imus | 189 RCJ Commercial Bldg. Gen. Yengco St. Bayan Luma 1 Imus City Cavite" },
-  { name: "3DBotics Las Piñas", contact: "0998 530 9437", address: "Scholl/Center Name: 3DBotics Las Piñas x Mind Builderz Address: Unit 115 Vatican building BF Resort Las Pinas" },
-  { name: "3DBotics Makati City", contact: "09176726871", address: "Unit 127, Mile Long Building Amorosolo Corner, Rufino st. Legaspi Village Makati City" },
-  { name: "3DBotics Mandaluyong City", contact: "0917 578 1611", address: "6F MG Tower II, Shaw Blvd., Mandaluyong City" },
-  { name: "3DBotics Muntinlupa", contact: "0927-572-2212", address: "IDEYA P-H Tutorial Services | Festival Mall Alabang" },
-  { name: "3DBotics Nuvali", contact: "0975 081 8303", address: "2nd Floor (near Shopwise), Laguna Central, Sta. Rosa Laguna" },
-  { name: "3DBotics Occ. Mindoro", contact: "0968 524 4403", address: "Scholl/Center Name: SJ 3Dbotics Learning Hub Address: Tagumpay A, Bagong Sikat ,San Jose Occidental Mindoro" },
-  { name: "3DBotics Ormoc City", contact: "0969 648 2744", address: "UG 113, Chinatown Eastgate, Lilia Ave., Brgy. Cogon, Ormoc City" },
-  { name: "3DBotics Parañaque", contact: "0995 861 8106", address: "Unit 2, 2nd Floor El Grande Arcade, 316 El Grande Avenue, BF Parañaque City, 1720" },
-  { name: "3DBotics Pasay City", contact: "0929 374 3932 | 0976 149 2525", address: "722 P. Santos St., Brgy. 169, Malibay, Pasay City" },
-  { name: "3DBotics San Pablo City", contact: "0945-289-0343", address: "Tech Wiz Club-3DBotics, 4 Lt. R. Brion St, San Pablo City, Laguna" },
-  { name: "3DBotics Sto. Tomas Batangas", contact: "0945 289 0343", address: "#19 A. Bonifacio St., Pob. 2, Sto Tomas Batangas" },
-  { name: "3DBotics Tacloban", contact: "0917 850 2008", address: "GF Primark Town Center, Caibaan, Tacloban" },
-  { name: "3DBotics Tagbilaran", contact: "0905 225 1088", address: "G/F Konnichiwa Building, J.B. Gallares Street, Janssen Heights, Dampas, Tagbilaran City, Bohol 6300" },
-  { name: "3DBotics Taguig", contact: "0917 557 2078 / 0927 647 8955", address: "2nd Flr #72 MRT Avenue Central Signal Village, Taguig City Email: 3dboticstaguig@gmail.com" },
-  { name: "3DBotics Tarlac", contact: "0943 134 9368", address: "Bayanihan Institute, Saint Marys Subdivision, Matatalaib, Tarlac City" },
-  { name: "3DBotics Urdaneta City", contact: "0908 224 6367", address: "3rd floor, RjR Building, San Vicente, Urdaneta City, Pangasinan" },
+  { name: "3DBotics Nuvali, Sta. Rosa (Main Branch)", contact: "0915 775 5321", address: "Unit 8 Level 2 Laguna Central Mall, Brgy. Don Jose, Sta. Rosa Tagaytay Road Corner, Sta. Rosa City, Laguna" },
+  { name: "3DBotics Makati", contact: "0917 887 9576", address: "Unit 127, Mile-Long Building, Amorsolo St., Legaspi Village, Makati City" },
+  { name: "3DBotics Mandaluyong", contact: "0917 578 1611", address: "6th Floor, 6E MG Tower II, Shaw Blvd., Mandaluyong City" },
+  { name: "3DBotics Quezon City", contact: "0977 832 4211 / 0917 806 8125", address: "3rd Floor, Fishermall, Quezon City" },
+  { name: "3DBotics Tacloban City", contact: "0917 850 2008", address: "Ground Floor, Primark Center, Caibaan, Tacloban City" },
+  { name: "3DBotics Imus", contact: "0956 895 0278", address: "#2 Sampaguita St., Plaridel Subd., Bayan Luma 8, Imus, Cavite" },
+  { name: "3DBotics Cabuyao", contact: "0917 574 3761 / 0919 236 4078", address: "LI Building 2, Southpoint Banay-Banay, Cabuyao, Laguna" },
+  { name: "3DBotics Ormoc City", contact: "0917 896 1768", address: "Unit 113, UGF Chinatown East Gate, Lilia Ave., Brgy. Cogon, Ormoc City, Leyte" },
+  { name: "3DBotics Las Pinas", contact: "0998 530 9437", address: "Las Pinas City" },
+  { name: "3DBotics Sto. Tomas", contact: "0945 289 0343 / 0936 535 6711", address: "Blk 18 Lot 25, Kiwi St., The Mango Grove Subdivision, Brgy. San Roque, Sto. Tomas City, Batangas" },
+  { name: "3DBotics San Pablo", contact: "0945 289 0343 / 0936 535 6711", address: "4 Lt. Brion St., Brgy. III-F, San Pablo City, Laguna" },
+  { name: "3DBotics Bacoor", contact: "0917 532 4671", address: "Main Square Mall, 2nd Level, Bacoor Blvd., Barangay Bayanan, Bacoor City, Cavite" },
+  { name: "3DBotics Paranaque City", contact: "0962 629 8135", address: "2F Unit 2, El Grande Arcade, 316 El Grande Arcade, BF Homes, Paranaque City" },
 ];
 
 function Branches() {
