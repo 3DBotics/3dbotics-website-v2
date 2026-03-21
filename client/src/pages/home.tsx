@@ -279,7 +279,7 @@ function FounderSection() {
         <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
           <div>
             <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6 uppercase tracking-wide" data-testid="text-founder-title">
-              Message from the Founder
+              About the Founder
             </h2>
             
             <p className="text-gray-700 text-base md:text-lg leading-relaxed mb-6" data-testid="text-founder-bio-1">
