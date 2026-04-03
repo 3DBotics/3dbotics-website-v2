@@ -67,10 +67,19 @@ export async function registerRoutes(
       }
       
       // NUCLEAR OVERRIDE FOR CONCIERGE: Franchise questions bypass AI entirely
+      // IMPORTANT: Keep keywords specific to FRANCHISE/BUSINESS inquiries only.
+      // Generic words like 'fee', 'price', 'how much', 'cost', 'payment' must NOT be here
+      // because they also match student/parent enrollment and tuition questions.
       if (category === 'concierge') {
         const lowerMessage = message.toLowerCase();
-        const franchiseKeywords = ['franchise', 'cost', 'price', 'fee', 'investment', 'how much', 'package', 'included', 'what do i get', 'what is included', 'cash out', 'initial', 'total', 'all-in', 'downpayment', 'payment', 'startup', 'partnership', 'reservation', 'deposit', 'schedule', 'terms', 'installment', 'balance', 'remaining', 'next steps', 'move forward', 'open a branch', 'open branch', 'start a branch'];
-        const isFranchiseQuestion = franchiseKeywords.some(kw => lowerMessage.includes(kw));
+
+        // Enrollment-related keywords that should NOT trigger the franchise override
+        const enrollmentKeywords = ['tuition', 'enrollment', 'enroll', 'monthly fee', 'session fee', 'student fee', 'course fee', 'per month', 'per session', 'registration fee', 'how much is the tuition', 'how much to enroll', 'how much for the class', 'how much per month', 'how much is enrollment'];
+        const isEnrollmentQuestion = enrollmentKeywords.some(kw => lowerMessage.includes(kw));
+
+        // Franchise-specific keywords only
+        const franchiseKeywords = ['franchise', 'franchising', 'open a branch', 'open branch', 'start a branch', 'become a franchisee', 'franchise package', 'franchise cost', 'franchise fee', 'franchise investment', 'franchise price', 'all-in cost', 'all-in package', 'cash out', 'downpayment', 'startup cost', 'initial investment', 'reservation fee', '660', 'partnership opportunity', 'branch owner'];
+        const isFranchiseQuestion = !isEnrollmentQuestion && franchiseKeywords.some(kw => lowerMessage.includes(kw));
         
         if (isFranchiseQuestion) {
           console.log(`[NUCLEAR OVERRIDE] Franchise question detected: "${message}"`);

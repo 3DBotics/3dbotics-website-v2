@@ -326,9 +326,18 @@ We follow China–Japan Standard Technology Education (中日标准科技教育 
     setIsLoading(true);
 
     // FRONTEND SAFETY SHIELD: Check if this is a franchise question
+    // NOTE: Keywords must be specific to FRANCHISE/BUSINESS inquiries.
+    // Do NOT include generic words like 'fee', 'price', 'how much', 'cost', 'payment' alone —
+    // those also match enrollment/tuition questions from students/parents.
     const lowerInput = input.toLowerCase();
-    const franchiseKeywords = ['franchise', 'cost', 'price', 'fee', 'investment', 'how much', 'package', 'included', 'what do i get', 'what is included', 'cash out', 'initial', 'total', 'all-in', 'downpayment', 'payment', 'startup'];
-    const isFranchiseQuestion = franchiseKeywords.some(kw => lowerInput.includes(kw));
+
+    // Enrollment-related keywords that should NOT trigger the franchise shield
+    const enrollmentKeywords = ['tuition', 'enrollment', 'enroll', 'monthly fee', 'session fee', 'student fee', 'course fee', 'per month', 'per session', 'registration fee', 'how much is the tuition', 'how much to enroll', 'how much for the class', 'how much per month', 'how much is enrollment'];
+    const isEnrollmentQuestion = enrollmentKeywords.some(kw => lowerInput.includes(kw));
+
+    // Franchise-specific keywords (only trigger shield when clearly about the franchise business)
+    const franchiseKeywords = ['franchise', 'franchising', 'open a branch', 'open branch', 'start a branch', 'become a franchisee', 'franchise package', 'franchise cost', 'franchise fee', 'franchise investment', 'franchise price', 'all-in cost', 'all-in package', 'cash out', 'downpayment', 'startup cost', 'initial investment', 'reservation fee', '660', 'partnership opportunity', 'branch owner'];
+    const isFranchiseQuestion = !isEnrollmentQuestion && franchiseKeywords.some(kw => lowerInput.includes(kw));
 
     let aiResponse: string;
     

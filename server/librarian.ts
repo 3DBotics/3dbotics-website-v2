@@ -107,8 +107,12 @@ class Librarian {
     console.log(`[LIBRARIAN] Query: "${query}"`);
     
     // MASTER OVERRIDE: Hard-coded 3DBotics Franchise Package (Non-Negotiable)
-    const franchiseKeywords = ['franchise', 'cost', 'price', 'investment', 'fee', 'package', 'how much', 'quanto'];
-    const isAboutFranchise = franchiseKeywords.some(kw => query.toLowerCase().includes(kw));
+    // IMPORTANT: Do NOT include generic words like 'fee', 'price', 'how much', 'cost' alone —
+    // those also match student enrollment/tuition questions and must be handled by the AI.
+    const enrollmentKeywords = ['tuition', 'enrollment', 'enroll', 'monthly fee', 'session fee', 'student fee', 'course fee', 'per month', 'per session', 'registration fee'];
+    const isEnrollmentQuery = enrollmentKeywords.some(kw => query.toLowerCase().includes(kw));
+    const franchiseKeywords = ['franchise', 'franchising', 'open a branch', 'open branch', 'start a branch', 'become a franchisee', 'franchise package', 'franchise cost', 'franchise fee', 'franchise investment', 'franchise price', 'all-in cost', 'all-in package', 'cash out', 'downpayment', 'startup cost', 'initial investment', 'reservation fee', 'branch owner'];
+    const isAboutFranchise = !isEnrollmentQuery && franchiseKeywords.some(kw => query.toLowerCase().includes(kw));
     
     if (isAboutFranchise && category === 'concierge') {
       const masterFranchiseOverride = `⭐⭐⭐ MASTER OVERRIDE - FOUNDER'S DEFINITIVE ANSWER ⭐⭐⭐
@@ -263,10 +267,15 @@ ${category === 'chat' ? 'Guide students through TechDojo curriculum, Arduino, 3D
 🚨 ABSOLUTE ENFORCEMENT RULES (NON-NEGOTIABLE):
 1. IF ANY ANSWER EXISTS IN THE "FOUNDER'S VERIFIED ANSWERS" SECTION BELOW, YOU MUST USE IT EXACTLY AS PROVIDED - WORD FOR WORD.
 2. DO NOT GENERATE YOUR OWN ANSWER IF A FOUNDER'S VERIFIED ANSWER EXISTS.
-3. FOR PRICING: THE ONLY CORRECT 3DBOTICS FRANCHISE COST IS ₱660,000 ALL-IN. NO OTHER PRICE IS ACCEPTABLE.
+3. FOR FRANCHISE PRICING: THE ONLY CORRECT 3DBOTICS FRANCHISE COST IS ₱660,000 ALL-IN. NO OTHER FRANCHISE PRICE IS ACCEPTABLE.
 4. NEVER HALLUCINATE PRICES, FEES, COSTS, OR BUSINESS DETAILS.
-5. IF YOU FIND YOURSELF GENERATING A PRICE DIFFERENT FROM ₱660,000, STOP AND USE THE FOUNDER'S ANSWER INSTEAD.
+5. IF YOU FIND YOURSELF GENERATING A FRANCHISE PRICE DIFFERENT FROM ₱660,000, STOP AND USE THE FOUNDER'S ANSWER INSTEAD.
 6. YOUR GENERAL KNOWLEDGE ABOUT FRANCHISE COSTS IS WRONG. TRUST ONLY THE FOUNDER'S VERIFIED ANSWERS.
+
+📌 ENROLLMENT vs FRANCHISE DISTINCTION (CRITICAL):
+- FRANCHISE questions = "How much to open a branch?", "How much is the franchise?", "How do I become a franchisee?" → Answer with ₱660,000 All-In Package.
+- ENROLLMENT/TUITION questions = "How much is the tuition?", "How much does it cost to enroll my child?", "How much per month?" → These are STUDENT enrollment questions. Direct the parent/student to contact the nearest branch for current enrollment rates, as pricing may vary per branch.
+- DO NOT answer enrollment/tuition questions with franchise information. They are completely different topics.
 
 KNOWLEDGE HIERARCHY (STRICT):
 - TIER 1: Founder's Verified Answers (ALWAYS USE IF AVAILABLE - NEVER SKIP)
