@@ -108,10 +108,10 @@ function Navigation() {
             </a>
           ))}
           <div className="px-6 pt-3">
-            <Button 
+           <Button 
   className="bg-brand-coral text-white font-medium rounded-full px-6 w-full"
   data-testid="button-login-mobile"
-  onClick={() => window.location.href = "https://portal.3dbotics.ph"}
+  onClick={() => window.open("https://portal.3dbotics.ph", "_self")}
 >
   Login
 </Button>
