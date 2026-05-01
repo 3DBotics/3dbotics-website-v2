@@ -75,11 +75,12 @@ function Navigation() {
             </a>
           ))}
           <Button
-            className="bg-brand-coral text-white font-medium rounded-full px-6"
-            data-testid="button-login"
-          >
-            Login
-          </Button>
+  className="bg-brand-coral text-white font-medium rounded-full px-6"
+  data-testid="button-login"
+  onClick={() => window.location.href = "https://portal.3dbotics.ph"}
+>
+  Login
+</Button>
         </div>
 
         <Button
