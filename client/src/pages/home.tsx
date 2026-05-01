@@ -77,7 +77,7 @@ function Navigation() {
           <Button
   className="bg-brand-coral text-white font-medium rounded-full px-6"
   data-testid="button-login"
-  onClick={() => window.open("https://portal.3dbotics.ph", "_blank") = "https://portal.3dbotics.ph"}
+  onClick={() => window.open("https://portal.3dbotics.ph", "_blank")}
 >
   Login
 </Button>
