@@ -651,7 +651,7 @@ function ContactSection() {
                 <div>
                   <p className="text-gray-800 font-medium mb-1">Phone</p>
                   <p className="text-gray-600" data-testid="text-contact-phone">
-                    09199727899
+                    0995 836 2249
                   </p>
                 </div>
               </div>
@@ -902,3 +902,4 @@ export default function Home() {
     </div>
   );
 }
+
