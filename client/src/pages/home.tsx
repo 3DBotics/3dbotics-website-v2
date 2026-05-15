@@ -72,18 +72,20 @@ function Navigation() {
               data-testid={`link-nav-${link.label.toLowerCase()}`}
             >
               {link.label}
-          <a 
-  href="https://portal.3dbotics.ph"
-  target="_blank"
-  rel="noopener noreferrer"
->
-  <Button
-    className="bg-brand-coral text-white font-medium rounded-full px-6"
-    data-testid="button-login"
-  >
-    Login
-  </Button>
-</a>
+            </a>
+          ))}
+          <a
+            href="https://portal.3dbotics.ph"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button
+              className="bg-brand-coral text-white font-medium rounded-full px-6"
+              data-testid="button-login"
+            >
+              Login
+            </Button>
+          </a>
         </div>
 
         <Button
@@ -902,4 +904,5 @@ export default function Home() {
     </div>
   );
 }
+
 
