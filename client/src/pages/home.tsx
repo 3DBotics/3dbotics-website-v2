@@ -33,7 +33,15 @@ import slider4 from "@assets/slider_4.jpg";
 import chatbotAvatar from "@assets/Gemini_Generated_Image_8t7xmn8t7xmn8t7x_1766711043630.png";
 
 function Navigation() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
+  const [leaderboard, setLeaderboard] = useState<any[]>([])
+
+  useEffect(() => {
+    fetch('https://portal.3dbotics.ph/api/leaderboard?scope=network')
+      .then(r => r.json())
+      .then(d => setLeaderboard((d.leaderboard ?? []).slice(0, 10)))
+      .catch(() => {})
+  }, []);
 
   const navLinks = [
     { label: "Home", href: "#home" },
@@ -608,6 +616,51 @@ function TestimonialsSection() {
 
 function ContactSection() {
   return (
+    {/* LEADERBOARD SECTION */}
+    <section className="py-16 md:py-20" style={{ background: '#0f1923' }}>
+      <div className="container mx-auto px-4 max-w-2xl">
+        <div className="text-center mb-10">
+        <div className="text-yellow-400 font-black text-2xl md:text-3xl mb-2">🏆 Student Rankings</div>
+        <div className="text-gray-400 text-sm">Top students across all 3DBotics® TechDojo branches</div>
+        </div>
+        {leaderboard.length === 0 ? (
+        <div className="text-center text-gray-500 py-10">Loading rankings...</div>
+        ) : (
+        <div className="flex flex-col gap-3">
+          {leaderboard.map((entry: any, i: number) => {
+            const medal = [String.fromCodePoint(0x1F947), String.fromCodePoint(0x1F948), String.fromCodePoint(0x1F949)][i] ?? ("#" + (i+1))
+            return (
+            <div key={entry.id} className="flex items-center gap-3 rounded-2xl p-3" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <div className="text-xl w-8 text-center flex-shrink-0">{medal}</div>
+              <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0" style={{ border: "2px solid " + (entry.level_color ?? "#2A9D8F") }}>
+                {entry.photo_url
+                ? <img src={entry.photo_url} alt={entry.full_name} className="w-full h-full object-cover" />
+                : <div className="w-full h-full flex items-center justify-center text-white font-black" style={{ background: entry.level_color ?? "#2A9D8F" }}>{entry.full_name.charAt(0)}</div>
+                }
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-white text-sm truncate">{entry.full_name}</div>
+                <div className="text-xs font-semibold mt-0.5" style={{ color: "#E84C24" }}>{entry.branch_name} · {entry.level_name} Labgown</div>
+              </div>
+              <div className="flex-shrink-0 text-right">
+                <div className="font-black text-lg text-yellow-400">{entry.sparks}</div>
+                <div className="text-xs text-gray-500">sparks</div>
+              </div>
+            </div>
+            )
+          })}
+        </div>
+        )}
+        <div className="text-center mt-8">
+        <a href="https://portal.3dbotics.ph/showcase" target="_blank" rel="noopener noreferrer"
+          className="inline-block px-8 py-3 rounded-full font-bold text-white text-sm"
+          style={{ background: "#2A9D8F" }}>
+          See Student Creations →
+        </a>
+        </div>
+      </div>
+    </section>
+
     <section id="contact" className="py-16 md:py-24 bg-white" data-testid="section-contact">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="text-center mb-12">
@@ -904,5 +957,6 @@ export default function Home() {
     </div>
   );
 }
+
 
 
