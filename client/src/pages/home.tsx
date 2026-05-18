@@ -620,8 +620,8 @@ function LeaderboardSection({ leaderboard }: { leaderboard: any[] }) {
     <section className="py-16 md:py-20" style={{ background: '#0f1923' }}>
       <div className="container mx-auto px-4 max-w-2xl">
         <div className="text-center mb-10">
-          <div className="text-yellow-400 font-black text-2xl md:text-3xl mb-2">🏆 Student Rankings</div>
-          <div className="text-gray-400 text-sm">Top students across all 3DBotics® TechDojo branches</div>
+          <div className="text-yellow-400 font-black text-2xl md:text-3xl mb-2">🏆 3DBotics® Global Rankings</div>
+          <div className="text-gray-400 text-sm">Top students across all 3DBotics® TechDojo branches worldwide 🌏</div>
         </div>
         {leaderboard.length === 0 ? (
           <div className="text-center text-gray-500 py-10">Loading rankings...</div>
@@ -961,6 +961,7 @@ export default function Home() {
     </div>
   );
 }
+
 
 
 
