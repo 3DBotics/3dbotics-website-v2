@@ -34,15 +34,6 @@ import chatbotAvatar from "@assets/Gemini_Generated_Image_8t7xmn8t7xmn8t7x_17667
 
 function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
-  const [leaderboard, setLeaderboard] = useState<any[]>([])
-
-  useEffect(() => {
-    fetch('https://portal.3dbotics.ph/api/leaderboard?scope=network')
-      .then(r => r.json())
-      .then(d => setLeaderboard((d.leaderboard ?? []).slice(0, 10)))
-      .catch(() => {})
-  }, []);
-
   const navLinks = [
     { label: "Home", href: "#home" },
     { label: "About", href: "#about" },
@@ -940,6 +931,15 @@ function ExternalChatbot() {
   );
 }
 export default function Home() {
+  const [leaderboard, setLeaderboard] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('https://portal.3dbotics.ph/api/leaderboard?scope=network')
+      .then(r => r.json())
+      .then(d => setLeaderboard((d.leaderboard ?? []).slice(0, 10)))
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navigation />
