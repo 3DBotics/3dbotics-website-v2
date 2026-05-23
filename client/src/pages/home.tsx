@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -865,6 +865,123 @@ function Footer() {
   );
 }
 
+
+function ShowcaseSection() {
+  const [posts, setPosts] = React.useState<any[]>([]);
+  const [stats, setStats] = React.useState({ branches: 0, creations: 0, reactions: 0 });
+
+  React.useEffect(() => {
+    fetch('https://portal.3dbotics.ph/api/showcase/preview')
+      .then(r => r.json())
+      .then(d => {
+        setPosts((d.posts ?? []).slice(0, 8));
+        setStats({ branches: d.branches ?? 16, creations: d.creations ?? 169, reactions: d.reactions ?? 1015 });
+      })
+      .catch(() => {
+        // Fallback: use known Supabase photo URLs from showcase page
+        setPosts([]);
+      });
+  }, []);
+
+  return (
+    <section id="showcase" className="py-16 md:py-24" style={{ background: '#0f1923' }}>
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center gap-2 bg-yellow-400/10 border border-yellow-400/30 rounded-full px-4 py-1.5 mb-4">
+            <span className="text-yellow-400 text-sm font-semibold">🤖 STUDENT CREATIONS</span>
+          </div>
+          <h2 className="text-3xl md:text-4xl font-black text-white mb-3">Real Robots. Real Students.</h2>
+          <p className="text-gray-400 text-lg max-w-xl mx-auto">Every creation here was built by a 3DBotics student. No filters. No AI. Just kids building the future.</p>
+          <div className="flex justify-center gap-8 mt-6 mb-2">
+            <div className="text-center">
+              <div className="text-2xl font-black text-yellow-400">🏢 {stats.branches}</div>
+              <div className="text-xs text-gray-400">Branches</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-black text-yellow-400">👥 {stats.creations}</div>
+              <div className="text-xs text-gray-400">Creations</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-black text-yellow-400">❤️ {stats.reactions}</div>
+              <div className="text-xs text-gray-400">Reactions</div>
+            </div>
+          </div>
+        </div>
+
+        {posts.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+            {posts.map((post: any, i: number) => (
+              <a
+                key={i}
+                href="https://portal.3dbotics.ph/showcase"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative group rounded-2xl overflow-hidden aspect-square block"
+                style={{ background: 'rgba(255,255,255,0.05)' }}
+              >
+                <img
+                  src={post.photo_url}
+                  alt={`Student creation by ${post.student_name}`}
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-3">
+                  <div>
+                    <div className="text-white text-xs font-bold">{post.student_name}</div>
+                    <div className="text-yellow-400 text-xs">❤️ {post.reactions}</div>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+            {[
+              'https://iolgjxjjgsynisqtrzit.supabase.co/storage/v1/object/public/project-photos/showcase/student/1779183410250.jpg',
+              'https://iolgjxjjgsynisqtrzit.supabase.co/storage/v1/object/public/project-photos/showcase/student/1779436513510.jpg',
+              'https://iolgjxjjgsynisqtrzit.supabase.co/storage/v1/object/public/project-photos/showcase/student/1779267912444.jpg',
+              'https://iolgjxjjgsynisqtrzit.supabase.co/storage/v1/object/public/project-photos/showcase/student/1779257533081.jpg',
+              'https://iolgjxjjgsynisqtrzit.supabase.co/storage/v1/object/public/project-photos/showcase/student/1779104529431.jpg',
+              'https://iolgjxjjgsynisqtrzit.supabase.co/storage/v1/object/public/project-photos/showcase/student/1779353615297.jpg',
+              'https://iolgjxjjgsynisqtrzit.supabase.co/storage/v1/object/public/project-photos/showcase/staff/1779193821172.jpg',
+              'https://iolgjxjjgsynisqtrzit.supabase.co/storage/v1/object/public/project-photos/showcase/student/1779346722900.jpg',
+            ].map((url, i) => (
+              <a
+                key={i}
+                href="https://portal.3dbotics.ph/showcase"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative group rounded-2xl overflow-hidden aspect-square block"
+              >
+                <img
+                  src={url}
+                  alt="Student creation"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                  <span className="text-white text-xs font-bold bg-black/50 px-2 py-1 rounded-full">View →</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
+
+        <div className="text-center">
+          <a
+            href="https://portal.3dbotics.ph/showcase"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-yellow-400 hover:bg-yellow-300 text-black font-black px-8 py-4 rounded-full text-lg transition-all duration-200 hover:scale-105 shadow-lg shadow-yellow-400/20"
+          >
+            🤖 See All Student Creations
+            <span className="text-sm font-normal">→</span>
+          </a>
+          <p className="text-gray-500 text-sm mt-3">169+ creations from 16 branches across the Philippines</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function ExternalChatbot() {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -954,6 +1071,7 @@ export default function Home() {
         <VideosSection />
         <Branches />
         <LeaderboardSection leaderboard={leaderboard} />
+        <ShowcaseSection />
       <ContactSection />
       </main>
       <Footer />
