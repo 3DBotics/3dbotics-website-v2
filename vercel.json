@@ -11,7 +11,12 @@
     { "source": "/api/validate-franchise-price", "destination": "/api/validate-franchise-price" },
     { "source": "/api/chat-log", "destination": "/api/chat-log" },
     { "source": "/api/pexels/search", "destination": "/api/pexels/search" },
-    { "source": "/api/videos/search", "destination": "/api/videos/search" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/api/videos/search", "destination": "/api/videos/search" }
+  ],
+  "routes": [
+    { "src": "/assets/(.*)", "dest": "/assets/$1" },
+    { "src": "/favicon.png", "dest": "/favicon.png" },
+    { "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot))", "dest": "/$1" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
