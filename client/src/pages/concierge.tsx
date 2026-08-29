@@ -255,6 +255,7 @@ We offer a FREE trial session called "Trial Play!" where prospective students ha
 21. Cagayan De Oro: 0976 176 5241 | ROOM 3D, H BUILDING, LOT 13, MASTERSON MILES, MASTERSON AVENUE, UPPER CARMEN, CAGAYAN DE ORO CITY
 22. Bacolod: 0908 887 0456 | 2nd Floor Mayfair Plaza, 13th Lacson St., Bacolod City, Negros Occidental | Email: 3dboticsbacolod@gmail.com
 23. La Union: 0998 533 9930 | 31 Gng R. Lirag St. BF Homes Parañaque City 1720 | Email: 3dbotics.launion@gmail.com
+24. Malolos, Bulacan: 0921 823 0858 | 2nd Floor, 0144 Purok 1, Santisima Trinidad, Malolos City, Bulacan
 
 **MAIN HEADQUARTERS:**
 Address: 2nd Floor Laguna Central Shopping Mall, Don Jose street Paseo De Sta Rosa Greenfield, Santa Rosa Laguna (Beside Shopwise) | Email: info@3DBotics.ph | Phone: (0966) 418 7054
