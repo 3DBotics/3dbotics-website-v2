@@ -244,17 +244,16 @@ We offer a FREE trial session called "Trial Play!" where prospective students ha
 10. **Nuvali: 0975 081 8303 | 2nd Floor (near Shopwise), Laguna Central, Sta. Rosa Laguna** (DO NOT add Unit numbers or change to Ground Floor)
 11. Occ. Mindoro: 0968 524 4403 | Tagumpay A, Bagong Sikat, San Jose
 12. Ormoc City: 0969 648 2744 | UG 113, Chinatown Eastgate, Lilia Ave., Brgy. Cogon, Ormoc City
-13. Parañaque: 0995 861 8106 | Unit 2, 2nd Floor El Grande Arcade, 316 El Grande Avenue, BF Parañaque City, 1720
-14. Pasay City: 0929 374 3932 / 0976 149 2525 | 722 P. Santos St., Brgy. 169, Malibay, Pasay City
-15. San Pablo City: 0945-289-0343 | Tech Wiz Club-3DBotics, 4 Lt. R. Brion St, San Pablo City, Laguna
-16. Sto. Tomas Batangas: 0945 289 0343 | #19 A. Bonifacio St., Pob. 2, Sto Tomas Batangas
-17. Tacloban: 0917 850 2008 | GF Primark Town Center, Caibaan, Tacloban
-18. Tagbilaran: 0905 225 1088 | G/F Konnichiwa Building, J.B. Gallares Street, Janssen Heights, Dampas, Tagbilaran City, Bohol 6300
-19. Taguig: 0917 557 2078 / 0927 647 8955 | 2nd Flr #72 MRT Avenue Central Signal Village, Taguig City
-20. Tarlac: 0943 134 9368 | Bayanihan Institute, Saint Marys Subdivision, Matatalaib, Tarlac City
-21. Urdaneta City: 0908 224 6367 | 3rd floor, RjR Building, San Vicente, Urdaneta City, Pangasinan
-22. Cagayan De Oro: 0976 176 5241 | ROOM 3D, H BUILDING, LOT 13, MASTERSON MILES, MASTERSON AVENUE, UPPER CARMEN, CAGAYAN DE ORO CITY
-23. Bacolod: 0919 065 2600 | 2nd Floor Mayfair Plaza 12th Lacson ST. Bacolod City
+13. Pasay City: 0929 374 3932 / 0976 149 2525 | 722 P. Santos St., Brgy. 169, Malibay, Pasay City
+14. San Pablo City: 0945-289-0343 | Tech Wiz Club-3DBotics, 4 Lt. R. Brion St, San Pablo City, Laguna
+15. Sto. Tomas Batangas: 0945 289 0343 | #19 A. Bonifacio St., Pob. 2, Sto Tomas Batangas
+16. Tacloban: 0917 850 2008 | GF Primark Town Center, Caibaan, Tacloban
+17. Tagbilaran: 0905 225 1088 | G/F Konnichiwa Building, J.B. Gallares Street, Janssen Heights, Dampas, Tagbilaran City, Bohol 6300
+18. Taguig: 0917 557 2078 / 0927 647 8955 | 2nd Flr #72 MRT Avenue Central Signal Village, Taguig City
+19. Tarlac: 0943 134 9368 | Bayanihan Institute, Saint Marys Subdivision, Matatalaib, Tarlac City
+20. Urdaneta City: 0908 224 6367 | 3rd floor, RjR Building, San Vicente, Urdaneta City, Pangasinan
+21. Cagayan De Oro: 0976 176 5241 | ROOM 3D, H BUILDING, LOT 13, MASTERSON MILES, MASTERSON AVENUE, UPPER CARMEN, CAGAYAN DE ORO CITY
+22. Bacolod: 0908 887 0456 | 2nd Floor Mayfair Plaza, 13th Lacson St., Bacolod City, Negros Occidental | Email: 3dboticsbacolod@gmail.com
 
 **MAIN HEADQUARTERS:**
 Address: 2nd Floor Laguna Central Shopping Mall, Don Jose street Paseo De Sta Rosa Greenfield, Santa Rosa Laguna (Beside Shopwise) | Email: info@3DBotics.ph | Phone: (0966) 418 7054

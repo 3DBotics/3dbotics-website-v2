@@ -545,7 +545,7 @@ const BRANCHES = [
   { name: "Sto. Tomas, Batangas", contact: "0945 289 0343", address: "Kiwi St., The Mango Grove Subd., Sto. Tomas City, Batangas" },
   { name: "San Pablo, Laguna", contact: "0945 289 0343", address: "4 Lt. Brion St., Brgy. III-F, San Pablo City, Laguna" },
   { name: "Bacoor, Cavite", contact: "0917 532 4671", address: "Main Square Mall, 2nd Level, Bacoor Blvd., Bacoor City, Cavite" },
-  { name: "Parañaque City", contact: "0962 629 8135", address: "2F Unit 2, El Grande Arcade, BF Homes, Parañaque City" },
+  { name: "Bacolod", contact: "0908 887 0456", address: "2nd Floor Mayfair Plaza, 13th Lacson St., Bacolod City, Negros Occidental", email: "3dboticsbacolod@gmail.com" },
 ];
 
 function Branches() {
@@ -568,7 +568,8 @@ function Branches() {
             onMouseLeave={e => { e.currentTarget.style.borderColor = "#E8ECF4"; e.currentTarget.style.boxShadow = "none"; }}>
             <div style={{ fontFamily: syne, fontWeight: 700, fontSize: 14, color: C.navy, marginBottom: 8 }}>3DBotics® {b.name}</div>
             <div style={{ fontSize: 12, color: C.gray, marginBottom: 4, display: "flex", alignItems: "center", gap: 6 }}><Phone size={11} color={C.teal} />{b.contact}</div>
-            <div style={{ fontSize: 12, color: C.gray, display: "flex", gap: 6 }}><MapPin size={11} color={C.teal} style={{ flexShrink: 0, marginTop: 2 }} />{b.address}</div>
+            <div style={{ fontSize: 12, color: C.gray, display: "flex", gap: 6, marginBottom: (b as any).email ? 4 : 0 }}><MapPin size={11} color={C.teal} style={{ flexShrink: 0, marginTop: 2 }} />{b.address}</div>
+            {(b as any).email && <div style={{ fontSize: 12, color: C.gray, display: "flex", alignItems: "center", gap: 6 }}><Mail size={11} color={C.teal} />{(b as any).email}</div>}
           </div>
         ))}
       </div>
