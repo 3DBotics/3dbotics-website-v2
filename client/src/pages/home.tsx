@@ -546,6 +546,7 @@ const BRANCHES = [
   { name: "San Pablo, Laguna", contact: "0945 289 0343", address: "4 Lt. Brion St., Brgy. III-F, San Pablo City, Laguna" },
   { name: "Bacoor, Cavite", contact: "0917 532 4671", address: "Main Square Mall, 2nd Level, Bacoor Blvd., Bacoor City, Cavite" },
   { name: "Bacolod", contact: "0908 887 0456", address: "2nd Floor Mayfair Plaza, 13th Lacson St., Bacolod City, Negros Occidental", email: "3dboticsbacolod@gmail.com" },
+  { name: "La Union", contact: "0998 533 9930", address: "31 Gng R. Lirag St. BF Homes Parañaque City 1720", email: "3dbotics.launion@gmail.com" },
 ];
 
 function Branches() {
