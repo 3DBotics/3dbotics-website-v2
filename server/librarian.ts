@@ -10,7 +10,7 @@ interface KnowledgeChunk {
 class Librarian {
   private knowledgeBase: KnowledgeChunk[] = [];
   private isInitialized = false;
-  private lmStudioUrl = 'https://undeclarable-kandy-graspingly.ngrok-free.dev/v1/chat/completions';
+  private lmStudioUrl = 'https://path-dividing-astronomy.ngrok-free.dev/v1/chat/completions';
   
   // Supabase Client for "Wisdom Log" (Collective Intelligence)
   private supabase = createClient(

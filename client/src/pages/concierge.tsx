@@ -22,7 +22,7 @@ interface LearningModal {
 }
 
 // NOTE: This is for non-franchise questions only. Franchise questions are handled by the FRONTEND SAFETY SHIELD.
-const LM_STUDIO_URL = "https://undeclarable-kandy-graspingly.ngrok-free.dev/v1/chat/completions";
+const LM_STUDIO_URL = "https://path-dividing-astronomy.ngrok-free.dev/v1/chat/completions";
 
 export default function ConciergePage() {
   const [messages, setMessages] = useState<Message[]>([]);

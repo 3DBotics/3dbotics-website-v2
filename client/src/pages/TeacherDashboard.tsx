@@ -92,9 +92,9 @@ export default function TeacherDashboard() {
       );
 
       // Send to LM Studio for analysis - NO RESTRICTIONS ON SUBJECT
-      const analysisResponse = await fetch("https://undeclarable-kandy-graspingly.ngrok-free.dev/v1/chat/completions", {
+      const analysisResponse = await fetch("https://path-dividing-astronomy.ngrok-free.dev/v1/chat/completions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "true" },
         body: JSON.stringify({
           model: "local-model",
           messages: [
@@ -130,9 +130,9 @@ export default function TeacherDashboard() {
         prev.map((s, i) => (i === 1 ? { ...s, status: "processing" as const, progress: 25 } : s))
       );
 
-      const timelineResponse = await fetch("https://undeclarable-kandy-graspingly.ngrok-free.dev/v1/chat/completions", {
+      const timelineResponse = await fetch("https://path-dividing-astronomy.ngrok-free.dev/v1/chat/completions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "true" },
         body: JSON.stringify({
           model: "local-model",
           messages: [
@@ -164,9 +164,9 @@ export default function TeacherDashboard() {
         prev.map((s, i) => (i === 2 ? { ...s, status: "processing" as const, progress: 25 } : s))
       );
 
-      const activitiesResponse = await fetch("https://undeclarable-kandy-graspingly.ngrok-free.dev/v1/chat/completions", {
+      const activitiesResponse = await fetch("https://path-dividing-astronomy.ngrok-free.dev/v1/chat/completions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "true" },
         body: JSON.stringify({
           model: "local-model",
           messages: [

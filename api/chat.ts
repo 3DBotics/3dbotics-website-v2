@@ -46,7 +46,7 @@ async function callLibrarian(message: string, category: string): Promise<string>
     ? `You are a friendly 3DBotics franchise concierge. The franchise package costs exactly ₱660,000 all-in. Never quote any other price. Use the wisdom below to answer questions.\n\n${wisdomContext}`
     : `You are LAILA, a helpful 3DBotics educational assistant. Use the wisdom below to answer questions.\n\n${wisdomContext}`
 
-  const lmUrl = process.env.LM_STUDIO_URL || 'https://undeclarable-kandy-graspingly.ngrok-free.dev/v1/chat/completions'
+  const lmUrl = process.env.LM_STUDIO_URL || 'https://path-dividing-astronomy.ngrok-free.dev/v1/chat/completions'
 
   const response = await fetch(lmUrl, {
     method: 'POST',

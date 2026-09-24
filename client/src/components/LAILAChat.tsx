@@ -55,9 +55,9 @@ export default function LAILAChat({ onClose, isOpen: initialOpen = false, lesson
 
     try {
       // Call LM Studio with lesson context
-      const response = await fetch("https://undeclarable-kandy-graspingly.ngrok-free.dev/v1/chat/completions", {
+      const response = await fetch("https://path-dividing-astronomy.ngrok-free.dev/v1/chat/completions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "true" },
         body: JSON.stringify({
           model: "local-model",
           messages: [
