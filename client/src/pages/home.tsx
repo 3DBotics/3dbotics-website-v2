@@ -542,7 +542,6 @@ const BRANCHES = [
   { name: "Cabuyao, Laguna", contact: "0917 574 3761", address: "LI Building 2, Southpoint Banay-Banay, Cabuyao, Laguna" },
   { name: "Ormoc City", contact: "0917 896 1768", address: "Unit 113, UGF Chinatown East Gate, Lilia Ave., Ormoc City, Leyte" },
   { name: "Las Piñas", contact: "0998 530 9437", address: "Las Piñas City" },
-  { name: "Sto. Tomas, Batangas", contact: "0945 289 0343", address: "Kiwi St., The Mango Grove Subd., Sto. Tomas City, Batangas" },
   { name: "San Pablo, Laguna", contact: "0945 289 0343", address: "4 Lt. Brion St., Brgy. III-F, San Pablo City, Laguna" },
   { name: "Bacoor, Cavite", contact: "0917 532 4671", address: "Main Square Mall, 2nd Level, Bacoor Blvd., Bacoor City, Cavite" },
   { name: "Bacolod", contact: "0908 887 0456", address: "2nd Floor Mayfair Plaza, 13th Lacson St., Bacolod City, Negros Occidental", email: "3dboticsbacolod@gmail.com" },
